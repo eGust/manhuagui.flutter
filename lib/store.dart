@@ -17,13 +17,17 @@ class Store {
 
   Future<void> initialize() async {
     storage = await SharedPreferences.getInstance();
-    // final metaJson = storage.getString(_META_DATA_KEY);
+    final metaJson = storage.getString(_META_DATA_KEY);
+    if (metaJson != null) {
+      metaData = WebsiteMetaData.fromJson(jsonDecode(metaJson));
+    } else {
+      await _refresh();
+    }
+  }
+
+  Future<void> cleanInitialize() async {
+    storage = await SharedPreferences.getInstance();
     await _refresh();
-    // if (metaJson != null) {
-    //   metaData = WebsiteMetaData.fromJson(jsonDecode(metaJson));
-    // } else {
-    //   await _refresh();
-    // }
   }
 }
 
