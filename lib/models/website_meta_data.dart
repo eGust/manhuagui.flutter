@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:html/dom.dart';
 
-import 'request.dart';
+import '../api/request.dart';
 
 const PROTOCOL = 'http';
 const DOMAIN = 'www.manhuagui.com';
@@ -57,17 +57,20 @@ class FilterGroup {
   FilterGroup.fromJson(Map<String, dynamic> json)
     : title = json['title']
     , key = json['key']
-    , filters = (json['key'] as List).map((json) => Filter.fromJson(json)).toList()
+    , filters = (json['filters'] as List).map((json) => Filter.fromJson(json)).toList()
     ;
 }
 
-class MetaData {
-  MetaData();
+class WebsiteMetaData {
+  WebsiteMetaData();
+
+  DateTime timestamp;
   List<FilterGroup> comicFilterGroupList, authorFilterGroupList;
   // Map<String, FilterGroup> comicFilterGroupMap, authorFilterGroupMap;
   List<Order> comicListOrders, comicRankOrders, authorListOrders;
 
   Map<String, dynamic> toJson() => {
+      'timestamp': timestamp?.toIso8601String(),
       'comicFilterGroupList': comicFilterGroupList.map((g) => g.toJson()).toList(),
       'authorFilterGroupList': authorFilterGroupList.map((g) => g.toJson()).toList(),
       'comicListOrders': comicListOrders.map((g) => g.toJson()).toList(),
@@ -78,12 +81,13 @@ class MetaData {
   // static Map<String, FilterGroup> _convertListToMap(List<FilterGroup> list) =>
   //   list.asMap().map((_, group) => MapEntry(group.key, group));
 
-  static List<FilterGroup> _decodeJsonList(json) =>
-    ((json ?? []) as List<Map<String, dynamic>>).map((json) => FilterGroup.fromJson(json)).toList();
-  static List<Order> _decodeJsonOrders(json) =>
-    ((json ?? []) as List<Map<String, dynamic>>).map((json) => Order.fromJson(json)).toList();
+  static List<FilterGroup> _decodeJsonList(List json) =>
+    (json ?? []).map((json) => FilterGroup.fromJson(json)).toList();
+  static List<Order> _decodeJsonOrders(List json) =>
+    (json ?? []).map((json) => Order.fromJson(json)).toList();
 
-  MetaData.fromJson(Map<String, dynamic> json) {
+  WebsiteMetaData.fromJson(Map<String, dynamic> json) {
+    timestamp = json['timestamp'] == null ? null : DateTime.parse(json['timestamp']);
     comicFilterGroupList = _decodeJsonList(json['comicFilterGroupList']);
     // comicFilterGroupMap = _convertListToMap(comicFilterGroupList);
 
@@ -110,7 +114,8 @@ class MetaData {
     return MapEntry(list, orders);
   }
 
-  Future refresh() async {
+  Future<WebsiteMetaData> refresh() async {
+    timestamp = DateTime.now();
     final comicList = await fetchParse('$PROTOCOL://$DOMAIN$PATH_LIST');
     comicFilterGroupList = comicList.key;
     // comicFilterGroupMap = _convertListToMap(comicFilterGroupList);
@@ -130,5 +135,7 @@ class MetaData {
             linkBase: link.isEmpty ? 'index' : link,
           );
       }).toList();
+
+    return this;
   }
 }

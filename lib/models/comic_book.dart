@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:html/parser.dart' show parse;
 
-import 'meta_data.dart';
-import 'request.dart';
+import '../api/request.dart';
+import '../api/decrypt_chapter_json.dart';
+import 'website_meta_data.dart';
 import 'comic_cover.dart';
 import 'chapter.dart';
-import 'decrypt_chapter_json.dart';
 
 class ComicBook extends ComicCover {
   ComicBook(String bookId): super(bookId, null);

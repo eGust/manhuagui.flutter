@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
-import '../lib/api/meta_data.dart';
-import '../lib/api/selectors.dart';
-import '../lib/api/comic_cover.dart';
-import '../lib/api/comic_book.dart';
+import '../lib/models/website_meta_data.dart';
+import '../lib/models/selectors.dart';
+import '../lib/models/comic_cover.dart';
+import '../lib/models/comic_book.dart';
 
 Future<ComicBook> testBook(ComicBook book) async {
   print("Comic ${book.bookId}");
@@ -22,7 +22,7 @@ Future<ComicBook> testBook(ComicBook book) async {
 }
 
 void main() async {
-  final meta = MetaData();
+  final meta = WebsiteMetaData();
   await meta.refresh();
   print(jsonEncode(meta));
   final selector = SelectorMeta(

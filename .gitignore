@@ -23,3 +23,6 @@ build/
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
+
+ios/Runner.xcworkspace/contents.xcworkspacedata
+ios/Runner.xcodeproj/project.pbxproj

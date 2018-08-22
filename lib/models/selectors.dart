@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:html/dom.dart';
 
-import 'meta_data.dart';
-import 'request.dart' as request;
+import '../api/request.dart' as request;
+import 'website_meta_data.dart';
 
 enum SelectorType { Comic, Author }
 
@@ -52,7 +52,7 @@ abstract class BaseFilterSelector {
   int page = 1;
   int pageCount;
 
-  void selectFilter({ String link: null, String group: null });
+  void selectFilter({ String link, String group });
 
   String get fullPath;
   String get url => '$PROTOCOL://$DOMAIN$fullPath';
@@ -78,7 +78,7 @@ class MultipleFilterSelector extends BaseFilterSelector {
   Map<String, String> filters = {};
 
   @override
-  void selectFilter({ String link: null, String group: null }) {
+  void selectFilter({ String link, String group }) {
     if (link == null) {
       filters[group] = null;
     } else {
@@ -101,7 +101,7 @@ class SingleFilterSelector extends BaseFilterSelector {
   String filterLink;
 
   @override
-  void selectFilter({ String link: null, String group: null }) {
+  void selectFilter({ String link, String group }) {
     filterLink = link;
   }
 
