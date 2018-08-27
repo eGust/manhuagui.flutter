@@ -26,3 +26,5 @@ build/
 
 ios/Runner.xcworkspace/contents.xcworkspacedata
 ios/Runner.xcodeproj/project.pbxproj
+
+config.dart

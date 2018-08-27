@@ -31,9 +31,10 @@ import 'website_meta_data.dart';
 class Chapter {
   Chapter(this.chapterId, this.title, this.bookId);
 
-  final String chapterId, title, bookId;
+  final int chapterId, bookId;
+  final String title;
   int pageCount;
-  String groupPrevId, groupNextId;
+  int groupPrevId, groupNextId;
 
   String prevChpId, nextChpId, basePath, signature;
   List<String> pages;

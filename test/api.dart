@@ -40,8 +40,8 @@ void main() async {
 
   // await testBook(ComicBook.fromCover(covers[4]));
   // await testBook(ComicBook('4740')); // 进击的巨人
-  final book = await testBook(ComicBook('4125'));
-  final ch = book.chapterMap['222478']; // 源君物语
+  final book = await testBook(ComicBook(4125));
+  final ch = book.chapterMap[222478]; // 源君物语
   await ch.refresh();
   print(ch);
 }

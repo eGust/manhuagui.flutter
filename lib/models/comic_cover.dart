@@ -1,5 +1,10 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:collection';
 import 'package:html/dom.dart';
+
+import '../api.dart';
+import '../config.dart';
 
 class AuthorLink {
   AuthorLink(this.authorId, this.name);
@@ -9,11 +14,11 @@ class AuthorLink {
 class ComicCover {
   ComicCover(this.bookId, this.name);
   ComicCover.fromLinkAttrs(LinkedHashMap<dynamic, String> linkAttrs)
-    : this.bookId = linkAttrs['href'].split('/')[2]
+    : this.bookId = int.parse(linkAttrs['href'].split('/')[2])
     , this.name = linkAttrs['title']
     ;
 
-  final String bookId;
+  final int bookId;
   String name, lastChpTitle, score;
   DateTime updatedAt;
   bool finished;
@@ -24,6 +29,19 @@ class ComicCover {
   static final RegExp _reDate = RegExp(r'(\d{4}-\d{2}-\d{2})');
 
   static ComicCover fromDom(Element element) {
+    if (element.localName == 'a') {
+      // mobile version
+      final bookId = int.parse(element.attributes['href'].split('/')[2]);
+      final name = element.querySelector('h3').text.trim();
+      final cc = ComicCover(bookId, name);
+      cc.finished = element.querySelector('.thumb > i').text.trim() == '完结';
+
+      final dds = element.querySelectorAll('dl > dd');
+      cc.lastChpTitle = dds[2].text;
+      cc.updatedAt = DateTime.parse(dds[3].text);
+      return cc;
+    }
+
     if (element.localName == 'li') {
       final cover = element.querySelector('a.bcover');
       final cc = ComicCover.fromLinkAttrs(cover.attributes);
@@ -68,6 +86,10 @@ class ComicCover {
 
   static List<ComicCover> parseAuthor(Document doc) => doc
     .querySelectorAll('.book-result ul > li .book-detail')
+    .map((tr) => ComicCover.fromDom(tr)).toList();
+
+  static List<ComicCover> parseFavorate(Document doc) => doc
+    .querySelectorAll('li > a')
     .map((tr) => ComicCover.fromDom(tr)).toList();
 
   static List<ComicCover> autoParseDom(Document doc) => (

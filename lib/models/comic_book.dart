@@ -8,7 +8,7 @@ import 'comic_cover.dart';
 import 'chapter.dart';
 
 class ComicBook extends ComicCover {
-  ComicBook(String bookId): super(bookId, null);
+  ComicBook(int bookId): super(bookId, null);
   static Map<String, ComicBook> books = {};
 
   int rank;
@@ -18,8 +18,8 @@ class ComicBook extends ComicCover {
   // List<FilterSelector> filters;
 
   List<String> chapterGroups;
-  Map<String, List<String>> groupedChapterIdListMap;
-  Map<String, Chapter> chapterMap;
+  Map<String, List<int>> groupedChapterIdListMap;
+  Map<int, Chapter> chapterMap;
 
   ComicBook.fromCover(ComicCover cover): super(cover.bookId, cover.name) {
     lastChpTitle = cover.lastChpTitle;
@@ -91,14 +91,14 @@ class ComicBook extends ComicCover {
         if (h4.localName != 'h4') h4 = h4.previousElementSibling;
 
         final groupName = h4.text;
-        final groupChapterIdList = <String>[];
+        final groupChapterIdList = <int>[];
 
         el.querySelectorAll('ul').reversed.forEach((ul) {
           groupChapterIdList.addAll(
             ul.querySelectorAll('li > a')
             .map((link) {
               final attrs = link.attributes;
-              final chapterId = attrs['href'].split('/')[3].replaceAll('.html', '');
+              final chapterId = int.parse(attrs['href'].split('/')[3].replaceAll('.html', ''));
               final chapter = Chapter(chapterId, attrs['title'], bookId);
               chapter.pageCount = int.parse(link.querySelector('i').text.replaceAll('p', ''));
 
