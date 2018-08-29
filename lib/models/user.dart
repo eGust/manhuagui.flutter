@@ -27,17 +27,26 @@ class User {
 
   static final _reCookie = RegExp(r'(my=[^;]+)');
 
-  static Future<User> initialize({ String cookie }) async {
-    if (cookie == null) return User(null);
-    final res = await getJson(buildActionUrl(AjaxAction.checkLogin), headers: { 'cookie': cookie });
-    return User(res['status'] == 1 ? cookie : null);
-  }
-
-  User(String cookie) {
+  User({ String user, String password, String cookie }) {
+    _user = user;
+    _password = password;
     _setCookie(cookie);
   }
 
-  String _cookie;
+  Future<bool> initialize() async {
+    if (_cookie != null) {
+      final res = await getJson(buildActionUrl(AjaxAction.checkLogin), headers: cookieHeaders);
+      if (res['status'] == 1) return true;
+      _setCookie(null);
+    }
+
+    if (_user == null || _password == null) return false;
+    final succ = await login(user: _user, password: _password);
+    return succ != null;
+  }
+
+  String _cookie, _user, _password;
+
   String get cookie => _cookie;
   void _setCookie(String value) {
     _cookie = value;
@@ -60,7 +69,7 @@ class User {
     return r;
   }
 
-  Future<String> login({ String user, String password }) async {
+  Future<String> login({ String user, String password, bool remember }) async {
     final data = await postJsonRaw(
       buildActionUrl(AjaxAction.login),
       body: { 'txtUserName': user, 'txtPassword': password },
@@ -71,6 +80,10 @@ class User {
       final String rawCookie = data['headers']['set-cookie'];
       c = _reCookie.firstMatch(rawCookie)[1];
       _setCookie(c);
+      if (remember) {
+        _user = user;
+        _password = password;
+      }
     }
     return c;
   }
@@ -99,5 +112,17 @@ class User {
     if (!isLogin) return <ComicCover>[];
     final doc = await fetchDom('$_FAVORATE_URL$pageNo', headers: cookieHeaders);
     return ComicCover.parseFavorate(doc);
+  }
+
+  Map<String, dynamic> toJson() => {
+    'cookie': _cookie,
+    'user': _user,
+    'password': _password,
+  };
+
+  User.fromJson(Map<String, dynamic> json) {
+    _setCookie(json['cookie']);
+    _user = (json['user']);
+    _password = (json['password']);
   }
 }

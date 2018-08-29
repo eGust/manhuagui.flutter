@@ -11,10 +11,10 @@ class Store {
   WebsiteMetaData metaData;
   User user;
   RemoteDb db;
-  Set<int> favorates = Set();
+  Set<int> favorateBookIdSet = Set();
 
   static const _META_DATA_KEY = 'websiteMetaData';
-  static const _COOKIES_KEY = 'cookies';
+  static const _USER_KEY = 'user';
   static const _FAVORATES_KEY = 'favorates';
 
   Future<void> _refresh() async {
@@ -23,25 +23,31 @@ class Store {
 
   void save() {
     storage.setString(_META_DATA_KEY, jsonEncode(metaData));
-    storage.setString(_FAVORATES_KEY, jsonEncode(favorates.toList()));
-    storage.setString(_COOKIES_KEY, user.cookie);
+    storage.setString(_FAVORATES_KEY, jsonEncode(favorateBookIdSet.toList()));
+    storage.setString(_USER_KEY, jsonEncode(user));
   }
 
   Future<void> _loadStorage() async {
     storage = await SharedPreferences.getInstance();
   }
 
+  Map<String, dynamic> _loadStorageJson(String key) {
+    final json = storage.getString(key);
+    return json == null ? null : jsonDecode(json);
+  }
+
   Future<void> _loadMetaData() async {
-    final metaJson = storage.getString(_META_DATA_KEY);
+    final metaJson = _loadStorageJson(_META_DATA_KEY);
     if (metaJson != null) {
-      metaData = WebsiteMetaData.fromJson(jsonDecode(metaJson));
+      metaData = WebsiteMetaData.fromJson(metaJson);
     } else {
       await _refresh();
     }
   }
 
   Future<void> _loadUser() async {
-    user = await User.initialize(cookie: storage.getString(_COOKIES_KEY));
+    user = User.fromJson(_loadStorageJson(_USER_KEY) ?? {});
+    await user.initialize();
   }
 
   Future<void> _loadDb() async {
@@ -57,8 +63,7 @@ class Store {
     ]);
 
     // favorates
-    final favorateIds = jsonDecode(storage.getString(_FAVORATES_KEY));
-    favorates = Set.from(List<int>.from(favorateIds));
+    favorateBookIdSet = Set.from(_loadStorageJson(_FAVORATES_KEY) ?? []);
   }
 }
 

@@ -10,6 +10,10 @@ abstract class StatusBar {
     SystemChrome.setEnabledSystemUIOverlays(value ? [] : SystemUiOverlay.values);
   }
 
+  static void init() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+  }
+
   static void hide() {
     hidden = true;
   }

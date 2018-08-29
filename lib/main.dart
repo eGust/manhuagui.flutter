@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'utils.dart';
 import 'store.dart';
 import 'routes.dart';
+import 'api.dart';
 
 void main() async {
   log('main started');
+  StatusBar.init();
   // await globals.cleanInitialize();
-  await globals.initialize();
+  // await globals.initialize();
   log('ready to start app');
   runApp(App());
 }
