@@ -13,8 +13,7 @@ class ComicBook extends ComicCover {
 
   int rank;
   List<int> votes;
-  List<AuthorLink> authors;
-  List<String> tags, alias, introduction;
+  List<String> alias, introduction;
   // List<FilterSelector> filters;
 
   List<String> chapterGroups;
@@ -24,6 +23,9 @@ class ComicBook extends ComicCover {
   ComicBook.fromCover(ComicCover cover): super(cover.bookId, cover.name) {
     lastChpTitle = cover.lastChpTitle;
     score = cover.score;
+    authors = cover.authors;
+    tags = cover.tags;
+    shortIntro = cover.shortIntro;
     updatedAt = cover.updatedAt;
     finished = cover.finished;
   }
@@ -31,42 +33,23 @@ class ComicBook extends ComicCover {
   String get url => "$PROTOCOL://$DOMAIN$path";
   String get voteUrl => 'http://www.manhuagui.com/tools/vote.ashx?act=get&bid=$bookId';
 
-  Future refresh() async {
+  Future<void> _updateMain() async {
     var doc = await fetchDom(url);
     final content = doc.querySelector('.book-cont');
-
     if (name == null) name = content.querySelector('.book-title > h1').text;
 
-    // ComicCover
-    if (score == null) {
-      // votes
-      final Map<String, dynamic> voteData = (await getJson(voteUrl))['data'];
-      votes = [0,
-        voteData['s1'],
-        voteData['s2'],
-        voteData['s3'],
-        voteData['s4'],
-        voteData['s5'],
-      ];
-      votes[0] = votes[1] + votes[2] + votes[3] + votes[4] + votes[5];
-
-      // lastChpTitle, score, updatedAt, finished
-      final status = content.querySelector('li.status');
-      lastChpTitle = status.querySelector('a').text;
-      score = (
-          (votes[5] * 5 + votes[4] * 4 + votes[3] * 3 + votes[2] * 2 + votes[1] * 1)
-            * 2 / votes[0]
-        ).toStringAsFixed(1);
-      updatedAt = DateTime.parse(status.querySelectorAll('span.red').last.text);
-      finished = status.querySelector('.dgreen') != null;
-    }
+    // lastChpTitle, updatedAt, finished
+    final status = content.querySelector('li.status');
+    lastChpTitle = status.querySelector('a').text;
+    updatedAt = DateTime.parse(status.querySelectorAll('span.red').last.text);
+    finished = status.querySelector('.dgreen') != null;
 
     // rank, tags, authors, alias, introduction
     rank = int.parse(content.querySelector('.rank strong').text);
     tags = content.querySelectorAll('li:not(.status) a[href^="/list/"]')
       .map((link) => link.text).toList();
     authors = content.querySelectorAll('a[href^="/author/"]')
-      .map((link) => AuthorLink(link.attributes['href'].split('/')[2], link.text))
+      .map((link) => AuthorLink(int.parse(link.attributes['href'].split('/')[2]), link.text))
       .toList();
     alias = ( content.querySelectorAll('a[href="$path"]')
             + content.querySelectorAll('.book-title > h2') )
@@ -119,4 +102,29 @@ class ComicBook extends ComicCover {
         return groupName;
       }).toList();
   }
+
+  Future<void> _updateScore() async {
+    if (score != null) return;
+    // votes
+    final Map<String, dynamic> voteData = (await getJson(voteUrl))['data'];
+    votes = [0,
+      voteData['s1'],
+      voteData['s2'],
+      voteData['s3'],
+      voteData['s4'],
+      voteData['s5'],
+    ];
+    votes[0] = votes[1] + votes[2] + votes[3] + votes[4] + votes[5];
+
+    score = (
+        (votes[5] * 5 + votes[4] * 4 + votes[3] * 3 + votes[2] * 2 + votes[1] * 1)
+          * 2 / votes[0]
+      ).toStringAsFixed(1);
+  }
+
+  Future<void> update() =>
+    Future.wait([
+      _updateMain(),
+      _updateScore(),
+    ]);
 }

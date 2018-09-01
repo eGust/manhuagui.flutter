@@ -10,8 +10,6 @@ import '../components/home/route_favorite.dart';
 import '../components/home/route_history.dart';
 import '../components/home/route_home.dart';
 
-const TEST_URL = 'https://i.hamreus.com/ps1/g/GrandBlue/%E7%AC%AC19%E5%9B%9E/03.jpg.webp?cid=199830&md5=tt2xffnmOLvq8k_RumWz_g';
-
 class Home extends StatefulWidget{
   _HomeState createState() => _HomeState();
 }
@@ -34,15 +32,19 @@ class _HomeState extends State<Home> {
 
   SideBarItem convertSideBarItem(SubRouter router) =>
     SideBarItem(
-      icon: router.icon,
-      label: router.label,
-      createWidget: router.createWidget,
+      router,
       onPressed: () => setState(() {
         this.path = router.path;
       }),
     );
 
-  void init() {
+  static final _sbColor = Colors.brown[800];
+  static final _bgColor = Colors.yellow[100];
+
+  @override
+  void initState() {
+    super.initState();
+
     sbSettings = convertSideBarItem(RouteConfiguration.router);
     sbItemMap = { 'settings': sbSettings };
 
@@ -64,30 +66,35 @@ class _HomeState extends State<Home> {
     _current.focused = true;
   }
 
-  static final _sbColor = Colors.brown[800];
-  static final _bgColor = Colors.yellow[100];
+  Map<String, Widget> _routeCache = {};
+
+  Widget get currentWidget {
+    var w = _routeCache[path];
+    if (w == null) {
+      w = _current.router.createWidget();
+      _routeCache[path] = w;
+    }
+    return w;
+  }
 
   @override
-  Widget build(BuildContext context) {
-    if (sbItemMap == null) init();
-
-    return Container(
-      padding: const EdgeInsets.only(top: 20.0),
-      color: _sbColor,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          SideBar(sbItemList, sbSettings, color: _sbColor),
-          Expanded(
-            child: Container(
-              child: _current.createWidget(),
-              color: _bgColor,
-            ),
-            flex: 1,
+  Widget build(BuildContext context) =>
+  Container(
+    padding: const EdgeInsets.only(top: 20.0),
+    color: _sbColor,
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        SideBar(sbItemList, sbSettings, color: _sbColor),
+        Expanded(
+          flex: 1,
+          child: Container(
+            child: currentWidget,
+            color: _bgColor,
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 }

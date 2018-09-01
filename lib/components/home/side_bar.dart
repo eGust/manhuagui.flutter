@@ -4,17 +4,12 @@ import './sub_router.dart';
 export './sub_router.dart';
 
 class SideBarItem {
-  SideBarItem({
-    this.icon,
-    this.label,
-    this.createWidget,
-    this.onPressed = _doNothing,
+  SideBarItem(this.router, {
+    this.onPressed,
     this.focused = false,
   });
-  final IconData icon;
-  final String label;
+  final SubRouter router;
   final VoidCallback onPressed;
-  final WidgetGenerator createWidget;
   bool focused;
 }
 
@@ -38,7 +33,7 @@ class SideBar extends StatelessWidget {
               children: mainButtons.map((item) => IconButton(item)).toList(),
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
             ),
-            padding: const EdgeInsets.only(top: 100.0, bottom: 60.0),
+            padding: const EdgeInsets.only(top: 50.0, bottom: 60.0),
           ),
           IconButton(settings),
         ],
@@ -51,55 +46,44 @@ class SideBar extends StatelessWidget {
   );
 }
 
-void _doNothing() {}
-
 class IconButton extends StatelessWidget {
   IconButton(SideBarItem item)
-    : this.icon = item.icon
-    , this.label = item.label
+    : this.onPressed = item.onPressed
+    , this.router = item.router
     , this.focused = item.focused
-    , this.onPressed = item.onPressed
     ;
 
-  final IconData icon;
-  final String label;
-  final bool focused;
   final VoidCallback onPressed;
+  final SubRouter router;
+  final bool focused;
 
   static final _focusedColor = Colors.yellow[200];
   static final _normalColor = Colors.white;
 
-  Color get color => focused ? _focusedColor : _normalColor;
+  List<Widget> _createChildren() {
+    final color = focused ? _focusedColor : _normalColor;
+    final icon = Icon(
+        router.icon,
+        color: color,
+        size: 40.0,
+      );
+    final text = router.label == null ? null : Text(
+        router.label,
+        style: TextStyle(
+          color: color,
+          fontSize: 14.0,
+        ),
+      );
+
+    return router.label == null ? [icon] : [icon, text];
+  }
 
   @override
-  Widget build(BuildContext context) =>   Container(
+  Widget build(BuildContext context) => Container(
     child: FlatButton(
       onPressed: onPressed,
       padding: const EdgeInsets.fromLTRB(5.0, 16.0, 5.0, 16.0),
-      child: Column(
-        children: label == null
-          ? <Widget>[
-            Icon(
-              icon,
-              color: color,
-              size: 40.0,
-            ),
-          ]
-          : <Widget>[
-            Icon(
-              icon,
-              color: color,
-              size: 40.0,
-            ),
-            Text(
-              label,
-              style: TextStyle(
-                color: color,
-                fontSize: 14.0,
-              ),
-            ),
-          ],
-      ),
+      child: Column(children: _createChildren()),
     ),
     margin: const EdgeInsets.only(top: 6.0, bottom: 6.0),
   );

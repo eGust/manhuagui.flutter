@@ -10,7 +10,7 @@ void main() async {
   log('main started');
   StatusBar.init();
   // await globals.cleanInitialize();
-  // await globals.initialize();
+  await globals.initialize();
   log('ready to start app');
   runApp(App());
 }

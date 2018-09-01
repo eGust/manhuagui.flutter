@@ -5,7 +5,7 @@ import '../lib/models.dart';
 
 Future<ComicBook> testBook(ComicBook book) async {
   print("Comic ${book.bookId}");
-  await book.refresh();
+  await book.update();
   print("  name: ${book.name}");
   print("  url: ${book.url}");
   book.chapterGroups.forEach((grp) {

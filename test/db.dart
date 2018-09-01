@@ -6,7 +6,7 @@ import '../lib/models.dart';
 import '../lib/config.dart';
 
 void main() async {
-  final user = User(null);
+  final user = User();
   final cookies = await user.login(user: loginInfo['user'], password: loginInfo['password']);
   print('cookies = $cookies, isLogin = ${user.isLogin}');
   final favorates = await user.getFavorates();

@@ -1,15 +1,13 @@
-import 'dart:async';
-import 'dart:convert';
 import 'dart:collection';
 import 'package:html/dom.dart';
 
-import '../api.dart';
-import '../config.dart';
-
 class AuthorLink {
   AuthorLink(this.authorId, this.name);
-  final String authorId, name;
+  final int authorId;
+  final String name;
 }
+
+enum CoverSize { min, xs, sm, md, lg, xl, max }
 
 class ComicCover {
   ComicCover(this.bookId, this.name);
@@ -23,8 +21,23 @@ class ComicCover {
   DateTime updatedAt;
   bool finished;
 
-  String get coverImageUrl => "https://cf.hamreus.com/cpic/b/$bookId.jpg";
+  List<AuthorLink> authors;
+  List<String> tags, introduction;
+  String shortIntro;
+
+  static const Map<CoverSize, String> _coverSizeMap = {
+    CoverSize.min: 's/', // 92 * 122
+    CoverSize.xs: 'l/', // 78 * 104
+    CoverSize.sm: 'm/', // 114 * 152
+    CoverSize.md: 'b/', // 132 * 176
+    CoverSize.lg: 'h/', // 180 * 240
+    CoverSize.xl: 'g/', // 240 * 360
+    CoverSize.max: '', // 360 * 480
+  };
+
   String get path => "/comic/$bookId/";
+  String getImageUrl({CoverSize size = CoverSize.lg}) =>
+    "https://cf.hamreus.com/cpic/${_coverSizeMap[size]}$bookId.jpg";
 
   static final RegExp _reDate = RegExp(r'(\d{4}-\d{2}-\d{2})');
 
@@ -34,11 +47,38 @@ class ComicCover {
       final bookId = int.parse(element.attributes['href'].split('/')[2]);
       final name = element.querySelector('h3').text.trim();
       final cc = ComicCover(bookId, name);
-      cc.finished = element.querySelector('.thumb > i').text.trim() == '完结';
 
-      final dds = element.querySelectorAll('dl > dd');
-      cc.lastChpTitle = dds[2].text;
-      cc.updatedAt = DateTime.parse(dds[3].text);
+      // finished
+      (() {
+        var ef = element.querySelector('.thumb > i');
+        if (ef != null) {
+          cc.finished = ef.text.trim() == '完结';
+          return;
+        }
+
+        ef = element.querySelector('em');
+        if (ef != null) {
+          cc.finished = ef.classes.contains('green');
+          return;
+        }
+      })();
+
+      // last chapter/updatedAt
+      (() {
+        final dds = element.querySelectorAll('dl > dd');
+        if (dds.isNotEmpty) {
+          cc.lastChpTitle = dds[2].text;
+          cc.updatedAt = DateTime.parse(dds[3].text);
+          return;
+        }
+
+        final le = element.querySelector('p > span');
+        if (le != null) {
+          cc.lastChpTitle = le.text;
+          return;
+        }
+      })();
+
       return cc;
     }
 
@@ -86,11 +126,11 @@ class ComicCover {
 
   static List<ComicCover> parseAuthor(Document doc) => doc
     .querySelectorAll('.book-result ul > li .book-detail')
-    .map((tr) => ComicCover.fromDom(tr)).toList();
+    .map((detail) => ComicCover.fromDom(detail)).toList();
 
   static List<ComicCover> parseFavorate(Document doc) => doc
     .querySelectorAll('li > a')
-    .map((tr) => ComicCover.fromDom(tr)).toList();
+    .map((a) => ComicCover.fromDom(a)).toList();
 
   static List<ComicCover> autoParseDom(Document doc) => (
       doc.querySelectorAll('ul#contList > li') +
