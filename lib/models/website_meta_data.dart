@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:html/dom.dart';
 
+import './selectors.dart';
 import '../api/request.dart';
 
 const PROTOCOL = 'http';
@@ -36,6 +37,8 @@ const PATH_AUTHOR = '/alist/';
 
 class FilterGroup {
   static final filterAll = Filter(link: null, title: '全部');
+  FilterGroup({ this.title, this.key, this.filters });
+
   final String title;
   final String key;
   final List<Filter> filters;
@@ -67,15 +70,14 @@ class WebsiteMetaData {
   DateTime timestamp;
   List<FilterGroup> comicFilterGroupList, authorFilterGroupList;
   // Map<String, FilterGroup> comicFilterGroupMap, authorFilterGroupMap;
-  List<Order> comicListOrders, comicRankOrders, authorListOrders;
+  List<Order> comicListOrders, authorListOrders;
 
   Map<String, dynamic> toJson() => {
       'timestamp': timestamp?.toIso8601String(),
       'comicFilterGroupList': comicFilterGroupList.map((g) => g.toJson()).toList(),
       'authorFilterGroupList': authorFilterGroupList.map((g) => g.toJson()).toList(),
       'comicListOrders': comicListOrders.map((g) => g.toJson()).toList(),
-      'comicRankOrders': comicRankOrders.map((g) => g.toJson()).toList(),
-      'authorListOrders': comicRankOrders.map((g) => g.toJson()).toList(),
+      'authorListOrders': authorListOrders.map((g) => g.toJson()).toList(),
     };
 
   // static Map<String, FilterGroup> _convertListToMap(List<FilterGroup> list) =>
@@ -95,47 +97,66 @@ class WebsiteMetaData {
     // authorFilterGroupMap = _convertListToMap(authorFilterGroupList);
 
     comicListOrders = _decodeJsonOrders(json['comicListOrders']);
-    comicRankOrders = _decodeJsonOrders(json['comicRankOrders']);
     authorListOrders = _decodeJsonOrders(json['authorListOrders']);
   }
 
-  Future<MapEntry<List<FilterGroup>, List<Order>>> fetchParse(String url) async {
-    final doc = await fetchDom(url);
-    final list = doc.querySelectorAll('.filter-nav > .filter')
+  Future<MapEntry<List<FilterGroup>, List<Order>>> fetchParse(String basePath) async {
+    final doc = await fetchDom('$PROTOCOL://$DOMAIN$basePath');
+    var list = doc.querySelectorAll('.filter-nav > .filter')
       .map((el) => FilterGroup.fromDom(el)).toList();
     final orders = doc.querySelectorAll('.book-sort ul > li > a')
       .map((a) {
-        final link = a.attributes['href'].substring(PATH_LIST.length).replaceAll('.html', '');
+        final link = a.attributes['href'].substring(basePath.length).replaceAll('.html', '');
         return Order(
             title: a.text,
             linkBase: link.isEmpty ? 'index' : link,
           );
       }).toList();
+    list = list.length > 5 ? list.where((grp) => grp.key != 'letter').toList() : list;
     return MapEntry(list, orders);
   }
 
   Future<WebsiteMetaData> refresh() async {
     timestamp = DateTime.now();
-    final comicList = await fetchParse('$PROTOCOL://$DOMAIN$PATH_LIST');
+    final comicList = await fetchParse(PATH_LIST);
     comicFilterGroupList = comicList.key;
     // comicFilterGroupMap = _convertListToMap(comicFilterGroupList);
     comicListOrders = comicList.value;
 
-    final authorList = await fetchParse('$PROTOCOL://$DOMAIN$PATH_AUTHOR');
+    final authorList = await fetchParse(PATH_AUTHOR);
     authorFilterGroupList = authorList.key;
     // authorFilterGroupMap = _convertListToMap(authorFilterGroupList);
     authorListOrders = authorList.value;
 
-    final docRank = await fetchDom('$PROTOCOL://$DOMAIN$PATH_RANK');
-    comicRankOrders = docRank.querySelectorAll('.top-tab ul > li > a')
-      .map((a) {
-        final link = a.attributes['href'].substring(PATH_LIST.length).replaceAll('.html', '');
-        return Order(
-            title: a.text,
-            linkBase: link.isEmpty ? 'index' : link,
-          );
-      }).toList();
-
     return this;
   }
+
+  SelectorMeta _comicMeta, _authorMeta;
+
+  SelectorMeta get comicMeta {
+    _comicMeta = _comicMeta ?? SelectorMeta(
+        filterGroups: comicFilterGroupList,
+        orders: comicListOrders,
+      );
+    return _comicMeta;
+  }
+
+  SelectorMeta get authorMeta {
+    _authorMeta = _authorMeta ?? SelectorMeta(
+        filterGroups: authorFilterGroupList,
+        orders: authorListOrders,
+      );
+    return _authorMeta;
+  }
+
+  FilterSelector createComicSelector({ String order }) => FilterSelector(
+    '/list/',
+    comicMeta,
+    order: order,
+  );
+
+  FilterSelector createAuthorSelector() => FilterSelector(
+    '/alist/',
+    authorMeta,
+  );
 }

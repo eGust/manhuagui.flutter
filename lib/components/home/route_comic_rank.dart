@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import './sub_router.dart';
+import './comic_list.dart';
 
 class RouteComicRank extends StatelessWidget {
   static final router = SubRouter(
@@ -11,13 +12,7 @@ class RouteComicRank extends StatelessWidget {
   );
 
   @override
-  Widget build(BuildContext context) =>
-    Text(
-      'comic_rank',
-      textDirection: TextDirection.ltr,
-      style: TextStyle(
-        color: Colors.blueAccent.shade700,
-        fontSize: 20.0
-      ),
-    );
+  Widget build(BuildContext context) => Material(
+    child: ComicList.fromPath(router.path),
+  );
 }

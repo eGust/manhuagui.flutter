@@ -24,26 +24,11 @@ class SelectorMeta {
   // final Map<String, FilterGroup> groupMap;
   final List<Order> orders;
   final Map<String, String> linkGroupMap;
-
-  BaseFilterSelector createListSelector() => MultipleFilterSelector(
-    '/list/',
-    this,
-  );
-
-  BaseFilterSelector createRankSelector() => SingleFilterSelector(
-    '/rank/',
-    this,
-  );
-
-  BaseFilterSelector createAuthorSelector() => MultipleFilterSelector(
-    '/alist/',
-    this,
-  );
 }
 
-abstract class BaseFilterSelector {
-  BaseFilterSelector(this.basePath, this.meta)
-    : order = meta.orders.first.linkBase
+class FilterSelector {
+  FilterSelector(this.basePath, this.meta, { String order })
+    : this.order = order ?? meta.orders.first.linkBase
     ;
   final SelectorMeta meta;
   final String basePath;
@@ -52,9 +37,23 @@ abstract class BaseFilterSelector {
   int page = 1;
   int pageCount;
 
-  void selectFilter({ String link, String group });
+  Map<String, String> filters = {};
 
-  String get fullPath;
+  void selectFilter({ String link, String group }) {
+    if (link == null) {
+      filters[group] = null;
+    } else {
+      filters[group ?? meta.linkGroupMap[link]] = link;
+    }
+  }
+
+  String get fullPath {
+    final filterPath = meta.filterGroups
+      .map((grp) => filters[grp.key])
+      .where((link) => link != null).join('_');
+    return "$basePath${filterPath.isEmpty ? '' : '$filterPath/'}${order}_p$page.html";
+  }
+
   String get url => '$PROTOCOL://$DOMAIN$fullPath';
 
   static final _rePageNo = RegExp(r'_p(\d+)\.html');
@@ -70,42 +69,4 @@ abstract class BaseFilterSelector {
 
   @override
   String toString() => fullPath;
-}
-
-class MultipleFilterSelector extends BaseFilterSelector {
-  MultipleFilterSelector(String basePath, SelectorMeta meta): super(basePath, meta);
-
-  Map<String, String> filters = {};
-
-  @override
-  void selectFilter({ String link, String group }) {
-    if (link == null) {
-      filters[group] = null;
-    } else {
-      filters[group ?? meta.linkGroupMap[link]] = link;
-    }
-  }
-
-  @override
-  String get fullPath {
-    final filterPath = meta.filterGroups
-      .map((grp) => filters[grp.key])
-      .where((link) => link != null).join('_');
-    return "$basePath${filterPath.isEmpty ? '' : '$filterPath/'}${order}_p$page.html";
-  }
-}
-
-class SingleFilterSelector extends BaseFilterSelector {
-  SingleFilterSelector(String basePath, SelectorMeta meta): super(basePath, meta);
-
-  String filterLink;
-
-  @override
-  void selectFilter({ String link, String group }) {
-    filterLink = link;
-  }
-
-  @override
-  String get fullPath =>
-    "$basePath${[filterLink, order].where((s) => s != null).join('_')}.html";
 }

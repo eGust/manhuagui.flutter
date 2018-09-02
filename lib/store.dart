@@ -17,7 +17,7 @@ class Store {
   static const _USER_KEY = 'user';
   static const _FAVORATES_KEY = 'favorates';
 
-  Future<void> _refresh() async {
+  Future<void> refreshMetaData() async {
     metaData = await WebsiteMetaData().refresh();
   }
 
@@ -31,7 +31,7 @@ class Store {
     storage = await SharedPreferences.getInstance();
   }
 
-  Map<String, dynamic> _loadStorageJson(String key) {
+  dynamic _loadStorageJson(String key) {
     final json = storage.getString(key);
     return json == null ? null : jsonDecode(json);
   }
@@ -41,7 +41,7 @@ class Store {
     if (metaJson != null) {
       metaData = WebsiteMetaData.fromJson(metaJson);
     } else {
-      await _refresh();
+      await refreshMetaData();
     }
   }
 

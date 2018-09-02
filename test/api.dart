@@ -22,10 +22,7 @@ void main() async {
   final meta = WebsiteMetaData();
   await meta.refresh();
   print(jsonEncode(meta));
-  final selector = SelectorMeta(
-      filterGroups: meta.comicFilterGroupList.where((grp) => grp.key != 'letter').toList(),
-      orders: meta.comicListOrders,
-    ).createListSelector();
+  final selector = meta.createComicSelector();
   print("$selector");
 
   selector.selectFilter(link: 'japan');
@@ -35,7 +32,7 @@ void main() async {
   print("$selector");
 
   final doc = await selector.fetchDom();
-  final covers = ComicCover.parseList(doc);
+  final covers = ComicCover.parseDesktop(doc);
   print("Covers: ${covers.length}");
 
   // await testBook(ComicBook.fromCover(covers[4]));

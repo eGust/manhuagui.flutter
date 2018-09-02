@@ -41,71 +41,58 @@ class ComicCover {
 
   static final RegExp _reDate = RegExp(r'(\d{4}-\d{2}-\d{2})');
 
-  static ComicCover fromDom(Element element) {
-    if (element.localName == 'a') {
-      // mobile version
-      final bookId = int.parse(element.attributes['href'].split('/')[2]);
-      final name = element.querySelector('h3').text.trim();
-      final cc = ComicCover(bookId, name);
+  static ComicCover fromMobileDom(Element element) {
+    final bookId = int.parse(element.attributes['href'].split('/')[2]);
+    final name = element.querySelector('h3').text.trim();
+    final cc = ComicCover(bookId, name);
 
-      // finished
-      (() {
-        var ef = element.querySelector('.thumb > i');
-        if (ef != null) {
-          cc.finished = ef.text.trim() == '完结';
-          return;
-        }
+    // finished
+    (() {
+      var ef = element.querySelector('.thumb > i');
+      if (ef != null) {
+        cc.finished = ef.text.trim() == '完结';
+        return;
+      }
 
-        ef = element.querySelector('em');
-        if (ef != null) {
-          cc.finished = ef.classes.contains('green');
-          return;
-        }
-      })();
+      ef = element.querySelector('em');
+      if (ef != null) {
+        cc.finished = ef.classes.contains('green');
+        return;
+      }
+    })();
 
-      // last chapter/updatedAt
-      (() {
-        final dds = element.querySelectorAll('dl > dd');
-        if (dds.isNotEmpty) {
-          cc.lastChpTitle = dds[2].text;
-          cc.updatedAt = DateTime.parse(dds[3].text);
-          return;
-        }
+    // last chapter/updatedAt
+    (() {
+      final dds = element.querySelectorAll('dl > dd');
+      if (dds.isNotEmpty) {
+        cc.lastChpTitle = dds[2].text;
+        cc.updatedAt = DateTime.parse(dds[3].text);
+        return;
+      }
 
-        final le = element.querySelector('p > span');
-        if (le != null) {
-          cc.lastChpTitle = le.text;
-          return;
-        }
-      })();
+      final le = element.querySelector('p > span');
+      if (le != null) {
+        cc.lastChpTitle = le.text;
+        return;
+      }
+    })();
 
-      return cc;
-    }
+    return cc;
+  }
 
-    if (element.localName == 'li') {
-      final cover = element.querySelector('a.bcover');
-      final cc = ComicCover.fromLinkAttrs(cover.attributes);
-      cc.finished = cover.querySelectorAll('.sl').isEmpty;
-      cc.lastChpTitle = cover.querySelector('.tt').text;
+  static ComicCover fromDesktopDom(Element element) {
+    final cover = element.querySelector('a.bcover');
+    final cc = ComicCover.fromLinkAttrs(cover.attributes);
+    cc.finished = cover.querySelectorAll('.sl').isEmpty;
+    cc.lastChpTitle = cover.querySelector('.tt').text;
 
-      final update = element.querySelector('.updateon');
-      cc.updatedAt = DateTime.parse(_reDate.firstMatch(update.text).group(1));
-      cc.score = update.querySelector('em').text;
-      return cc;
-    }
+    final update = element.querySelector('.updateon');
+    cc.updatedAt = DateTime.parse(_reDate.firstMatch(update.text).group(1));
+    cc.score = update.querySelector('em').text;
+    return cc;
+  }
 
-    if (element.localName == 'tr') {
-      final tdTitle = element.querySelector('td.rank-title');
-      final cc = ComicCover.fromLinkAttrs(tdTitle.querySelector('a').attributes);
-      cc.finished = tdTitle.querySelector('span.cGreen') != null;
-      cc.lastChpTitle = element.querySelector('.rank-update').text.trim();
-
-      cc.updatedAt = DateTime.parse(element.querySelector('.rank-time').text.trim());
-      cc.score = element.querySelector('.rank-score').text.trim();
-      return cc;
-    }
-
-    // if (element.className.contains('book-detail')) {
+  static ComicCover fromAuthorDom(Element element) {
     final cc = ComicCover.fromLinkAttrs(element.querySelector('dt > a').attributes);
     final status = element.querySelector('dd.status');
     cc.finished = status.querySelector('span.green') != null;
@@ -116,25 +103,22 @@ class ComicCover {
     return cc;
   }
 
-  static List<ComicCover> parseList(Document doc) => doc
-    .querySelectorAll('ul#contList > li')
-    .map((li) => ComicCover.fromDom(li)).toList();
+  static ComicCover fromDomAuto(Element element) {
+    if (element.localName == 'a') return fromMobileDom(element);
+    if (element.localName == 'li') return fromDesktopDom(element);
+    if (element.className.contains('book-detail')) fromDesktopDom(element);
+    return null;
+  }
 
-  static List<ComicCover> parseRank(Document doc) => doc
-    .querySelectorAll('table.rank-detail tr:not([class])')
-    .map((tr) => ComicCover.fromDom(tr)).toList();
+  static List<ComicCover> parseDesktop(Document doc) => doc
+    .querySelectorAll('ul#contList > li')
+    .map((li) => ComicCover.fromDesktopDom(li)).toList();
 
   static List<ComicCover> parseAuthor(Document doc) => doc
     .querySelectorAll('.book-result ul > li .book-detail')
-    .map((detail) => ComicCover.fromDom(detail)).toList();
+    .map((detail) => ComicCover.fromAuthorDom(detail)).toList();
 
   static List<ComicCover> parseFavorate(Document doc) => doc
     .querySelectorAll('li > a')
-    .map((a) => ComicCover.fromDom(a)).toList();
-
-  static List<ComicCover> autoParseDom(Document doc) => (
-      doc.querySelectorAll('ul#contList > li') +
-      doc.querySelectorAll('table.rank-detail tr:not([class])') +
-      doc.querySelectorAll('.book-result ul > li .book-detail')
-    ).map((el) => ComicCover.fromDom(el)).toList();
+    .map((a) => ComicCover.fromDesktopDom(a)).toList();
 }

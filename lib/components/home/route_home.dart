@@ -21,36 +21,44 @@ class RouteHome extends StatefulWidget {
 }
 
 class _RouteHomeState extends State<RouteHome> {
-  List<MapEntry<String, List<ComicCover>>> comicGroups = [];
+  static List<MapEntry<String, List<ComicCover>>> comicGroups;
+  static DateTime _updated;
+  var _groups = comicGroups ?? [];
+
+  Future<void> _refresh() async {
+    if (_updated != null && DateTime.now().difference(_updated).inSeconds < 100)
+      return;
+
+    final doc = await fetchDom('http://m.manhuagui.com/');
+    _updated = DateTime.now();
+    final grps = doc.querySelectorAll('.bar + .main-list').map((el) => MapEntry(
+      el.previousElementSibling.querySelector('h2').text,
+      el.querySelectorAll('li > a').map((a) => ComicCover.fromMobileDom(a)).toList()
+    )).toList();
+    final covers = grps.map((g) => g.value).expand((List<ComicCover> i) => i).toList();
+    await globals.db.updateCovers(covers);
+    comicGroups = grps;
+
+    if (!mounted) return;
+    setState(() {
+      _groups = grps;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    (() async {
-      final doc = await fetchDom('http://m.manhuagui.com/');
-      final grps = doc.querySelectorAll('.bar + .main-list').map((el) => MapEntry(
-        el.previousElementSibling.querySelector('h2').text,
-        el.querySelectorAll('li > a').map((a) => ComicCover.fromDom(a)).toList()
-      )).toList();
-      final covers = grps.map((g) => g.value).expand((List<ComicCover> i) => i).toList();
-      await globals.db.updateCovers(covers);
-
-      setState(() {
-        comicGroups = grps;
-      });
-    })();
+    _refresh();
   }
 
   @override
   Widget build(BuildContext context) => ListView(
-    children: comicGroups.map(
+    children: _groups.map(
       (group) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           Text(group.key),
           Container(
-            height: 300.0,
+            height: 303.0,
             child: ListView(
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
@@ -67,13 +75,15 @@ class _Cover extends StatelessWidget {
   _Cover(this.cover) : this.color = cover.finished ? Colors.red[800] : Colors.green[800];
   final ComicCover cover;
   final Color color;
-  static const _tagStyle = const TextStyle(
-      fontSize: 9.0
+  static final _tagStyle = TextStyle(
+      color: Colors.blueGrey[900],
+      fontSize: 12.0
     );
 
   @override
   Widget build(BuildContext context) => Container(
-    margin: const EdgeInsets.all(5.0),
+    margin: const EdgeInsets.all(3.0),
+    padding: const EdgeInsets.only(left: 5.0, right: 5.0),
     width: 210.0,
     child: Column(
       children: <Widget>[
@@ -85,7 +95,7 @@ class _Cover extends StatelessWidget {
           cover.name,
           style: TextStyle(
             color: color,
-            fontSize: 14.0
+            fontSize: 15.0
           ),
         ),
         Row(
@@ -94,20 +104,21 @@ class _Cover extends StatelessWidget {
             Text(
               cover.lastChpTitle,
               style: TextStyle(
+                fontSize: 13.0
+              ),
+            ),
+            Text(
+              cover.finished ? '[完结]' : '[连载]',
+              style: TextStyle(
                 color: color,
                 fontSize: 11.0
               ),
-            ),
-          ] + cover.authors.map((a) => Text(
-            a.name,
-            style: const TextStyle(
-              fontSize: 11.0
-            ),
-          )).toList(),
+            )
+          ],
         ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: cover.tags.map((tag) => Text(tag, style: _tagStyle)).toList(),
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: cover.tags.map((t) => Text(t, style: _tagStyle)).toList(),
         ),
       ],
     )

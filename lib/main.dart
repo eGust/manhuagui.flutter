@@ -9,10 +9,15 @@ import 'api.dart';
 void main() async {
   log('main started');
   StatusBar.init();
-  // await globals.cleanInitialize();
   await globals.initialize();
+  // updateSettings();
   log('ready to start app');
   runApp(App());
+}
+
+void updateSettings() async {
+  await globals.refreshMetaData();
+  globals.save();
 }
 
 class App extends StatelessWidget {
