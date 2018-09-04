@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
 import '../components/home/side_bar.dart';
-import '../components/home/route_configuration.dart';
-import '../components/home/route_author.dart';
+import '../components/home/route_search.dart';
+import '../components/home/route_home.dart';
 import '../components/home/route_comic_category.dart';
 import '../components/home/route_comic_rank.dart';
 import '../components/home/route_comic_update.dart';
+import '../components/home/route_author.dart';
 import '../components/home/route_favorite.dart';
 import '../components/home/route_history.dart';
-import '../components/home/route_home.dart';
+import '../components/home/route_configuration.dart';
 
 class Home extends StatefulWidget{
   _HomeState createState() => _HomeState();
@@ -28,7 +29,7 @@ class _HomeState extends State<Home> {
 
   Map<String, SideBarItem> sbItemMap;
   List<SideBarItem> sbItemList;
-  SideBarItem sbSettings;
+  SideBarItem _sbSearch, _sbSettings;
 
   SideBarItem convertSideBarItem(SubRouter router) =>
     SideBarItem(
@@ -45,8 +46,12 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
 
-    sbSettings = convertSideBarItem(RouteConfiguration.router);
-    sbItemMap = { 'settings': sbSettings };
+    _sbSearch = convertSideBarItem(RouteSearch.router);
+    _sbSettings = convertSideBarItem(RouteConfiguration.router);
+    sbItemMap = {
+      'search': _sbSearch,
+      'settings': _sbSettings,
+    };
 
     final sbRouterItems = [
       RouteHome.router,
@@ -86,7 +91,7 @@ class _HomeState extends State<Home> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
-        SideBar(sbItemList, sbSettings, color: _sbColor),
+        SideBar(_sbSearch, sbItemList, _sbSettings, color: _sbColor),
         Expanded(
           flex: 1,
           child: Container(

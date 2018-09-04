@@ -12,7 +12,5 @@ class RouteComicCategory extends StatelessWidget {
   );
 
   @override
-  Widget build(BuildContext context) => Material(
-    child: ComicList.fromPath(router.path),
-  );
+  Widget build(BuildContext context) => ComicList(router);
 }

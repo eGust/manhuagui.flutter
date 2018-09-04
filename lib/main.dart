@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'utils.dart';
@@ -22,12 +21,12 @@ void updateSettings() async {
 
 class App extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => CupertinoApp(
-      home: Home(),
-      // routes: {
-      //   '/foo': (context) => Home(),
-      // },
-      // initialRoute: '/',
-      // onGenerateRoute: router,
-    );
+  Widget build(BuildContext context) => MaterialApp(
+    theme: ThemeData(
+      brightness: Brightness.light,
+      dialogBackgroundColor: Colors.yellow[200].withAlpha(0xCC),
+    ),
+    initialRoute: '/',
+    routes: routes,
+  );
 }

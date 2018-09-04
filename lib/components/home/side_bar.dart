@@ -16,47 +16,50 @@ class SideBarItem {
 }
 
 class SideBar extends StatelessWidget {
-  SideBar(this.mainButtons, this.settings, { Color color }):
+  SideBar(this._search, this._mainButtons, this._settings, { Color color }):
     this.color = color ?? Colors.brown[800];
 
   static const _SIDE_BAR_WIDTH = 80.0;
 
-  final List<SideBarItem> mainButtons;
-  final SideBarItem settings;
+  final List<SideBarItem> _mainButtons;
+  final SideBarItem _search;
+  final SideBarItem _settings;
   final Color color;
 
   @override
-  Widget build(BuildContext context) => Material(
-    child: Container(
-      child: Column(
-        children: <Widget>[
-          Container(
-            child: Column(
-              children: mainButtons.map((item) => IconButton(item)).toList(),
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            ),
-            padding: const EdgeInsets.only(top: 50.0, bottom: 60.0),
+  Widget build(BuildContext context) => Container(
+    width: _SIDE_BAR_WIDTH,
+    color: Colors.brown[800],
+    padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        IconLabelButton.forSideBar(_search),
+        Container(
+          child: Column(
+            children: _mainButtons.map((item) => IconLabelButton.forSideBar(item)).toList(),
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
           ),
-          IconButton(settings),
-        ],
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      ),
-      width: _SIDE_BAR_WIDTH,
-      color: Colors.brown[800],
-      alignment: Alignment.center,
+        ),
+        IconLabelButton.forSideBar(_settings),
+      ],
     ),
   );
 }
 
-class IconButton extends StatelessWidget {
-  IconButton(SideBarItem item)
+class IconLabelButton extends StatelessWidget {
+  IconLabelButton(this.icon, { this.focused = false, this.onPressed, this.label });
+
+  IconLabelButton.forSideBar(SideBarItem item)
     : this.onPressed = item.onPressed
-    , this.router = item.router
+    , this.icon = item.router.icon
+    , this.label = item.router.label
     , this.focused = item.focused
     ;
 
   final VoidCallback onPressed;
-  final SubRouter router;
+  final IconData icon;
+  final String label;
   final bool focused;
 
   static final _focusedColor = Colors.yellow[200];
@@ -64,29 +67,29 @@ class IconButton extends StatelessWidget {
 
   List<Widget> _createChildren() {
     final color = focused ? _focusedColor : _normalColor;
-    final icon = Icon(
-        router.icon,
+    final iconItem = Icon(
+        icon,
         color: color,
-        size: 40.0,
+        size: 48.0,
       );
-    final text = router.label == null ? null : Text(
-        router.label,
+    final text = label == null ? null : Text(
+        label,
         style: TextStyle(
           color: color,
           fontSize: 14.0,
         ),
       );
 
-    return router.label == null ? [icon] : [icon, text];
+    return label == null ? [iconItem] : [iconItem, text];
   }
 
   @override
   Widget build(BuildContext context) => Container(
     child: FlatButton(
       onPressed: onPressed,
-      padding: const EdgeInsets.fromLTRB(5.0, 16.0, 5.0, 16.0),
+      padding: const EdgeInsets.fromLTRB(5.0, 12.0, 5.0, 12.0),
       child: Column(children: _createChildren()),
     ),
-    margin: const EdgeInsets.only(top: 6.0, bottom: 6.0),
+    margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
   );
 }

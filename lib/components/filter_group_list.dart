@@ -12,11 +12,29 @@ class FilterGroupList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 15.0),
-    child: GridList(
-      columnCount: 6,
-      children: filterGroup.filters.map((f) => FilterButton(onSelected, f)).toList(),
+    margin: const EdgeInsets.only(left: 8.0, right: 8.0),
+    padding: const EdgeInsets.all(5.0),
+    decoration: BoxDecoration(
+      border: Border(top: BorderSide(color: Colors.white)),
     ),
+    child: Row(
+      children: <Widget>[
+        Container(
+          width: 50.0,
+          alignment: Alignment.center,
+          child: Text(filterGroup.title, style: TextStyle(
+            fontSize: 18.0,
+          )),
+        ),
+        Container(
+          width: 600.0,
+          child: GridList(
+            columnCount: 5,
+            children: filterGroup.filters.map((f) => FilterButton(onSelected, f)).toList(),
+          ),
+        ),
+      ],
+    )
   );
 }
 
@@ -24,10 +42,6 @@ class FilterButton extends StatelessWidget {
   FilterButton(this.onSelected, this.filter);
   final SelectedFilter onSelected;
   final Filter filter;
-  static final _textStyle = TextStyle(
-    fontSize: 19.0,
-    color: Colors.white,
-  );
 
   void onPressed() {
     if (onSelected == null) return;
@@ -36,14 +50,20 @@ class FilterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    margin: const EdgeInsets.all(6.0),
+    margin: const EdgeInsets.fromLTRB(10.0, 1.0, 0.0, 1.0),
     child: FlatButton(
+      color: Colors.amber[700],
       child: Container(
-        padding: const EdgeInsets.only(top: 11.0, bottom: 11.0),
-        child: Text(filter.title, style: _textStyle),
+        padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+        child: Text(
+          filter.title,
+          style: TextStyle(
+            fontSize: 18.0,
+            color: Colors.brown[900],
+          ),
+        ),
       ),
       onPressed: onPressed,
-      color: filter.link == null ? Colors.lightBlue[700] : Colors.amber[900],
     ),
   );
 }

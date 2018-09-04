@@ -1,6 +1,6 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 
+import './side_bar.dart';
 import '../filter_group_list.dart';
 import '../../store.dart';
 import '../../models.dart';
@@ -9,15 +9,13 @@ import '../../utils.dart';
 typedef ComicFilterSelected = void Function(String filter, String order);
 
 class ComicList extends StatefulWidget {
-  ComicList(this.filterSelector);
+  ComicList(this.router) :
+    this.filterSelector = globals.metaData.createComicSelector(
+      order: pathOrderMap[router.path],
+    );
 
+  final SubRouter router;
   final FilterSelector filterSelector;
-
-  static ComicList fromPath(String path) => ComicList(
-    globals.metaData.createComicSelector(
-      order: pathOrderMap[path],
-    )
-  );
 
   static const Map<String, String> pathOrderMap = {
     'comic_category': 'index',
@@ -26,26 +24,45 @@ class ComicList extends StatefulWidget {
   };
 
   @override
-  _ComicListState createState() => _ComicListState(filterSelector);
+  _ComicListState createState() => _ComicListState(router.label, filterSelector);
 }
 
 class _ComicListState extends State<ComicList> {
-  _ComicListState(this.filterSelector);
+  _ComicListState(this.title, this.filterSelector);
 
+  final String title;
   final FilterSelector filterSelector;
   bool _pending = true;
 
   void _quickSelectFilter(Duration _) async {
     final link = await showDialog<String>(
       context: context,
+      barrierDismissible: false,
       builder: (context) => SimpleDialog(
-        title: Text('dialog'),
-        children: List<Widget>.from(
-          filterSelector.meta.filterGroups
-            .map((fg) => FilterGroupList(fg, (link) {
-              Navigator.pop(context, link);
-            })),
+        title: Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(title),
+              FlatButton(
+                child: Icon(Icons.check),
+                onPressed: () {
+                  Navigator.pop(context, null);
+                },
+              ),
+            ],
           ),
+        ),
+        children: [
+          Container(
+            child: Column(
+              children: filterSelector.meta.filterGroups
+              .map((fg) => FilterGroupList(fg, (link) {
+                Navigator.pop(context, link);
+              })).toList(),
+            ),
+          ),
+        ],
       ),
     );
 
