@@ -8,7 +8,9 @@ enum SelectorType { Comic, Author }
 
 class SelectorMeta {
   SelectorMeta({ this.filterGroups, this.orders })
-    : linkGroupMap = _buildLinkGroupMap(filterGroups);
+    : linkGroupMap = _buildLinkGroupMap(filterGroups)
+    , linkTitleMap = _buildLinkTitleMap(filterGroups)
+    ;
 
   static Map<String, String> _buildLinkGroupMap(List<FilterGroup> filterGroups) {
     Map<String, String> r = {};
@@ -20,10 +22,20 @@ class SelectorMeta {
     return r;
   }
 
+  static Map<String, String> _buildLinkTitleMap(List<FilterGroup> filterGroups) {
+    Map<String, String> r = {};
+    filterGroups.forEach((grp) {
+      grp.filters.forEach((f) {
+        r[f.link] = f.title;
+      });
+    });
+    return r;
+  }
+
   final List<FilterGroup> filterGroups;
   // final Map<String, FilterGroup> groupMap;
   final List<Order> orders;
-  final Map<String, String> linkGroupMap;
+  final Map<String, String> linkGroupMap, linkTitleMap;
 }
 
 class FilterSelector {
