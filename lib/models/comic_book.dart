@@ -60,7 +60,8 @@ class ComicBook extends ComicCover {
 
     // chapters
     final adult = doc.querySelector('#__VIEWSTATE');
-    if (adult != null) {
+    isAdult = adult != null;
+    if (isAdult) {
       final html = lzDecompressFromBase64(adult.attributes['value']);
       doc = parse('<div class="chapter">$html</div>');
     }

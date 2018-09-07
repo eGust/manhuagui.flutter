@@ -40,7 +40,9 @@ class RemoteDb {
     list.forEach((comic) {
       final Map<String, dynamic> attrs = jsonDecode(comic['data']);
       final cover = bookMap[comic['id']];
-      cover.tags = List.from((attrs['cs'] as Map).values);
+      final tags = attrs['cs'] as Map;
+      cover.tags = List.from(tags.values);
+      cover.tagSet = Set.from(tags.keys);
       cover.shortIntro = attrs['sm'];
       cover.authors = (attrs['as'] as List)
         .map((author) => AuthorLink(author['i'], author['n'])).toList();

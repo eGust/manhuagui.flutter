@@ -32,7 +32,7 @@ void main() async {
   print("$selector");
 
   final doc = await selector.fetchDom();
-  final covers = ComicCover.parseDesktop(doc);
+  final covers = ComicCover.parseDesktop(doc).toList();
   print("Covers: ${covers.length}");
 
   // await testBook(ComicBook.fromCover(covers[4]));

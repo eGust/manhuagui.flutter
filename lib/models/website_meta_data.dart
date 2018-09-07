@@ -149,10 +149,11 @@ class WebsiteMetaData {
     return _authorMeta;
   }
 
-  FilterSelector createComicSelector({ String order }) => FilterSelector(
+  FilterSelector createComicSelector({ String order, Iterable<String> blacklist }) => FilterSelector(
     '/list/',
     comicMeta,
     order: order,
+    blacklist: blacklist,
   );
 
   FilterSelector createAuthorSelector() => FilterSelector(

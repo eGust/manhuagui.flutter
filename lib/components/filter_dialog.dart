@@ -55,11 +55,12 @@ class _DialogTopBarState extends State<DialogTopBar> {
 }
 
 class DialogBody extends StatefulWidget {
-  DialogBody(this.groups, this.selected, { this.onSelectedFilter });
+  DialogBody(this.groups, this.selected, { this.onSelectedFilter, this.blacklist });
 
   final Map<String, String> selected;
   final List<FilterGroup> groups;
   final VoidCallback onSelectedFilter;
+  final Set<String> blacklist;
 
   @override
   _DialogBodyState createState() => _DialogBodyState(this);
@@ -88,6 +89,7 @@ class _DialogBodyState extends State<DialogBody> {
       fg,
       data.selected[fg.key],
       onSelectedFilter: selectedFilter,
+      blacklist: data.blacklist,
     )).toList(),
   );
 }

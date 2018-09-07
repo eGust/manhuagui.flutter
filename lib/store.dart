@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 import 'models/website_meta_data.dart';
 import 'models/user.dart';
@@ -12,10 +13,18 @@ class Store {
   User user;
   RemoteDb db;
   Set<int> favorateBookIdSet = Set();
+  Set<String> blacklistSet = Set();
+  DateFormat _df;
+
+  String formatDate(DateTime date) {
+    _df = _df ?? DateFormat('yyyy-MM-dd');
+    return _df.format(date);
+  }
 
   static const _META_DATA_KEY = 'websiteMetaData';
   static const _USER_KEY = 'user';
   static const _FAVORATES_KEY = 'favorates';
+  static const _BLACKLIST = 'blacklist';
 
   Future<void> refreshMetaData() async {
     metaData = await WebsiteMetaData().refresh();
@@ -24,6 +33,7 @@ class Store {
   void save() {
     storage.setString(_META_DATA_KEY, jsonEncode(metaData));
     storage.setString(_FAVORATES_KEY, jsonEncode(favorateBookIdSet.toList()));
+    storage.setString(_BLACKLIST, jsonEncode(blacklistSet.toList()));
     storage.setString(_USER_KEY, jsonEncode(user));
   }
 
@@ -62,8 +72,9 @@ class Store {
       _loadUser(),
     ]);
 
-    // favorates
+    // sets
     favorateBookIdSet = Set.from(_loadStorageJson(_FAVORATES_KEY) ?? []);
+    blacklistSet = Set.from(_loadStorageJson(_BLACKLIST) ?? []);
   }
 }
 

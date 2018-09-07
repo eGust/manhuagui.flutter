@@ -19,10 +19,11 @@ class ComicCover {
   final int bookId;
   String name, lastChpTitle, score;
   DateTime updatedAt;
-  bool finished;
+  bool finished, isAdult;
 
   List<AuthorLink> authors;
   List<String> tags, introduction;
+  Set<String> tagSet;
   String shortIntro;
 
   static const Map<CoverSize, String> _coverSizeMap = {
@@ -110,15 +111,15 @@ class ComicCover {
     return null;
   }
 
-  static List<ComicCover> parseDesktop(Document doc) => doc
+  static Iterable<ComicCover> parseDesktop(Document doc) => doc
     .querySelectorAll('ul#contList > li')
-    .map((li) => ComicCover.fromDesktopDom(li)).toList();
+    .map((li) => ComicCover.fromDesktopDom(li));
 
-  static List<ComicCover> parseAuthor(Document doc) => doc
+  static Iterable<ComicCover> parseAuthor(Document doc) => doc
     .querySelectorAll('.book-result ul > li .book-detail')
-    .map((detail) => ComicCover.fromAuthorDom(detail)).toList();
+    .map((detail) => ComicCover.fromAuthorDom(detail));
 
-  static List<ComicCover> parseFavorate(Document doc) => doc
+  static Iterable<ComicCover> parseFavorate(Document doc) => doc
     .querySelectorAll('li > a')
-    .map((a) => ComicCover.fromDesktopDom(a)).toList();
+    .map((a) => ComicCover.fromDesktopDom(a));
 }

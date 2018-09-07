@@ -39,13 +39,15 @@ class SelectorMeta {
 }
 
 class FilterSelector {
-  FilterSelector(this.basePath, this.meta, { String order })
+  FilterSelector(this.basePath, this.meta, { String order, Iterable<String> blacklist })
     : this.order = order ?? meta.orders.first.linkBase
+    , this.blacklist = Set.from(blacklist ?? [])
     ;
   final SelectorMeta meta;
   final String basePath;
 
   String order;
+  Set<String> blacklist;
   int page = 1;
   int pageCount;
 
@@ -59,12 +61,12 @@ class FilterSelector {
     }
   }
 
-  String get fullPath {
-    final filterPath = meta.filterGroups
-      .map((grp) => filters[grp.key])
-      .where((link) => link != null).join('_');
-    return "$basePath${filterPath.isEmpty ? '' : '$filterPath/'}${order}_p$page.html";
-  }
+  String get filterPath => meta.filterGroups
+    .map((grp) => filters[grp.key])
+    .where((link) => link != null).join('_');
+
+  String get fullPath =>
+    "$basePath${filterPath.isEmpty ? '' : '$filterPath/'}${order}_p$page.html";
 
   String get url => '$PROTOCOL://$DOMAIN$fullPath';
 

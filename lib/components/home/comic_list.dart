@@ -13,6 +13,7 @@ class ComicList extends StatefulWidget {
   ComicList(this.router) :
     this.filterSelector = globals.metaData.createComicSelector(
       order: pathOrderMap[router.path],
+      blacklist: globals.blacklistSet
     );
 
   final SubRouter router;
@@ -34,7 +35,9 @@ class _ComicListState extends State<ComicList> {
   final String title;
   final FilterSelector filterSelector;
   bool _pinned = false;
-  bool _blacklist = true;
+  bool _blacklistEnabled = true;
+  bool _fetching = false;
+  List<ComicCover> comics = [];
 
   Future<void> _showFilterDialog() async {
     final filters = Map<String, String>.from(filterSelector.filters);
@@ -58,16 +61,42 @@ class _ComicListState extends State<ComicList> {
               if (_pinned) return;
               Navigator.pop(context, null);
             },
+            blacklist: filterSelector.blacklist,
           ),
         ],
       ),
     );
 
+    final oldFilterPath = filterSelector.filterPath;
+    filters.forEach((group, link) {
+      filterSelector.selectFilter(link: link, group: group);
+    });
+    if (oldFilterPath == filterSelector.filterPath) return;
+
     if (!mounted) return;
     setState(() {
-      filters.forEach((group, link) {
-        filterSelector.selectFilter(link: link, group: group);
-      });
+      filterSelector.page = 1;
+      comics = [];
+      _fetching = true;
+    });
+    _fetchNextPage();
+  }
+
+  bool _notInBlacklist(ComicCover cover) =>
+    filterSelector.blacklist.intersection(cover.tagSet).isEmpty;
+
+  void _fetchNextPage() async {
+    final doc = await filterSelector.fetchDom();
+
+    if (!mounted) return;
+    filterSelector.page += filterSelector.page;
+    final covers = ComicCover.parseDesktop(doc).toList();
+    await globals.db.updateCovers(covers);
+
+    if (!mounted) return;
+    setState(() {
+      _fetching = false;
+      comics.addAll(_blacklistEnabled ? covers.where(_notInBlacklist) : covers);
     });
   }
 
@@ -78,7 +107,7 @@ class _ComicListState extends State<ComicList> {
 
   void _switchBlacklist() {
     setState(() {
-      _blacklist = !_blacklist;
+      _blacklistEnabled = !_blacklistEnabled;
     });
   }
 
@@ -127,7 +156,7 @@ class _ComicListState extends State<ComicList> {
               onPressed: _showFilterDialog,
             ),
             FlatButton(
-              child: _blacklist ?
+              child: _blacklistEnabled ?
                 Icon(Icons.blur_off, color: Colors.red[200], size: 28.0) :
                 const Icon(Icons.blur_on, color: Colors.white, size: 28.0) ,
               onPressed: _switchBlacklist,
@@ -136,8 +165,79 @@ class _ComicListState extends State<ComicList> {
         ),
       ),
       Expanded(
-        child: Container(),
+        child: ListView.builder(
+          controller: ScrollController(),
+          itemCount: comics.length + 1,
+          padding: const EdgeInsets.all(1.0),
+          itemBuilder: (_, index) => index == comics.length ?
+            _ProgressIndicator(visible: _fetching) :
+            _Cover(comics[index]),
+        ),
       ),
     ],
+  );
+}
+
+class _ProgressIndicator extends StatelessWidget {
+  _ProgressIndicator({ this.visible = false });
+  final bool visible;
+  @override
+  Widget build(BuildContext context) => visible ?
+    Container(
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(30.0),
+      child: CircularProgressIndicator(),
+    ) :
+    Visibility(visible: false, child: const Text(''))
+    ;
+}
+
+class _Cover extends StatelessWidget {
+  _Cover(this._cover);
+
+  final ComicCover _cover;
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(2.0),
+    child: Row(children: [
+      Container(
+        padding: const EdgeInsets.only(right: 5.0),
+        child: Image.network(
+          _cover.getImageUrl(),
+          headers: { 'Referer': 'https://m.manhuagui.com' },
+        ),
+      ),
+      Expanded(child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Text(_cover.name),
+          Row(
+            children: [
+              const Text('作者: '),
+              Text(_cover.authors.map((a) => a.name).join(',')),
+            ],
+          ),
+          Row(
+            children: [
+              const Text('类型: '),
+              Text(_cover.tags.join(',')),
+            ],
+          ),
+          Row(
+            children: [
+              const Text('评分: '),
+              Text(_cover.score),
+            ],
+          ),
+          Row(
+            children: [
+              const Text('最后更新: '),
+              Text('${_cover.lastChpTitle} (${globals.formatDate(_cover.updatedAt)})'),
+            ],
+          ),
+          Text(_cover.shortIntro),
+        ],
+      )),
+    ])
   );
 }
