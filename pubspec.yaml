@@ -21,7 +21,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   shared_preferences: ^0.4.0
   mongo_dart: ^0.3.3
-  intl:
+  intl: ^0.15.7
 
 dev_dependencies:
   flutter_test:

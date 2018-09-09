@@ -19,7 +19,7 @@ class ComicCover {
   final int bookId;
   String name, lastChpTitle, score;
   DateTime updatedAt;
-  bool finished, isAdult;
+  bool finished, isAdult = false;
 
   List<AuthorLink> authors;
   List<String> tags, introduction;
@@ -85,7 +85,8 @@ class ComicCover {
     final cover = element.querySelector('a.bcover');
     final cc = ComicCover.fromLinkAttrs(cover.attributes);
     cc.finished = cover.querySelectorAll('.sl').isEmpty;
-    cc.lastChpTitle = cover.querySelector('.tt').text;
+    cc.lastChpTitle = cover.querySelector('.tt').text
+      .replaceAll('更新至', '').replaceAll('[完]', '');
 
     final update = element.querySelector('.updateon');
     cc.updatedAt = DateTime.parse(_reDate.firstMatch(update.text).group(1));

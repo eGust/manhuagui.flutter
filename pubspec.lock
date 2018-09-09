@@ -220,7 +220,7 @@ packages:
       name: more
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.10.1"
+    version: "1.11.1"
   multi_server_socket:
     dependency: transitive
     description:

@@ -44,6 +44,7 @@ class RemoteDb {
       cover.tags = List.from(tags.values);
       cover.tagSet = Set.from(tags.keys);
       cover.shortIntro = attrs['sm'];
+      cover.isAdult = attrs['ad'] == 1;
       cover.authors = (attrs['as'] as List)
         .map((author) => AuthorLink(author['i'], author['n'])).toList();
     });
