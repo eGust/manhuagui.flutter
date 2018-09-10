@@ -26,7 +26,6 @@ class App extends StatelessWidget {
       brightness: Brightness.light,
       dialogBackgroundColor: Colors.yellow[200].withAlpha(0xCC),
     ),
-    initialRoute: '/',
-    routes: routes,
+    home: Material(child: HomeScreen()),
   );
 }

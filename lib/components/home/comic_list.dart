@@ -7,6 +7,7 @@ import '../filter_dialog.dart';
 import '../../store.dart';
 import '../../models.dart';
 import '../../utils.dart';
+import '../../routes.dart';
 
 typedef ComicFilterSelected = void Function(String filter, String order);
 
@@ -35,13 +36,12 @@ class _ComicListState extends State<ComicList> {
 
   final String title;
   final FilterSelector filterSelector;
-  bool _pinned = false;
-  bool _blacklistEnabled = true;
-  bool _fetching = false;
+  bool _pinned = false, _blacklistEnabled = true, _fetching = false, _indicator = false;
   List<ComicCover> comics = [];
+  Set<int> bookIds = Set();
   ScrollController _scroller = ScrollController();
 
-  Future<void> _showFilterDialog() async {
+  Future<void> _showFilterDialog({ bool forceRefresh = false }) async {
     final filters = Map<String, String>.from(filterSelector.filters);
 
     await showDialog<String>(
@@ -52,7 +52,6 @@ class _ComicListState extends State<ComicList> {
           title, _pinned,
           onPinChanged: (bool pinned) {
             _pinned = pinned;
-            logd('pinned = $_pinned');
           },
         ),
         children: [
@@ -73,19 +72,21 @@ class _ComicListState extends State<ComicList> {
     filters.forEach((group, link) {
       filterSelector.selectFilter(link: link, group: group);
     });
-    if (oldFilterPath == filterSelector.filterPath) return;
+    if (oldFilterPath == filterSelector.filterPath && !forceRefresh) return;
 
     _refresh();
   }
 
-  void _refresh() async {
+  Future<void> _refresh({ bool indicator = true }) async {
     if (_fetching || !mounted) return;
     setState(() {
+      _indicator = indicator;
       filterSelector.page = 1;
-      comics = [];
+      comics.clear();
+      bookIds.clear();
       _fetching = true;
     });
-    _fetchNextPage();
+    await _fetchNextPage();
   }
 
   void _nextPage() async {
@@ -96,23 +97,44 @@ class _ComicListState extends State<ComicList> {
     _fetchNextPage();
   }
 
-  bool _notInBlacklist(ComicCover cover) =>
-    filterSelector.blacklist.intersection(cover.tagSet).isEmpty;
+  void _scrollToTop() {
+    _scroller.animateTo(
+      0.1,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.fastOutSlowIn,
+    );
+  }
 
-  void _fetchNextPage() async {
+  bool _notInBlacklist(ComicCover cover) =>
+    cover.tagSet == null || filterSelector.blacklist.intersection(cover.tagSet).isEmpty;
+
+  Future<void> _fetchNextPage() async {
     final doc = await filterSelector.fetchDom();
 
     if (!mounted) return;
     filterSelector.page += filterSelector.page;
-    final covers = ComicCover.parseDesktop(doc).toList();
-    await globals.db.updateCovers(covers);
+    final covers = ComicCover.parseDesktop(doc)
+      .where((c) => !bookIds.contains(c.bookId)).toList();
+    await globals.db?.updateCovers(covers);
 
     if (!mounted) return;
     setState(() {
       _fetching = false;
       comics.addAll(covers);
+      bookIds.addAll(covers.map((c) => c.bookId));
     });
   }
+
+  Widget _buildCover(ComicCover cover) =>
+    _Cover(
+      cover,
+      onComicPressed: () {
+        Routes.navigateComic(context, cover);
+      },
+      onAuthorPressed: (authorLink) {
+        Routes.navigateAuthor(context, authorLink);
+      },
+    );
 
   Widget _buildCoverList() {
     final covers = _blacklistEnabled ? comics.where(_notInBlacklist).toList() : comics;
@@ -121,12 +143,14 @@ class _ComicListState extends State<ComicList> {
       controller: _scroller,
       itemCount: count + 1,
       padding: const EdgeInsets.all(1.0),
-      itemBuilder: (_, i) => i == count ? Progressing(visible: _fetching) : _Cover(covers[i]),
+      itemBuilder: (_, i) => i == count ?
+        Progressing(visible: _indicator && _fetching) :
+        _buildCover(covers[i],),
     );
   }
 
   void _quickSelectFilter(Duration _) async {
-    await _showFilterDialog();
+    await _showFilterDialog(forceRefresh: true);
     _pinned = true;
   }
 
@@ -143,12 +167,7 @@ class _ComicListState extends State<ComicList> {
     super.initState();
     _scroller.addListener(() {
       if (_scroller.position.pixels + _NEXT_THRESH_HOLD > _scroller.position.maxScrollExtent) {
-        logd('reached MAX');
         _nextPage();
-      } else if (_scroller.position.pixels == _scroller.position.minScrollExtent) {
-        logd('reached MIN');
-        _refresh();
-      } else {
       }
     });
     filterSelector.filters.clear();
@@ -178,8 +197,9 @@ class _ComicListState extends State<ComicList> {
 
   @override
   Widget build(BuildContext context) => Column(
-    children: <Widget>[
-      Container(
+    children: <Widget>[GestureDetector(
+      onTap: _scrollToTop,
+      child: Container(
         height: 36.0,
         color: Colors.brown[800],
         child: Row(
@@ -215,35 +235,33 @@ class _ComicListState extends State<ComicList> {
                   ),
                   GestureDetector(
                     child: const Icon(Icons.vertical_align_top, color: Colors.white, size: 28.0) ,
-                    onTap: () {
-                      _scroller.animateTo(
-                        0.1,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.fastOutSlowIn,
-                      );
-                    },
+                    onTap: _scrollToTop,
                   ),
                 ],
               ),
             ),
           ],
         ),
-      ),
+      )),
       Expanded(
-        child: _buildCoverList(),
+        child: RefreshIndicator(
+          onRefresh: () => _refresh(indicator: false),
+          child: _buildCoverList(),
+        ),
       ),
     ],
   );
 }
 
 class _Cover extends StatelessWidget {
-  _Cover(this._cover);
+  _Cover(this._cover, { this.onComicPressed, this.onAuthorPressed });
+
+  final VoidCallback onComicPressed;
+  final AuthorLinkCallback onAuthorPressed;
 
   Widget _wrapTouch(Widget w) => GestureDetector(
     child: w,
-    onTap: () {
-      logd('clicked comic: ${_cover.name} bookId = ${_cover.bookId}');
-    },
+    onTap: onComicPressed,
   );
 
   final ComicCover _cover;
@@ -253,11 +271,13 @@ class _Cover extends StatelessWidget {
     padding: const EdgeInsets.all(5.0),
     decoration: BoxDecoration(
       border: Border(bottom: BorderSide(color: Colors.orange[300])),
-      color: _cover.isAdult ? Colors.pink[50] : Colors.transparent,
+      color: _cover.restricted ? Colors.pink[50] : Colors.transparent,
     ),
     child: Row(children: [
       Container(
-        padding: const EdgeInsets.only(right: 6.0),
+        margin: const EdgeInsets.only(right: 6.0),
+        width: 180.0,
+        height: 240.0,
         child: Image.network(
           _cover.getImageUrl(),
           headers: { 'Referer': 'https://m.manhuagui.com' },
@@ -271,7 +291,7 @@ class _Cover extends StatelessWidget {
             _cover.name,
             style: TextStyle(
               fontSize: 20.0,
-              color: _cover.isAdult ? Colors.pink[600] : Colors.deepPurple[900],
+              color: _cover.restricted ? Colors.pink[600] : Colors.deepPurple[900],
             ),
           ),
           Row(
@@ -293,7 +313,15 @@ class _Cover extends StatelessWidget {
             ],
           ),
           Row(
-            children: _cover.authors.map((author) => Container(
+            children: _cover.authors == null ? [
+              Text(
+                '[无作者数据]',
+                style: TextStyle(
+                  fontSize: 18.0,
+                  color: Colors.red[600],
+                ),
+              ),
+            ] : _cover.authors.map((author) => Container(
               padding: const EdgeInsets.only(left: 5.0, right: 5.0),
               child: GestureDetector(
                 child: Text(
@@ -304,7 +332,8 @@ class _Cover extends StatelessWidget {
                   ),
                 ),
                 onTap: () {
-                  logd('clicked author: ${author.name} id = ${author.authorId}');
+                  if (onAuthorPressed == null) return;
+                  onAuthorPressed(author);
                 },
               )
             )).toList(),
@@ -313,13 +342,13 @@ class _Cover extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(
-                _cover.tags.join(' '),
+                (_cover.tags ?? ['[无类型数据]']).join(' '),
                 style: TextStyle(
                   fontSize: 16.0,
                 ),
               ),
               Text(
-                '${_cover.isAdult ? '*' : ''}${_cover.score}',
+                '${_cover.restricted ? '*' : ''}${_cover.score}',
                 style: TextStyle(
                   fontSize: 16.0,
                 ),
@@ -334,7 +363,7 @@ class _Cover extends StatelessWidget {
             ),
             child: SingleChildScrollView(
               child: Text(
-                _cover.shortIntro,
+                _cover.shortIntro ?? '无简介数据',
                 overflow: TextOverflow.clip,
                 style: TextStyle(
                   fontSize: 15.0,

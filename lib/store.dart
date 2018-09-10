@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'models/website_meta_data.dart';
 import 'models/user.dart';
 import 'api/remote_db.dart';
+import './config.dart';
 
 class Store {
   SharedPreferences storage;
@@ -61,7 +62,7 @@ class Store {
   }
 
   Future<void> _loadDb() async {
-    db = await RemoteDb.create();
+    db = await RemoteDb.create(uri: MONGO_DB_URL);
   }
 
   Future<void> initialize() async {

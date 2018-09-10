@@ -7,6 +7,8 @@ class AuthorLink {
   final String name;
 }
 
+typedef AuthorLinkCallback = void Function(AuthorLink);
+
 enum CoverSize { min, xs, sm, md, lg, xl, max }
 
 class ComicCover {
@@ -19,10 +21,10 @@ class ComicCover {
   final int bookId;
   String name, lastChpTitle, score;
   DateTime updatedAt;
-  bool finished, isAdult = false;
+  bool finished, restricted = false;
 
   List<AuthorLink> authors;
-  List<String> tags, introduction;
+  List<String> tags;
   Set<String> tagSet;
   String shortIntro;
 

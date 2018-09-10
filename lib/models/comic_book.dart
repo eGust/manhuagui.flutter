@@ -23,11 +23,15 @@ class ComicBook extends ComicCover {
   ComicBook.fromCover(ComicCover cover): super(cover.bookId, cover.name) {
     lastChpTitle = cover.lastChpTitle;
     score = cover.score;
-    authors = cover.authors;
-    tags = cover.tags;
-    shortIntro = cover.shortIntro;
     updatedAt = cover.updatedAt;
+
     finished = cover.finished;
+    restricted = cover.restricted;
+    shortIntro = cover.shortIntro;
+
+    authors = List.from(cover.authors ?? []);
+    tags = List.from(cover.tags ?? []);
+    tagSet = Set.from(cover.tagSet ?? []);
   }
 
   String get url => "$PROTOCOL://$DOMAIN$path";
@@ -46,8 +50,9 @@ class ComicBook extends ComicCover {
 
     // rank, tags, authors, alias, introduction
     rank = int.parse(content.querySelector('.rank strong').text);
-    tags = content.querySelectorAll('li:not(.status) a[href^="/list/"]')
-      .map((link) => link.text).toList();
+    tags = tags == null || tags.isEmpty ?
+      content.querySelectorAll('li:not(.status) a[href^="/list/"]')
+        .map((link) => link.text).toList() : tags;
     authors = content.querySelectorAll('a[href^="/author/"]')
       .map((link) => AuthorLink(int.parse(link.attributes['href'].split('/')[2]), link.text))
       .toList();
@@ -59,10 +64,10 @@ class ComicBook extends ComicCover {
       .map((p) => p.text.trim()).toList();
 
     // chapters
-    final adult = doc.querySelector('#__VIEWSTATE');
-    isAdult = adult != null;
-    if (isAdult) {
-      final html = lzDecompressFromBase64(adult.attributes['value']);
+    final restrictEl = doc.querySelector('#__VIEWSTATE');
+    restricted = restrictEl != null;
+    if (restricted) {
+      final html = lzDecompressFromBase64(restrictEl.attributes['value']);
       doc = parse('<div class="chapter">$html</div>');
     }
 

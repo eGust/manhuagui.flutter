@@ -11,11 +11,11 @@ import '../components/home/route_favorite.dart';
 import '../components/home/route_history.dart';
 import '../components/home/route_configuration.dart';
 
-class Home extends StatefulWidget{
-  _HomeState createState() => _HomeState();
+class HomeScreen extends StatefulWidget{
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeScreenState extends State<HomeScreen> {
   String _path = 'home';
   String get path => _path;
   set path(String val) {
@@ -83,8 +83,7 @@ class _HomeState extends State<Home> {
   }
 
   @override
-  Widget build(BuildContext context) =>
-  Container(
+  Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.only(top: 20.0),
     color: _sbColor,
     child: Row(

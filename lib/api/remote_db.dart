@@ -2,12 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:mongo_dart/mongo_dart.dart';
 
-import '../config.dart';
 import '../models/comic_cover.dart';
 
 class RemoteDb {
-  RemoteDb(String url) {
-    _db = Db(url);
+  RemoteDb(String uri) {
+    _db = Db(uri);
   }
 
   Db _db;
@@ -34,7 +33,7 @@ class RemoteDb {
     }).toList();
   }
 
-  Future<List<ComicCover>> updateCovers(List<ComicCover> covers) async {
+  Future<void> updateCovers(List<ComicCover> covers) async {
     final bookMap = Map.fromEntries(covers.map((c) => MapEntry(c.bookId, c)));
     final list = await dcComic.find(where.oneFrom('id', bookMap.keys.toList())).toList();
     list.forEach((comic) {
@@ -44,17 +43,17 @@ class RemoteDb {
       cover.tags = List.from(tags.values);
       cover.tagSet = Set.from(tags.keys);
       cover.shortIntro = attrs['sm'];
-      cover.isAdult = attrs['ad'] == 1;
+      cover.restricted = attrs['ad'] == 1;
       cover.authors = (attrs['as'] as List)
         .map((author) => AuthorLink(author['i'], author['n'])).toList();
     });
-    return covers;
   }
 
   DbCollection dcComic;
 
-  static Future<RemoteDb> create({ String url = MONGO_DB_URL }) async {
-    final r = RemoteDb(url);
+  static Future<RemoteDb> create({ String uri }) async {
+    if (uri == null) return null;
+    final r = RemoteDb(uri);
     await r.initialize();
     return r;
   }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../store.dart';
 import '../../api.dart';
 import '../../models.dart';
+import '../../routes.dart';
 import './sub_router.dart';
 
 final _router = SubRouter(
@@ -36,7 +37,7 @@ class _RouteHomeState extends State<RouteHome> {
       el.querySelectorAll('li > a').map((a) => ComicCover.fromMobileDom(a)).toList()
     )).toList();
     final covers = grps.map((g) => g.value).expand((List<ComicCover> i) => i).toList();
-    await globals.db.updateCovers(covers);
+    await globals.db?.updateCovers(covers);
     comicGroups = grps;
 
     if (!mounted) return;
@@ -58,7 +59,7 @@ class _RouteHomeState extends State<RouteHome> {
         children: <Widget>[
           Text(group.key),
           Container(
-            height: 303.0,
+            height: 307.0,
             child: ListView(
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
@@ -87,15 +88,21 @@ class _Cover extends StatelessWidget {
     width: 210.0,
     child: Column(
       children: <Widget>[
-        Image.network(
-          cover.getImageUrl(),
-          headers: { 'Referer': 'https://m.manhuagui.com' },
+        GestureDetector(
+          child: Image.network(
+            cover.getImageUrl(),
+            headers: { 'Referer': 'https://m.manhuagui.com' },
+          ),
+          onTap: () {
+            Routes.navigateComic(context, cover);
+          },
         ),
         Text(
           cover.name,
+          overflow: TextOverflow.ellipsis,
           style: TextStyle(
             color: color,
-            fontSize: 15.0
+            fontSize: 15.0,
           ),
         ),
         Row(
@@ -118,7 +125,7 @@ class _Cover extends StatelessWidget {
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: cover.tags.map((t) => Text(t, style: _tagStyle)).toList(),
+          children: (cover.tags ?? []).map((t) => Text(t, style: _tagStyle)).toList(),
         ),
       ],
     )
