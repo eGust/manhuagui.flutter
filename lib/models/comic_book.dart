@@ -12,13 +12,13 @@ class ComicBook extends ComicCover {
   static Map<String, ComicBook> books = {};
 
   int rank;
-  List<int> votes;
-  List<String> alias, introduction;
+  List<int> votes = [];
+  List<String> alias = [], introduction = [];
   // List<FilterSelector> filters;
 
-  List<String> chapterGroups;
-  Map<String, List<int>> groupedChapterIdListMap;
-  Map<int, Chapter> chapterMap;
+  List<String> chapterGroups = [];
+  Map<String, List<int>> groupedChapterIdListMap = {};
+  Map<int, Chapter> chapterMap = {};
 
   ComicBook.fromCover(ComicCover cover): super(cover.bookId, cover.name) {
     lastChpTitle = cover.lastChpTitle;

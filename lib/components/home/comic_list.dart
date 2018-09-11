@@ -6,7 +6,6 @@ import '../progressing.dart';
 import '../filter_dialog.dart';
 import '../../store.dart';
 import '../../models.dart';
-import '../../utils.dart';
 import '../../routes.dart';
 
 typedef ComicFilterSelected = void Function(String filter, String order);
@@ -142,7 +141,7 @@ class _ComicListState extends State<ComicList> {
     return ListView.builder(
       controller: _scroller,
       itemCount: count + 1,
-      padding: const EdgeInsets.all(1.0),
+      padding: const EdgeInsets.all(0.0),
       itemBuilder: (_, i) => i == count ?
         Progressing(visible: _indicator && _fetching) :
         _buildCover(covers[i],),
@@ -160,7 +159,7 @@ class _ComicListState extends State<ComicList> {
     });
   }
 
-  static const _NEXT_THRESH_HOLD = 2400.0;
+  static const _NEXT_THRESH_HOLD = 2500.0; // > 10 items
 
   @override
   void initState() {
@@ -267,15 +266,14 @@ class _Cover extends StatelessWidget {
   final ComicCover _cover;
   @override
   Widget build(BuildContext context) => _wrapTouch(Container(
-    height: 248.0,
-    padding: const EdgeInsets.all(5.0),
+    height: 242.0,
+    padding: const EdgeInsets.only(right: 6.0),
     decoration: BoxDecoration(
       border: Border(bottom: BorderSide(color: Colors.orange[300])),
       color: _cover.restricted ? Colors.pink[50] : Colors.transparent,
     ),
     child: Row(children: [
       Container(
-        margin: const EdgeInsets.only(right: 6.0),
         width: 180.0,
         height: 240.0,
         child: Image.network(
@@ -283,96 +281,99 @@ class _Cover extends StatelessWidget {
           headers: { 'Referer': 'https://m.manhuagui.com' },
         ),
       ),
-      Expanded(child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Text(
-            _cover.name,
-            style: TextStyle(
-              fontSize: 20.0,
-              color: _cover.restricted ? Colors.pink[600] : Colors.deepPurple[900],
+      Expanded(child: Container(
+        padding: const EdgeInsets.all(6.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Text(
+              _cover.name,
+              style: TextStyle(
+                fontSize: 20.0,
+                color: _cover.restricted ? Colors.pink[600] : Colors.deepPurple[900],
+              ),
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '[${_cover.finished ? '完结' : '连载'}] ${_cover.lastChpTitle}',
-                style: TextStyle(
-                  fontSize: 15.0,
-                  color: _cover.finished ? Colors.red[800] : Colors.green[800],
-                ),
-              ),
-              Text(
-                '更新 ${globals.formatDate(_cover.updatedAt)}',
-                style: TextStyle(
-                  fontSize: 14.0,
-                ),
-              ),
-            ],
-          ),
-          Row(
-            children: _cover.authors == null ? [
-              Text(
-                '[无作者数据]',
-                style: TextStyle(
-                  fontSize: 18.0,
-                  color: Colors.red[600],
-                ),
-              ),
-            ] : _cover.authors.map((author) => Container(
-              padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-              child: GestureDetector(
-                child: Text(
-                  author.name,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '[${_cover.finished ? '完结' : '连载'}] ${_cover.lastChpTitle}',
                   style: TextStyle(
-                    fontSize: 18.0,
-                    color: Colors.lightBlue[900],
+                    fontSize: 15.0,
+                    color: _cover.finished ? Colors.red[800] : Colors.green[800],
                   ),
                 ),
-                onTap: () {
-                  if (onAuthorPressed == null) return;
-                  onAuthorPressed(author);
-                },
-              )
-            )).toList(),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                (_cover.tags ?? ['[无类型数据]']).join(' '),
-                style: TextStyle(
-                  fontSize: 16.0,
+                Text(
+                  '更新 ${globals.formatDate(_cover.updatedAt)}',
+                  style: TextStyle(
+                    fontSize: 14.0,
+                  ),
                 ),
-              ),
-              Text(
-                '${_cover.restricted ? '*' : ''}${_cover.score}',
-                style: TextStyle(
-                  fontSize: 16.0,
-                ),
-              ),
-            ],
-          ),
-          Container(
-            height: 100.0,
-            padding: const EdgeInsets.only(top: 5.0),
-            decoration: BoxDecoration(
-              border: Border(top: BorderSide(color: Colors.orange[100])),
+              ],
             ),
-            child: SingleChildScrollView(
-              child: Text(
-                _cover.shortIntro ?? '无简介数据',
-                overflow: TextOverflow.clip,
-                style: TextStyle(
-                  fontSize: 15.0,
+            Row(
+              children: _cover.authors == null ? [
+                Text(
+                  '[无作者数据]',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    color: Colors.red[600],
+                  ),
+                ),
+              ] : _cover.authors.map((author) => Container(
+                padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                child: GestureDetector(
+                  child: Text(
+                    author.name,
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      color: Colors.lightBlue[900],
+                    ),
+                  ),
+                  onTap: () {
+                    if (onAuthorPressed == null) return;
+                    onAuthorPressed(author);
+                  },
+                )
+              )).toList(),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  (_cover.tags ?? ['[无类型数据]']).join(' '),
+                  style: TextStyle(
+                    fontSize: 16.0,
+                  ),
+                ),
+                Text(
+                  '${_cover.restricted ? '*' : ''}${_cover.score}',
+                  style: TextStyle(
+                    fontSize: 16.0,
+                  ),
+                ),
+              ],
+            ),
+            Container(
+              height: 100.0,
+              padding: const EdgeInsets.only(top: 5.0),
+              decoration: BoxDecoration(
+                border: Border(top: BorderSide(color: Colors.orange[100])),
+              ),
+              child: SingleChildScrollView(
+                child: Text(
+                  _cover.shortIntro ?? '无简介数据',
+                  overflow: TextOverflow.clip,
+                  style: TextStyle(
+                    fontSize: 15.0,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       )),
-    ])
+    ]),
   ));
 }
