@@ -5,6 +5,7 @@ import '../../store.dart';
 import '../../api.dart';
 import '../../models.dart';
 import '../../routes.dart';
+import '../progressing.dart';
 import './sub_router.dart';
 
 final _router = SubRouter(
@@ -53,27 +54,29 @@ class _RouteHomeState extends State<RouteHome> {
   }
 
   @override
-  Widget build(BuildContext context) => ListView(
-    children: _groups.map(
-      (group) => Column(
-        children: <Widget>[
-          Text(group.key),
-          Container(
-            height: 307.0,
-            child: ListView(
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              children: group.value.map((c) => _Cover(c)).toList(),
+  Widget build(BuildContext context) => _groups.isEmpty ?
+    Progressing(size: 180.0, strokeWidth: 16.0) :
+    ListView(
+      children: _groups.map(
+        (group) => Column(
+          children: <Widget>[
+            Text(group.key),
+            Container(
+              height: 307.0,
+              child: ListView(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                children: group.value.map((c) => _HomeCover(c)).toList(),
+              ),
             ),
-          ),
-        ],
-      )
-    ).toList(),
+          ],
+        )
+      ).toList(),
   );
 }
 
-class _Cover extends StatelessWidget {
-  _Cover(this.cover) : this.color = cover.finished ? Colors.red[800] : Colors.green[800];
+class _HomeCover extends StatelessWidget {
+  _HomeCover(this.cover) : this.color = cover.finished ? Colors.red[800] : Colors.green[800];
   final ComicCover cover;
   final Color color;
   static final _tagStyle = TextStyle(
