@@ -15,6 +15,7 @@ abstract class ComicListManagerBase {
   void onFinishedInitialization() {}
   void resetPageIndex();
   String get filtersTitle;
+  bool get isLastPage;
   bool notInBlacklist(ComicCover comic);
   Future<Iterable<ComicCover>> fetchNextPage();
   Future<bool> showDialogChanged(BuildContext context);
@@ -71,6 +72,8 @@ class _ComicListState extends State<ComicList> {
   }
 
   Future<void> _fetchNextPage() async {
+    if (stateManager.isLastPage) return;
+
     final rawCovers = await stateManager.fetchNextPage();
     final covers = rawCovers.where((c) => !bookIds.contains(c.bookId)).toList();
     await globals.db?.updateCovers(covers);

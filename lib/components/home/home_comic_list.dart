@@ -59,6 +59,9 @@ class HomeComicListManager extends ComicListManagerBase {
     cover.tagSet == null || filterSelector.blacklist.intersection(cover.tagSet).isEmpty;
 
   @override
+  bool get isLastPage => filterSelector.page == filterSelector.pageCount;
+
+  @override
   Future<Iterable<ComicCover>> fetchNextPage() async {
     final doc = await filterSelector.fetchDom();
     filterSelector.page += filterSelector.page;
