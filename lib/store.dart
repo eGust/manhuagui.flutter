@@ -19,7 +19,7 @@ class Store {
 
   String formatDate(DateTime date) {
     _df = _df ?? DateFormat('yyyy-MM-dd');
-    return _df.format(date);
+    return date == null ? '--' : _df.format(date);
   }
 
   static const _META_DATA_KEY = 'websiteMetaData';

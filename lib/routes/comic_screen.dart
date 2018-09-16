@@ -144,13 +144,13 @@ class _ComicScreenState extends State<ComicScreen> {
                     ),
                   ),
                   Text(
-                    '${comic.restricted ? '[R] ' : ''}${comic.score}',
+                    '${comic.restricted ? '[R] ' : ''}${comic.score ?? '??'}',
                     style: TextStyle(
                       fontSize: 16.0,
                     ),
                   ),
                   Text(
-                    '${comic.rank}',
+                    '${comic.rank ?? '...'}',
                     style: TextStyle(
                       fontSize: 16.0,
                     ),
