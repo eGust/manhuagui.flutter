@@ -7,10 +7,21 @@ import '../api/request.dart';
 const PROTOCOL = 'http';
 const DOMAIN = 'www.manhuagui.com';
 
-class Filter {
+abstract class Displayable {
+  String get display;
+  String get value;
+}
+
+class Filter extends Displayable {
   Filter({ this.title, this.link });
   final String title;
   final String link;
+
+  @override
+  String get display => title;
+
+  @override
+  String get value => link;
 
   Map<String, dynamic> toJson() => { 'title': title, 'link': link };
   Filter.fromJson(Map<String, dynamic> json)
@@ -19,10 +30,19 @@ class Filter {
     ;
 }
 
-class Order {
+class Order extends Displayable {
   Order({ this.title, this.linkBase });
   final String title;
   final String linkBase;
+
+  @override
+  String get display => title;
+
+  @override
+  String get value => linkBase;
+
+  String pathWith(int page) =>
+    page > 1 ? '${linkBase}_p$page.html' : '$linkBase.html';
 
   Map<String, dynamic> toJson() => { 'title': title, 'linkBase': linkBase };
   Order.fromJson(Map<String, dynamic> json)

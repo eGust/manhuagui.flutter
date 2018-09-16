@@ -3,9 +3,10 @@ import 'package:html/parser.dart' show parse;
 
 import '../api/request.dart';
 import '../api/decrypt_chapter_json.dart';
-import 'website_meta_data.dart';
-import 'comic_cover.dart';
-import 'chapter.dart';
+import './website_meta_data.dart';
+import './author.dart';
+import './comic_cover.dart';
+import './chapter.dart';
 
 class ComicBook extends ComicCover {
   ComicBook(int bookId): super(bookId, null);
@@ -32,6 +33,7 @@ class ComicBook extends ComicCover {
     authors = List.from(cover.authors ?? []);
     tags = List.from(cover.tags ?? []);
     tagSet = Set.from(cover.tagSet ?? []);
+    history = Map.from(cover.history);
   }
 
   String get url => "$PROTOCOL://$DOMAIN$path";
@@ -128,9 +130,13 @@ class ComicBook extends ComicCover {
       ).toStringAsFixed(1);
   }
 
+  // TODO: load user history from local storage
+  Future<void> _updateHistory() async {}
+
   Future<void> update() =>
     Future.wait([
       _updateMain(),
       _updateScore(),
+      _updateHistory(),
     ]);
 }

@@ -1,3 +1,4 @@
+export 'models/author.dart';
 export 'models/chapter.dart';
 export 'models/comic_book.dart';
 export 'models/comic_cover.dart';

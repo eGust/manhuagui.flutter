@@ -32,18 +32,22 @@ class HomeComicListManager extends ComicListManagerBase {
 
   @override
   void reset() {
+    super.reset();
     filterSelector.filters.clear();
     _pinned = false;
   }
 
   @override
-  void onFinishedInitialization() {
+  bool get popupFilterDialog => true;
+
+  @override
+  void onInitialized() {
     _pinned = true;
   }
 
   @override
   void resetPageIndex() {
-    filterSelector.page = 1;
+    filterSelector.page = 0;
   }
 
   @override
@@ -63,8 +67,8 @@ class HomeComicListManager extends ComicListManagerBase {
 
   @override
   Future<Iterable<ComicCover>> fetchNextPage() async {
+    filterSelector.page += 1;
     final doc = await filterSelector.fetchDom();
-    filterSelector.page += filterSelector.page;
     return ComicCover.parseDesktop(doc);
   }
 

@@ -1,15 +1,21 @@
 import 'dart:collection';
 import 'package:html/dom.dart';
 
-class AuthorLink {
-  AuthorLink(this.authorId, this.name);
-  final int authorId;
-  final String name;
-}
-
-typedef AuthorLinkCallback = void Function(AuthorLink);
+import './author.dart';
 
 enum CoverSize { min, xs, sm, md, lg, xl, max }
+
+class ReadStatus {
+  String name;
+  Map<int, int> chapterPageProgress; // id => page
+  ChapterInfo last, max;
+}
+
+class ChapterInfo {
+  DateTime acessedAt;
+  String title;
+  int id, page;
+}
 
 class ComicCover {
   ComicCover(this.bookId, this.name);
@@ -27,6 +33,7 @@ class ComicCover {
   List<String> tags;
   Set<String> tagSet;
   String shortIntro;
+  Map<String, String> history = {};
 
   static const Map<CoverSize, String> _coverSizeMap = {
     CoverSize.min: 's/', // 92 * 122
@@ -102,7 +109,7 @@ class ComicCover {
     cc.finished = status.querySelector('span.green') != null;
     cc.lastChpTitle = status.querySelector('a').text.trim();
 
-    cc.updatedAt = DateTime.parse(status.querySelectorAll('span.read').last.text.trim());
+    cc.updatedAt = DateTime.parse(status.querySelectorAll('span.red').last.text.trim());
     cc.score = element.nextElementSibling.querySelector('.score-avg strong').text;
     return cc;
   }
@@ -119,7 +126,7 @@ class ComicCover {
     .map((li) => ComicCover.fromDesktopDom(li));
 
   static Iterable<ComicCover> parseAuthor(Document doc) => doc
-    .querySelectorAll('.book-result ul > li .book-detail')
+    .querySelectorAll('.book-result ul li .book-detail')
     .map((detail) => ComicCover.fromAuthorDom(detail));
 
   static Iterable<ComicCover> parseFavorate(Document doc) => doc

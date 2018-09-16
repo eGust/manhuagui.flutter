@@ -11,12 +11,18 @@ import '../store.dart';
 typedef ComicFilterSelected = void Function(String filter, String order);
 
 abstract class ComicListManagerBase {
-  void reset();
-  void onFinishedInitialization() {}
+  void reset() {
+    resetPageIndex();
+  }
+  bool get popupFilterDialog;
+  void onInitialized() {}
   void resetPageIndex();
+  String get listTitle => null;
   String get filtersTitle;
   bool get isLastPage;
-  bool notInBlacklist(ComicCover comic);
+  bool get isScreen => false;
+  bool get useBlacklist => true;
+  bool notInBlacklist(ComicCover comic) { return true; }
   Future<Iterable<ComicCover>> fetchNextPage();
   Future<bool> showDialogChanged(BuildContext context);
 }
@@ -40,7 +46,7 @@ class _ComicListState extends State<ComicList> {
   Future<void> _showFilterDialog({ bool isInitial = false }) async {
     final changed = await stateManager.showDialogChanged(context);
     if (changed || isInitial) _refresh();
-    if (isInitial) stateManager.onFinishedInitialization();
+    if (isInitial) stateManager.onInitialized();
   }
 
   Future<void> _refresh({ bool indicator = true }) async {
@@ -55,11 +61,8 @@ class _ComicListState extends State<ComicList> {
     await _fetchNextPage();
   }
 
-  void _nextPage() async {
+  void _nextPage() {
     if (_fetching || !mounted) return;
-    setState(() {
-      _fetching = true;
-    });
     _fetchNextPage();
   }
 
@@ -73,10 +76,13 @@ class _ComicListState extends State<ComicList> {
 
   Future<void> _fetchNextPage() async {
     if (stateManager.isLastPage) return;
+    setState(() {
+      _fetching = true;
+    });
 
     final rawCovers = await stateManager.fetchNextPage();
     final covers = rawCovers.where((c) => !bookIds.contains(c.bookId)).toList();
-    await globals.db?.updateCovers(covers);
+    await globals.updateCovers(covers);
 
     if (!mounted) return;
     setState(() {
@@ -87,7 +93,8 @@ class _ComicListState extends State<ComicList> {
   }
 
   Widget _buildCoverList() {
-    final covers = _blacklistEnabled ? comics.where(stateManager.notInBlacklist).toList() : comics;
+    final covers = stateManager.useBlacklist && _blacklistEnabled ?
+      comics.where(stateManager.notInBlacklist).toList() : comics;
     final count = covers.length;
     return ListView.builder(
       controller: _scroller,
@@ -109,8 +116,12 @@ class _ComicListState extends State<ComicList> {
     );
   }
 
-  void _quickSelectFilter(Duration _) async {
-    await _showFilterDialog(isInitial: true);
+  void _initialized(Duration _) {
+    if (stateManager.popupFilterDialog) {
+      _showFilterDialog(isInitial: true);
+    } else {
+      _refresh();
+    }
   }
 
   void _switchBlacklist() {
@@ -130,7 +141,7 @@ class _ComicListState extends State<ComicList> {
       }
     });
     stateManager.reset();
-    WidgetsBinding.instance.addPostFrameCallback(_quickSelectFilter);
+    WidgetsBinding.instance.addPostFrameCallback(_initialized);
   }
 
   @override
@@ -143,7 +154,9 @@ class _ComicListState extends State<ComicList> {
   Widget build(BuildContext context) => Column(
     children: <Widget>[
       ComicListTopBar(
+        isScreen: stateManager.isScreen,
         enabledBlacklist: _blacklistEnabled,
+        listTitle: stateManager.listTitle,
         filtersTitle: stateManager.filtersTitle,
         onPressedScrollTop: _scrollToTop,
         onPressedFilters: _showFilterDialog,

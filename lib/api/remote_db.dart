@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:mongo_dart/mongo_dart.dart';
 
 import '../models/comic_cover.dart';
+import '../models/author.dart';
 
 class RemoteDb {
   RemoteDb(String uri) {

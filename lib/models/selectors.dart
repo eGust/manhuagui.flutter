@@ -70,14 +70,18 @@ class FilterSelector {
 
   String get url => '$PROTOCOL://$DOMAIN$fullPath';
 
-  static final _rePageNo = RegExp(r'_p(\d+)\.html');
+  static final rePageNo = RegExp(r'_p(\d+)\.html');
+
+  static int parsePageCount(Document doc) {
+    final links = doc.querySelectorAll('a.prev');
+    return links.isEmpty ? 1 : int.parse(rePageNo.firstMatch(
+        links.last.attributes['href'],
+      )[1]);
+  }
 
   Future<Document> fetchDom() async {
     final doc = await request.fetchDom(url);
-    final links = doc.querySelectorAll('a.prev');
-    pageCount = links.isEmpty ? 1 : int.parse(_rePageNo.firstMatch(
-        links.last.attributes['href'],
-      )[1]);
+    pageCount ??= parsePageCount(doc);
     return doc;
   }
 

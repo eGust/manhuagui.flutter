@@ -67,7 +67,7 @@ class FilterButton extends StatelessWidget {
   ;
 
   final VoidCallback onPressed;
-  final Filter filter;
+  final Displayable filter;
   final Color color, textColor;
 
   @override
@@ -80,7 +80,7 @@ class FilterButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
         child: Text(
-          filter.title,
+          filter.display,
           style: TextStyle(
             fontSize: 18.0,
             color: textColor,

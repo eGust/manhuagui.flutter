@@ -3,8 +3,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
-import 'models/website_meta_data.dart';
-import 'models/user.dart';
+import 'models.dart';
 import 'api/remote_db.dart';
 import './config.dart';
 
@@ -76,6 +75,15 @@ class Store {
     // sets
     favorateBookIdSet = Set.from(_loadStorageJson(_FAVORATES_KEY) ?? []);
     blacklistSet = Set.from(_loadStorageJson(_BLACKLIST) ?? []);
+  }
+
+  Future<void> updateCovers(List<ComicCover> covers) async {
+    final updates = <Future>[
+      // TODO: load cover history from local storage
+    ];
+    if (db != null) updates.add(db.updateCovers(covers));
+    if (updates.isEmpty) return;
+    await Future.wait(updates);
   }
 }
 
