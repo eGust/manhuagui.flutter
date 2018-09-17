@@ -7,7 +7,7 @@ class RouteHistory extends StatelessWidget {
     'history',
     Icons.history,
     () => RouteHistory(),
-    label: '我的收藏',
+    label: '最近阅读',
   );
 
   @override

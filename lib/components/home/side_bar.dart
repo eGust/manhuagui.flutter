@@ -16,13 +16,12 @@ class SideBarItem {
 }
 
 class SideBar extends StatelessWidget {
-  SideBar(this._search, this._mainButtons, this._settings, { Color color }):
+  SideBar(this._mainButtons, this._settings, { Color color }):
     this.color = color ?? Colors.brown[800];
 
   static const _SIDE_BAR_WIDTH = 80.0;
 
   final List<SideBarItem> _mainButtons;
-  final SideBarItem _search;
   final SideBarItem _settings;
   final Color color;
 
@@ -34,7 +33,10 @@ class SideBar extends StatelessWidget {
     child: Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        IconLabelButton.forSideBar(_search),
+        IconLabelButton(
+          Icons.search,
+          onPressed: () {},
+        ),
         Container(
           child: Column(
             children: _mainButtons.map((item) => IconLabelButton.forSideBar(item)).toList(),

@@ -5,18 +5,6 @@ import './author.dart';
 
 enum CoverSize { min, xs, sm, md, lg, xl, max }
 
-class ReadStatus {
-  String name;
-  Map<int, int> chapterPageProgress; // id => page
-  ChapterInfo last, max;
-}
-
-class ChapterInfo {
-  DateTime acessedAt;
-  String title;
-  int id, page;
-}
-
 class ComicCover {
   ComicCover(this.bookId, this.name);
   ComicCover.fromLinkAttrs(LinkedHashMap<dynamic, String> linkAttrs)
@@ -33,7 +21,7 @@ class ComicCover {
   List<String> tags;
   Set<String> tagSet;
   String shortIntro;
-  Map<String, String> history = {};
+  Map<String, int> history = {};
 
   static const Map<CoverSize, String> _coverSizeMap = {
     CoverSize.min: 's/', // 92 * 122

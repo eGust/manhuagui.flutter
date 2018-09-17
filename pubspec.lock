@@ -220,7 +220,7 @@ packages:
       name: more
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.11.4"
+    version: "1.12.0"
   multi_server_socket:
     dependency: transitive
     description:
@@ -345,6 +345,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.4.1"
+  sqflite:
+    dependency: "direct main"
+    description:
+      name: sqflite
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.12.0"
   stack_trace:
     dependency: transitive
     description:
@@ -366,6 +373,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
+  synchronized:
+    dependency: transitive
+    description:
+      name: synchronized
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.5.2"
   term_glyph:
     dependency: transitive
     description:

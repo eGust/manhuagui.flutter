@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../components/home/side_bar.dart';
-import '../components/home/route_search.dart';
 import '../components/home/route_home.dart';
 import '../components/home/route_comic_category.dart';
 import '../components/home/route_comic_rank.dart';
@@ -29,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Map<String, SideBarItem> sbItemMap;
   List<SideBarItem> sbItemList;
-  SideBarItem _sbSearch, _sbSettings;
+  SideBarItem _sbSettings;
 
   SideBarItem convertSideBarItem(SubRouter router) =>
     SideBarItem(
@@ -46,10 +45,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    _sbSearch = convertSideBarItem(RouteSearch.router);
     _sbSettings = convertSideBarItem(RouteConfiguration.router);
     sbItemMap = {
-      'search': _sbSearch,
       'settings': _sbSettings,
     };
 
@@ -90,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
-        SideBar(_sbSearch, sbItemList, _sbSettings, color: _sbColor),
+        SideBar(sbItemList, _sbSettings, color: _sbColor),
         Expanded(
           flex: 1,
           child: Container(
