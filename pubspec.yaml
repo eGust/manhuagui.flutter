@@ -23,6 +23,7 @@ dependencies:
   mongo_dart: any
   intl: any
   sqflite: any
+  flutter_cache_manager: any
 
 dev_dependencies:
   flutter_test:

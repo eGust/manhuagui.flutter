@@ -11,6 +11,16 @@ class AuthorLink {
   AuthorLink(this.authorId, this.name);
   final int authorId;
   final String name;
+
+  Map<String, dynamic> toJson() => {
+    'author_id': authorId,
+    'name': name,
+  };
+
+  AuthorLink.fromJson(Map<String, dynamic> json)
+    : authorId = json['author_id']
+    , name = json['name']
+    ;
 }
 
 class AuthorPage extends AuthorLink {

@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../progressing.dart';
+import '../../routes.dart';
 import '../../models.dart';
 
 class ChapterTabs extends StatelessWidget {
   ChapterTabs(this.comic);
 
   final ComicBook comic;
-
-  void _onPressedChapter(Chapter ch) {
-    //
-  }
 
   @override
   Widget build(BuildContext context) => Expanded(
@@ -45,7 +42,9 @@ class ChapterTabs extends StatelessWidget {
                       .map((chId) =>
                         ChapterButton(
                           comic.chapterMap[chId],
-                          onPressed: _onPressedChapter,
+                          onPressed: (chapter) {
+                            Routes.navigateReader(context, ReaderHelper(comic, chapter));
+                          },
                         )
                       ).toList(),
                   ),

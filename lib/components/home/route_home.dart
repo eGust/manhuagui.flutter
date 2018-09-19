@@ -38,7 +38,7 @@ class _RouteHomeState extends State<RouteHome> {
       el.querySelectorAll('li > a').map((a) => ComicCover.fromMobileDom(a)).toList()
     )).toList();
     final covers = grps.map((g) => g.value).expand((List<ComicCover> i) => i).toList();
-    await globals.db?.updateCovers(covers);
+    await globals.remoteDb?.updateCovers(covers);
     comicGroups = grps;
 
     if (!mounted) return;

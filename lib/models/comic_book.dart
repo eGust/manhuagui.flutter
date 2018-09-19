@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:html/parser.dart' show parse;
 
 import '../api/request.dart';
@@ -7,6 +8,7 @@ import './website_meta_data.dart';
 import './author.dart';
 import './comic_cover.dart';
 import './chapter.dart';
+import '../store.dart';
 
 class ComicBook extends ComicCover {
   ComicBook(int bookId): super(bookId, null);
@@ -35,6 +37,12 @@ class ComicBook extends ComicCover {
     tagSet = Set.from(cover.tagSet ?? []);
     history = Map.from(cover.history);
   }
+
+  Chapter groupPrevOf(Chapter ch) => chapterMap[ch?.groupPrevId];
+  Chapter groupNextOf(Chapter ch) => chapterMap[ch?.groupNextId];
+
+  Chapter prevOf(Chapter ch) => chapterMap[ch?.prevChpId];
+  Chapter nextOf(Chapter ch) => chapterMap[ch?.nextChpId];
 
   String get url => "$PROTOCOL://$DOMAIN$path";
   String get voteUrl => 'http://www.manhuagui.com/tools/vote.ashx?act=get&bid=$bookId';
@@ -130,13 +138,55 @@ class ComicBook extends ComicCover {
       ).toStringAsFixed(1);
   }
 
-  // TODO: load user history from local storage
-  Future<void> _updateHistory() async {}
+  Map<String, dynamic> toJson() => {
+    'as': authors,
+    'tags': tags,
+    'intro': shortIntro,
+    'ad': restricted,
+  };
+
+  void loadJson(Map<String, dynamic> json) {
+    authors = List.from((json['as'] as List).map((a) => AuthorLink.fromJson(a)));
+    tags = List.from(json['tags']);
+    shortIntro = json['intro'];
+    restricted = json['ad'];
+  }
+
+  Future<void> updateHistory({ int lastChapterId }) async {
+    final db = globals.localDb;
+    final wc = 'book_id = $lastChapterId';
+    final r = await db.rawQuery('SELECT max_read_chapter_id FROM books WHERE $wc');
+
+    if (r.isEmpty) {
+      return db.insert('books', {
+        'book_id': lastChapterId,
+        'cover_json': jsonEncode(this),
+        'is_favorate': 0,
+        'last_read_chapter_id': lastChapterId,
+        'max_read_chapter_id': lastChapterId,
+      });
+    }
+
+    final int maxChapterId = r.first['max_read_chapter_id'];
+    if (lastChapterId > maxChapterId) {
+      return db.update('books',
+        {
+          'last_read_chapter_id': lastChapterId,
+          'max_read_chapter_id': lastChapterId,
+        },
+        where: wc,
+      );
+    } else {
+      return db.update('books',
+        { 'last_read_chapter_id': lastChapterId },
+        where: wc,
+      );
+    }
+  }
 
   Future<void> update() =>
     Future.wait([
       _updateMain(),
       _updateScore(),
-      _updateHistory(),
     ]);
 }

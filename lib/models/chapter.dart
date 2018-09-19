@@ -3,7 +3,8 @@ import 'dart:convert';
 
 import '../api/request.dart';
 import '../api/decrypt_chapter_json.dart';
-import 'website_meta_data.dart';
+import './website_meta_data.dart';
+import '../store.dart';
 
 /*
 {
@@ -43,7 +44,10 @@ class Chapter {
 
   String getPageUrl(int index) => 'http://i.hamreus.com$basePath${pages[index]}$signature';
 
-  Future refresh() async {
+  bool _refreshing = false, _ready = false;
+
+  Future<void> _refresh() async {
+    _refreshing = true;
     final doc = await fetchDom('$PROTOCOL://$DOMAIN$path');
     final m = _reExtractParams.firstMatch(doc.querySelector('script:not([src])').text);
     final json = decryptChapterData(m[1], int.parse(m[2]), m[3]);
@@ -54,6 +58,41 @@ class Chapter {
     signature = '?cid=$chapterId&md5=${chapter['sl']['md5']}';
     prevChpId = _safeId(chapter['prevId']);
     nextChpId = _safeId(chapter['nextId']);
+    _refreshing = false;
+    _ready = true;
+  }
+
+  Future<void> load() async {
+    if (_ready) return;
+    if (!_refreshing) return await _refresh();
+
+    do {
+      await Future.delayed(const Duration(milliseconds: 10), () {});
+    } while (_refreshing);
+  }
+
+  Future<void> updateHistory(int pageIndex) async {
+    final db = globals.localDb;
+    final wc = 'chapter_id = $chapterId';
+    final r = await db.rawQuery('SELECT chapter_id FROM chapters WHERE $wc');
+
+    if (r.isEmpty) {
+      return db.insert('chapters', {
+        'chapter_id': chapterId,
+        'title': title,
+        'book_id': bookId,
+        'read_at': DateTime.now().millisecondsSinceEpoch,
+        'read_page': pageIndex,
+      });
+    }
+
+    return db.update('chapters',
+      {
+        'read_at': DateTime.now().millisecondsSinceEpoch,
+        'read_page': pageIndex,
+      },
+      where: wc,
+    );
   }
 }
 

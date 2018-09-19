@@ -5,7 +5,7 @@ class LocalDb {
   static const _FILENAME = 'history.db';
   static const _VERSION = 1;
 
-  static Future<Database> open() async {
+  static Future<Database> connect() async {
     final basePath = await getDatabasesPath();
     final filename = '$basePath/$_FILENAME';
     return await openDatabase(

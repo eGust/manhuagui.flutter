@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import 'models.dart';
 import 'api/remote_db.dart';
@@ -11,7 +13,9 @@ class Store {
   SharedPreferences storage;
   WebsiteMetaData metaData;
   User user;
-  RemoteDb db;
+  RemoteDb remoteDb;
+  Database localDb;
+  CacheManager cache;
   Set<int> favorateBookIdSet = Set();
   Set<String> blacklistSet = Set();
   DateFormat _df;
@@ -60,14 +64,24 @@ class Store {
     await user.initialize();
   }
 
-  Future<void> _loadDb() async {
-    db = await RemoteDb.create(uri: MONGO_DB_URL);
+  Future<void> _openRemoteDb() async {
+    remoteDb = await RemoteDb.create(uri: MONGO_DB_URL);
+  }
+
+  Future<void> _openLocalDb() async {
+    localDb = await LocalDb.connect();
+  }
+
+  Future<void> _openCache() async {
+    cache = await CacheManager.getInstance();
   }
 
   Future<void> initialize() async {
     await _loadStorage();
     await Future.wait([
-      _loadDb(),
+      _openRemoteDb(),
+      _openLocalDb(),
+      _openCache(),
       _loadMetaData(),
       _loadUser(),
     ]);
@@ -81,7 +95,7 @@ class Store {
     final updates = <Future>[
       // TODO: load cover history from local storage
     ];
-    if (db != null) updates.add(db.updateCovers(covers));
+    if (remoteDb != null) updates.add(remoteDb.updateCovers(covers));
     if (updates.isEmpty) return;
     await Future.wait(updates);
   }
