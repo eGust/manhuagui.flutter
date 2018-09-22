@@ -24,7 +24,7 @@ class ComicCoverRow extends StatelessWidget {
       color: _cover.restricted ? Colors.pink[50] : Colors.transparent,
     ),
     child: Row(children: [
-      Container(
+      SizedBox(
         width: 180.0,
         height: 240.0,
         child: Image.network(
@@ -117,10 +117,9 @@ class ComicCoverRow extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border(top: BorderSide(color: Colors.orange[100])),
               ),
-              child: SingleChildScrollView(
+              child: ClipRect(
                 child: Text(
                   _cover.shortIntro ?? '无简介数据',
-                  overflow: TextOverflow.clip,
                   style: TextStyle(
                     fontSize: 15.0,
                   ),

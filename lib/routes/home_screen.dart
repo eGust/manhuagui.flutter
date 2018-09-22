@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../components/home/side_bar.dart';
 import '../components/home/route_home.dart';
-import '../components/home/route_comic_category.dart';
+import '../components/home/route_comic_newest.dart';
 import '../components/home/route_comic_rank.dart';
 import '../components/home/route_comic_update.dart';
 import '../components/home/route_author.dart';
@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }),
     );
 
-  static final _sbColor = Colors.brown[800];
+  static final _sbColor = Colors.brown[900];
   static final _bgColor = Colors.yellow[100];
 
   @override
@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final sbRouterItems = [
       RouteHome.router,
       RouteComicUpdate.router,
-      RouteComicCategory.router,
+      RouteComicNewest.router,
       RouteComicRank.router,
       RouteAuthor.router,
       RouteFavorite.router,

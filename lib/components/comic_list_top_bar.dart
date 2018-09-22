@@ -25,7 +25,7 @@ class ComicListTopBar extends StatelessWidget {
       child: Container(
         height: isScreen ? 56.0 : 36.0,
         padding: isScreen ? const EdgeInsets.only(top: 20.0) : null,
-        color: Colors.brown[800],
+        color: Colors.brown[900],
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[

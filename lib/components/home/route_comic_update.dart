@@ -8,7 +8,7 @@ class RouteComicUpdate extends StatelessWidget {
     'comic_update',
     Icons.update,
     () => RouteComicUpdate(),
-    label: '最近更新',
+    label: '更新',
   );
 
   @override

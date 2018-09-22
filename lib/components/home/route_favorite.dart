@@ -7,7 +7,7 @@ class RouteFavorite extends StatelessWidget {
     'favorite',
     Icons.favorite,
     () => RouteFavorite(),
-    label: '我的收藏',
+    label: '收藏',
   );
 
   @override

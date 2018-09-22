@@ -17,9 +17,9 @@ class SideBarItem {
 
 class SideBar extends StatelessWidget {
   SideBar(this._mainButtons, this._settings, { Color color }):
-    this.color = color ?? Colors.brown[800];
+    this.color = color ?? Colors.brown[900];
 
-  static const _SIDE_BAR_WIDTH = 80.0;
+  static const _SIDE_BAR_WIDTH = 72.0;
 
   final List<SideBarItem> _mainButtons;
   final SideBarItem _settings;
@@ -28,7 +28,7 @@ class SideBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     width: _SIDE_BAR_WIDTH,
-    color: Colors.brown[800],
+    color: color,
     padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
     child: Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -72,7 +72,7 @@ class IconLabelButton extends StatelessWidget {
     final iconItem = Icon(
         icon,
         color: color,
-        size: 48.0,
+        size: 45.0,
       );
     final text = label == null ? null : Text(
         label,
