@@ -10,6 +10,8 @@ import '../components/home/route_favorite.dart';
 import '../components/home/route_history.dart';
 import '../components/home/route_configuration.dart';
 
+import '../store.dart';
+
 class HomeScreen extends StatefulWidget{
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -80,22 +82,30 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.only(top: 20.0),
-    color: _sbColor,
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[
-        SideBar(sbItemList, _sbSettings, color: _sbColor),
-        Expanded(
-          flex: 1,
-          child: Container(
-            child: currentWidget,
-            color: _bgColor,
+  Widget build(BuildContext context) {
+    if (globals.screenSize == null) {
+      globals.screenSize = MediaQuery.of(context).size;
+      final w = globals.screenSize.width;
+      globals.prevThreshold = w * 2 / 7;
+      globals.nextThreshold = w * 5 / 7;
+    }
+    return Container(
+      padding: const EdgeInsets.only(top: 20.0),
+      color: _sbColor,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          SideBar(sbItemList, _sbSettings, color: _sbColor),
+          Expanded(
+            flex: 1,
+            child: Container(
+              child: currentWidget,
+              color: _bgColor,
+            ),
           ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }

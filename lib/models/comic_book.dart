@@ -108,10 +108,10 @@ class ComicBook extends ComicCover {
         });
 
         for (var i = 1; i < groupChapterIdList.length; i += 1) {
-          final prevId = groupChapterIdList[i - 1];
-          final nextId = groupChapterIdList[i];
-          chapterMap[prevId].groupNextId = nextId;
-          chapterMap[nextId].groupPrevId = prevId;
+          final latterId = groupChapterIdList[i - 1];
+          final formerId = groupChapterIdList[i];
+          chapterMap[latterId].groupPrevId = formerId;
+          chapterMap[formerId].groupNextId = latterId;
         }
 
         groupedChapterIdListMap[groupName] = groupChapterIdList;
@@ -140,7 +140,8 @@ class ComicBook extends ComicCover {
 
   Map<String, dynamic> toJson() => {
     'as': authors,
-    'tags': tags,
+    'tns': tags,
+    'tks': tagSet.toList(),
     'intro': shortIntro,
     'ad': restricted,
   };
@@ -158,29 +159,33 @@ class ComicBook extends ComicCover {
     final r = await db.rawQuery('SELECT max_read_chapter_id FROM books WHERE $wc');
 
     if (r.isEmpty) {
-      return db.insert('books', {
+      await db.insert('books', {
         'book_id': lastChapterId,
         'cover_json': jsonEncode(this),
         'is_favorate': 0,
         'last_read_chapter_id': lastChapterId,
         'max_read_chapter_id': lastChapterId,
       });
+      return;
     }
 
     final int maxChapterId = r.first['max_read_chapter_id'];
     if (lastChapterId > maxChapterId) {
-      return db.update('books',
+      await db.update('books',
         {
+          'cover_json': jsonEncode(this),
           'last_read_chapter_id': lastChapterId,
           'max_read_chapter_id': lastChapterId,
         },
         where: wc,
       );
+      return;
     } else {
-      return db.update('books',
+      await db.update('books',
         { 'last_read_chapter_id': lastChapterId },
         where: wc,
       );
+      return;
     }
   }
 

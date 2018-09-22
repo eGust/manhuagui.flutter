@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter/material.dart';
 
 import 'models.dart';
 import 'api/remote_db.dart';
@@ -18,12 +19,14 @@ class Store {
   CacheManager cache;
   Set<int> favorateBookIdSet = Set();
   Set<String> blacklistSet = Set();
-  DateFormat _df;
+  static final DateFormat _df = DateFormat('yyyy-MM-dd');
+  static final DateFormat _tf = DateFormat('HH:mm');
+  Size screenSize;
+  double prevThreshold, nextThreshold;
 
-  String formatDate(DateTime date) {
-    _df = _df ?? DateFormat('yyyy-MM-dd');
-    return date == null ? '--' : _df.format(date);
-  }
+  String formatDate(DateTime date) => date == null ? '--' : _df.format(date);
+
+  String formatTimeHM(DateTime time) => time == null ? '--' : _tf.format(time);
 
   static const _META_DATA_KEY = 'websiteMetaData';
   static const _USER_KEY = 'user';
@@ -73,6 +76,9 @@ class Store {
   }
 
   Future<void> _openCache() async {
+    CacheManager.maxNrOfCacheObjects = 9999;
+    CacheManager.inBetweenCleans = const Duration(minutes: 5);
+    CacheManager.maxAgeCacheObject = const Duration(minutes: 10);
     cache = await CacheManager.getInstance();
   }
 
@@ -88,6 +94,7 @@ class Store {
 
     // sets
     favorateBookIdSet = Set.from(_loadStorageJson(_FAVORATES_KEY) ?? []);
+    // blacklistSet = Set.from(['danmei']);
     blacklistSet = Set.from(_loadStorageJson(_BLACKLIST) ?? []);
   }
 

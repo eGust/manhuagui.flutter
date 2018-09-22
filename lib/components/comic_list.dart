@@ -130,13 +130,13 @@ class _ComicListState extends State<ComicList> {
     });
   }
 
-  static const _NEXT_THRESH_HOLD = 2500.0; // > 10 items
+  static const _NEXT_THRESHOLD = 2500.0; // > 10 items
 
   @override
   void initState() {
     super.initState();
     _scroller.addListener(() {
-      if (_scroller.position.pixels + _NEXT_THRESH_HOLD > _scroller.position.maxScrollExtent) {
+      if (_scroller.position.pixels + _NEXT_THRESHOLD > _scroller.position.maxScrollExtent) {
         _nextPage();
       }
     });
