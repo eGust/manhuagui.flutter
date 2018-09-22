@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'utils.dart';
-import 'store.dart';
-import 'routes.dart';
-import 'api.dart';
+import './store.dart';
+import './routes.dart';
+import './api.dart';
 
 void main() async {
   log('main started');

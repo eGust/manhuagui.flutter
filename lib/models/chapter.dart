@@ -96,7 +96,7 @@ class Chapter {
   }
 }
 
-final _reExtractParams = new RegExp(
+final _reExtractParams = RegExp(
   r"\);return\s+\w+;}\(" +
   r"'[\w\.]+\(({[^']+?})\)\.\w+\(\);'" + // 'c.r( 111 ).M();'
   r",(\d+),\d+,'([^']+)'" + // , 222 ,67, ' 333 '

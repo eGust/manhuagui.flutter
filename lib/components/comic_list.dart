@@ -108,10 +108,10 @@ class _ComicListState extends State<ComicList> {
           ComicCoverRow(
             cover,
             onComicPressed: () {
-              Routes.navigateComic(context, cover);
+              RouteHelper.navigateComic(context, cover);
             },
             onAuthorPressed: (authorLink) {
-              Routes.navigateAuthor(context, authorLink);
+              RouteHelper.navigateAuthor(context, authorLink);
             },
           )
         )(covers[i]),

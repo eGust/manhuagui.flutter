@@ -11,7 +11,7 @@ import 'routes/reader_screen.dart';
 
 import './models.dart';
 
-class Routes {
+class RouteHelper {
   static Route<Widget> buildRoute(Widget screen) =>
     MaterialPageRoute(builder: (_) => Material(child: screen));
 

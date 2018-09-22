@@ -43,7 +43,7 @@ class ChapterTabs extends StatelessWidget {
                         ChapterButton(
                           comic.chapterMap[chId],
                           onPressed: (chapter) {
-                            Routes.navigateReader(context, ReaderHelper(comic, chapter));
+                            RouteHelper.navigateReader(context, ReaderHelper(comic, chapter));
                           },
                         )
                       ).toList(),

@@ -66,7 +66,7 @@ class CoverHeader extends StatelessWidget {
                       ),
                     ),
                     onTap: () {
-                      Routes.navigateAuthor(context, author);
+                      RouteHelper.navigateAuthor(context, author);
                     },
                   )
                 )).toList(),

@@ -97,7 +97,7 @@ class _HomeCover extends StatelessWidget {
             headers: { 'Referer': 'https://m.manhuagui.com' },
           ),
           onTap: () {
-            Routes.navigateComic(context, cover);
+            RouteHelper.navigateComic(context, cover);
           },
         ),
         Text(
