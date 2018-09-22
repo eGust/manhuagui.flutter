@@ -46,7 +46,13 @@ class AnimationHelper {
   static double circleSize, strokeWidth;
 
   Widget buildImageWidget(final File file)
-    => file != null ? Image.file(file) :
+    => file != null ?
+      Container(
+        child: Image.file(file,
+          fit: BoxFit.contain,
+          // scale: 1.0,
+        )
+      ) :
       Center(
         child: SizedBox(
           width: circleSize,

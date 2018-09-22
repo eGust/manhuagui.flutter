@@ -9,19 +9,11 @@ class ImageEntry {
   ImageEntry(final this.chapter, final this.page);
   final Chapter chapter;
   final int page;
-  File _file;
 
   @override
-  String toString() => '${chapter.title} ${page+1}/${chapter.pageCount}';
+  String toString() => '${chapter.title}  ${page+1} / ${chapter.pageCount}';
 
-  File get file => _file;
-
-  Future<File> loadFile() async {
-    if (_file == null) {
-      _file = await ReaderHelper.getCachedImageFile(chapter, page);
-    }
-    return _file;
-  }
+  Future<File> loadFile() => ReaderHelper.getCachedImageFile(chapter, page);
 }
 
 class ReaderHelper {
@@ -41,11 +33,19 @@ class ReaderHelper {
     }
   }
 
+  Chapter get prevChapter => comic.groupPrevOf(current);
+  Chapter get nextChapter => comic.groupNextOf(current);
+
   Future<void> updateCurrentChapter({ bool updateCover = false }) async {
-    await current.load();
+    final loading = current.load();
     comic.updateHistory(lastChapterId: current.chapterId, updateCover: updateCover);
-    comic.groupPrevOf(current)?.load();
-    comic.groupNextOf(current)?.load();
+    await loading;
+    prevChapter?.load();
+    nextChapter?.load();
+  }
+
+  void changeCurrent(final Chapter chapter) {
+    _current = chapter;
   }
 
   static const IMAGE_HEADERS = const { 'Referer': 'https://m.manhuagui.com' };
@@ -88,7 +88,7 @@ class ReaderHelper {
   Future<ImageEntry> getSiblingEntry(final int offset)
     => ready ? _findImageEntry(current, pageIndex + offset) : null;
 
-  void updateCurrentPage() {
+  void updateCurrentPageAndCacheSiblings() {
     current.updateHistory(pageIndex);
     CACHE_SIBLINGS.forEach(_cacheSiblingImageFile);
   }

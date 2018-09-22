@@ -69,11 +69,11 @@ class _ReaderScreenState extends State<ReaderScreen> with TickerProviderStateMix
 
     final file = await _currEntry.loadFile();
     if (!mounted) return;
+
     setState(() {
       _currentImage = file;
     });
-
-    helper.updateCurrentPage();
+    helper.updateCurrentPageAndCacheSiblings();
   }
 
   @override
@@ -97,6 +97,7 @@ class _ReaderScreenState extends State<ReaderScreen> with TickerProviderStateMix
   void _toggleReadMode() {
     setState(() {
       _reading = !_reading;
+      StatusBar.hidden = _reading;
     });
   }
 
@@ -130,6 +131,10 @@ class _ReaderScreenState extends State<ReaderScreen> with TickerProviderStateMix
   String get status => _currEntry == null ? '...' : _currEntry.toString();
   String get timestamp => globals.formatTimeHM(DateTime.now());
 
+  Offset _dragFrom, _dragTo;
+
+  static final disabledColor = Colors.grey[500];
+
   @override
   Widget build(BuildContext context) => WillPopScope(
     onWillPop: () async => !_preventBack,
@@ -145,10 +150,23 @@ class _ReaderScreenState extends State<ReaderScreen> with TickerProviderStateMix
           [
             GestureDetector(
               onHorizontalDragStart: (details) {
-                logd('onHorizontalDragStart ${details.globalPosition}');
+                _dragFrom = details.globalPosition;
               },
-              onHorizontalDragEnd: (details) {
-                logd('onHorizontalDragEnd ${details.velocity} ${details.primaryVelocity}');
+              onHorizontalDragUpdate: (details) {
+                _dragTo = details.globalPosition;
+              },
+              onHorizontalDragEnd: (_) {
+                final dx = _dragTo.dx - _dragFrom.dx;
+                final dy = _dragTo.dy - _dragFrom.dy;
+
+                if (dx.abs() < dy.abs() * 3 || dx.abs() < 40.0) return;
+                slidePage(dx > 0 ? 0 - 1 : 0 + 1);
+              },
+              onScaleStart: (details) {
+                logd('onScaleStart $details');
+              },
+              onScaleUpdate: (details) {
+                logd('onScaleUpdate $details');
               },
               onTapUp: (details) {
                 final x = details.globalPosition.dx;
@@ -167,9 +185,10 @@ class _ReaderScreenState extends State<ReaderScreen> with TickerProviderStateMix
                 padding: const EdgeInsets.fromLTRB(10.0, 1.0, 10.0, 1.0),
                 color: Color.fromARGB(200, 40, 40, 40),
                 child: Text(
-                  '$status $timestamp',
-                  style: TextStyle(
-                    color: Colors.white
+                  '$status  $timestamp',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12.0,
                   ),
                 ),
               ),
@@ -180,11 +199,12 @@ class _ReaderScreenState extends State<ReaderScreen> with TickerProviderStateMix
                 Container(
                   color: Color.fromARGB(200, 40, 40, 40),
                   height: 100.0,
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 10.0),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       TouchableIcon(
-                        Icons.arrow_back,
+                        Icons.arrow_back_ios,
                         color: Colors.white,
                         size: 32.0,
                         onPressed: () {
@@ -192,14 +212,121 @@ class _ReaderScreenState extends State<ReaderScreen> with TickerProviderStateMix
                           Navigator.pop(context);
                         },
                       ),
-                      Container(),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          Text(helper.comic.name,
+                            style: const TextStyle(
+                              fontSize: 20.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(status,
+                            style: const TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                      TouchableIcon(
+                        Icons.file_download,
+                        color: Colors.white,
+                        size: 32.0,
+                        onPressed: () {},
+                      ),
                     ],
                   ),
                 ),
                 Expanded(child: GestureDetector(onTap: _toggleReadMode)),
                 Container(
                   color: Color.fromARGB(200, 40, 40, 40),
-                  height: 100.0,
+                  height: 72.0,
+                  padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      TouchableIcon(
+                        Icons.fast_rewind,
+                        color: Colors.white,
+                        disabled: helper.prevChapter == null,
+                        disabledColor: disabledColor,
+                        size: 32.0,
+                        onPressed: () {
+                          helper.changeCurrent(helper.prevChapter);
+                          helper.pageIndex = 0;
+                          _open();
+                        },
+                      ),
+                      TouchableIcon(
+                        Icons.arrow_left,
+                        color: Colors.white,
+                        disabled: !_slidable(0 - 1),
+                        disabledColor: disabledColor,
+                        size: 32.0,
+                        onPressed: () {
+                          slidePage(0 - 1);
+                        },
+                      ),
+                      Expanded(
+                        child: Container(
+                          margin: const EdgeInsets.all(5.0),
+                          child: helper.current == null ? Container() :
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Text(
+                                  '${helper.pageIndex + 1} / ${helper.current.pageCount}',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15.0,
+                                  ),
+                                ),
+                                Slider(
+                                  divisions: helper.current.pageCount - 1,
+                                  min: 1.0,
+                                  max: (helper.current.pageCount).toDouble(),
+                                  value: (helper.pageIndex + 1).toDouble(),
+                                  activeColor: Colors.white,
+                                  inactiveColor: Colors.white,
+                                  onChangeEnd: (value) {
+                                    _nextImage = null;
+                                    _reloadImages();
+                                  },
+                                  onChanged: (value) {
+                                    setState(() {
+                                      helper.pageIndex = value.toInt() - 1;
+                                    });
+                                  },
+                                ),
+                              ]
+                            )
+                        ),
+                      ),
+                      TouchableIcon(
+                        Icons.arrow_right,
+                        color: Colors.white,
+                        disabled: !_slidable(0 + 1),
+                        disabledColor: disabledColor,
+                        size: 32.0,
+                        onPressed: () {
+                          slidePage(0 + 1);
+                        },
+                      ),
+                      TouchableIcon(
+                        Icons.fast_forward,
+                        color: Colors.white,
+                        disabled: helper.nextChapter == null,
+                        disabledColor: disabledColor,
+                        size: 32.0,
+                        onPressed: () {
+                          helper.changeCurrent(helper.nextChapter);
+                          helper.pageIndex = 0;
+                          _open();
+                        },
+                      ),
+                    ],
+                  )
                 ),
               ],
             ),

@@ -83,7 +83,8 @@ class _ComicListState extends State<ComicList> {
 
     final rawCovers = await stateManager.fetchNextPage();
     final covers = rawCovers.where((c) => !bookIds.contains(c.bookId)).toList();
-    await globals.updateCovers(Map.fromEntries(covers.map((c) => MapEntry(c.bookId, c))));
+    final coverMap = Map.fromEntries(covers.map((c) => MapEntry(c.bookId, c)));
+    await globals.updateCovers(coverMap);
 
     if (!mounted) return;
     setState(() {

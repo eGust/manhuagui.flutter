@@ -44,6 +44,14 @@ class Store {
     storage.setString(_USER_KEY, jsonEncode(user));
   }
 
+  static bool _isDebug = false;
+  static bool get isDebug => _isDebug;
+
+  static bool _debugOnly() {
+    _isDebug = true;
+    return true;
+  }
+
   Future<void> _loadStorage() async {
     storage = await SharedPreferences.getInstance();
   }
@@ -76,13 +84,20 @@ class Store {
   }
 
   Future<void> _openCache() async {
-    CacheManager.maxNrOfCacheObjects = 9999;
-    CacheManager.inBetweenCleans = const Duration(minutes: 5);
-    CacheManager.maxAgeCacheObject = const Duration(minutes: 10);
+    if (isDebug) {
+      CacheManager.maxNrOfCacheObjects = 9999;
+      CacheManager.inBetweenCleans = const Duration(minutes: 2);
+      CacheManager.maxAgeCacheObject = const Duration(minutes: 5);
+    } else {
+      CacheManager.maxNrOfCacheObjects = 9999;
+      CacheManager.inBetweenCleans = const Duration(days: 5);
+      CacheManager.maxAgeCacheObject = const Duration(days: 10);
+    }
     cache = await CacheManager.getInstance();
   }
 
   Future<void> initialize() async {
+    assert(_debugOnly());
     await _loadStorage();
     await Future.wait([
       _openRemoteDb(),
@@ -110,7 +125,7 @@ class Store {
       cover.loadJson(jsonDecode(json));
     });
     if (remoteDb != null) {
-      await remoteDb.updateCovers(coverMap.values);
+      await remoteDb.updateCovers(coverMap.values.toList());
     }
   }
 }

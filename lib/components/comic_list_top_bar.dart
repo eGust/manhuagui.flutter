@@ -37,7 +37,7 @@ class ComicListTopBar extends StatelessWidget {
                     margin: const EdgeInsets.only(left: 8.0, right: 2.0),
                     padding: const EdgeInsets.only(left: 3.0, right: 3.0),
                     child: _IconButton(
-                      Icons.arrow_back,
+                      Icons.arrow_back_ios,
                       onPressed: () { Navigator.pop(context); },
                     ),
                   ) : Container(),

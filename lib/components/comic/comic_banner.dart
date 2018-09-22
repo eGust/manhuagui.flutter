@@ -16,7 +16,7 @@ class ComicBanner extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         TouchableIcon(
-          Icons.arrow_back,
+          Icons.arrow_back_ios,
           size: 28.0,
           color: Colors.white,
           onPressed: () { Navigator.pop(context); },
