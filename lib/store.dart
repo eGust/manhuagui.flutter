@@ -6,8 +6,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter/material.dart';
 
-import 'models.dart';
-import 'api/remote_db.dart';
+import './models.dart';
+import './api.dart';
 import './config.dart';
 
 class Store {
@@ -95,16 +95,23 @@ class Store {
     // sets
     favorateBookIdSet = Set.from(_loadStorageJson(_FAVORATES_KEY) ?? []);
     // blacklistSet = Set.from(['danmei']);
-    blacklistSet = Set.from(_loadStorageJson(_BLACKLIST) ?? []);
+    blacklistSet = Set.from(_loadStorageJson(_BLACKLIST) ?? ['danmei']);
   }
 
-  Future<void> updateCovers(List<ComicCover> covers) async {
-    final updates = <Future>[
-      // TODO: load cover history from local storage
-    ];
-    if (remoteDb != null) updates.add(remoteDb.updateCovers(covers));
-    if (updates.isEmpty) return;
-    await Future.wait(updates);
+  Future<void> updateCovers(final Map<int, ComicCover> coverMap) async {
+    final books = await localDb.query('books',
+      columns: ['book_id', 'cover_json'],
+      where: 'book_id IN (${coverMap.keys.join(',')})',
+    );
+    books.forEach((book) {
+      final int id = book['book_id'];
+      final String json = book['cover_json'];
+      final cover = coverMap.remove(id);
+      cover.loadJson(jsonDecode(json));
+    });
+    if (remoteDb != null) {
+      await remoteDb.updateCovers(coverMap.values);
+    }
   }
 }
 

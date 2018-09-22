@@ -8,7 +8,7 @@ typedef AnimationFinished = void Function(int);
 class AnimationHelper {
   AnimationHelper(final TickerProviderStateMixin provider, final this.onAnimationFinished) {
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 580),
+      duration: const Duration(milliseconds: 200),
       vsync: provider,
     );
     animation = CurvedAnimation(

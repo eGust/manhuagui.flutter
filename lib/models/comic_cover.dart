@@ -120,4 +120,20 @@ class ComicCover {
   static Iterable<ComicCover> parseFavorate(Document doc) => doc
     .querySelectorAll('li > a')
     .map((a) => ComicCover.fromDesktopDom(a));
+
+  Map<String, dynamic> toJson() => {
+    'as': authors,
+    'tg': tags,
+    'ts': tagSet.toList(),
+    'in': shortIntro,
+    'ad': restricted,
+  };
+
+  void loadJson(Map<String, dynamic> json) {
+    authors = List.from((json['as'] as List).map((a) => AuthorLink.fromJson(a)));
+    tags = List.from(json['tg']);
+    tagSet = Set.from(json['ts']);
+    shortIntro = json['in'];
+    restricted = json['ad'];
+  }
 }

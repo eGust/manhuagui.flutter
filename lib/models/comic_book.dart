@@ -70,6 +70,7 @@ class ComicBook extends ComicCover {
             + content.querySelectorAll('.book-title > h2') )
             .map((link) => link.text.trim())
             .where((name) => name.length > 0).toList();
+    shortIntro = content.querySelector('#intro-cut').text;
     introduction = content.querySelectorAll('#intro-all > *')
       .map((p) => p.text.trim()).toList();
 
@@ -138,29 +139,14 @@ class ComicBook extends ComicCover {
       ).toStringAsFixed(1);
   }
 
-  Map<String, dynamic> toJson() => {
-    'as': authors,
-    'tns': tags,
-    'tks': tagSet.toList(),
-    'intro': shortIntro,
-    'ad': restricted,
-  };
-
-  void loadJson(Map<String, dynamic> json) {
-    authors = List.from((json['as'] as List).map((a) => AuthorLink.fromJson(a)));
-    tags = List.from(json['tags']);
-    shortIntro = json['intro'];
-    restricted = json['ad'];
-  }
-
-  Future<void> updateHistory({ int lastChapterId }) async {
+  Future<void> updateHistory({ final int lastChapterId, final bool updateCover = false }) async {
     final db = globals.localDb;
-    final wc = 'book_id = $lastChapterId';
+    final wc = 'book_id = $bookId';
     final r = await db.rawQuery('SELECT max_read_chapter_id FROM books WHERE $wc');
 
     if (r.isEmpty) {
       await db.insert('books', {
-        'book_id': lastChapterId,
+        'book_id': bookId,
         'cover_json': jsonEncode(this),
         'is_favorate': 0,
         'last_read_chapter_id': lastChapterId,
@@ -170,23 +156,14 @@ class ComicBook extends ComicCover {
     }
 
     final int maxChapterId = r.first['max_read_chapter_id'];
-    if (lastChapterId > maxChapterId) {
-      await db.update('books',
-        {
-          'cover_json': jsonEncode(this),
-          'last_read_chapter_id': lastChapterId,
-          'max_read_chapter_id': lastChapterId,
-        },
-        where: wc,
-      );
-      return;
-    } else {
-      await db.update('books',
-        { 'last_read_chapter_id': lastChapterId },
-        where: wc,
-      );
-      return;
-    }
+    final Map<String, dynamic> attrs = {
+      'last_read_chapter_id': lastChapterId,
+    };
+
+    if (updateCover) attrs['cover_json'] = jsonEncode(this);
+    if (lastChapterId > maxChapterId) attrs['max_read_chapter_id'] = lastChapterId;
+
+    await db.update('books', attrs, where: wc);
   }
 
   Future<void> update() =>

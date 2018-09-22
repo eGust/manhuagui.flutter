@@ -73,7 +73,7 @@ class _ReaderScreenState extends State<ReaderScreen> with TickerProviderStateMix
       _currentImage = file;
     });
 
-    helper.updateCurrent();
+    helper.updateCurrentPage();
   }
 
   @override

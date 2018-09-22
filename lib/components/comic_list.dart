@@ -45,12 +45,13 @@ class _ComicListState extends State<ComicList> {
 
   Future<void> _showFilterDialog({ bool isInitial = false }) async {
     final changed = await stateManager.showDialogChanged(context);
+    if (!mounted) return;
     if (changed || isInitial) _refresh();
     if (isInitial) stateManager.onInitialized();
   }
 
   Future<void> _refresh({ bool indicator = true }) async {
-    if (_fetching || !mounted) return;
+    if (!mounted || _fetching) return;
     setState(() {
       _indicator = indicator;
       stateManager.resetPageIndex();
@@ -82,7 +83,7 @@ class _ComicListState extends State<ComicList> {
 
     final rawCovers = await stateManager.fetchNextPage();
     final covers = rawCovers.where((c) => !bookIds.contains(c.bookId)).toList();
-    await globals.updateCovers(covers);
+    await globals.updateCovers(Map.fromEntries(covers.map((c) => MapEntry(c.bookId, c))));
 
     if (!mounted) return;
     setState(() {

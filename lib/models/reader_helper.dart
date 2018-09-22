@@ -37,9 +37,15 @@ class ReaderHelper {
     final diff = val.chapterId != val.chapterId;
     _current = val;
     if (diff) {
-      comic.groupPrevOf(val)?.load();
-      comic.groupNextOf(val)?.load();
+      updateCurrentChapter();
     }
+  }
+
+  Future<void> updateCurrentChapter({ bool updateCover = false }) async {
+    await current.load();
+    comic.updateHistory(lastChapterId: current.chapterId, updateCover: updateCover);
+    comic.groupPrevOf(current)?.load();
+    comic.groupNextOf(current)?.load();
   }
 
   static const IMAGE_HEADERS = const { 'Referer': 'https://m.manhuagui.com' };
@@ -82,7 +88,7 @@ class ReaderHelper {
   Future<ImageEntry> getSiblingEntry(final int offset)
     => ready ? _findImageEntry(current, pageIndex + offset) : null;
 
-  void updateCurrent() {
+  void updateCurrentPage() {
     current.updateHistory(pageIndex);
     CACHE_SIBLINGS.forEach(_cacheSiblingImageFile);
   }
@@ -93,16 +99,12 @@ class ReaderHelper {
 
   Future<void> openChapter() async {
     ready = false;
-    await current.load();
-    comic.updateHistory(lastChapterId: current.chapterId);
+    await updateCurrentChapter(updateCover: true);
 
     pageIndex ??= 0;
     if (pageIndex < 0) {
       pageIndex = current.pageCount + pageIndex;
     }
     ready = true;
-
-    comic.groupPrevOf(current)?.load();
-    comic.groupNextOf(current)?.load();
   }
 }
