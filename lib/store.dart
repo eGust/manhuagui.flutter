@@ -112,10 +112,8 @@ class Store {
       where: 'book_id IN (${coverMap.keys.join(',')})',
     );
     books.forEach((book) {
-      final int id = book['book_id'];
-      final String json = book['cover_json'];
-      final cover = coverMap.remove(id);
-      cover.loadJson(jsonDecode(json));
+      final cover = coverMap.remove(book['book_id']);
+      cover.loadJson(jsonDecode(book['cover_json']));
     });
     if (remoteDb != null) {
       await remoteDb.updateCovers(coverMap.values.toList());

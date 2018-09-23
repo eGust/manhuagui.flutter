@@ -14,7 +14,7 @@ class ComicCover {
 
   final int bookId;
   String name, lastChpTitle, score, updatedAt;
-  bool finished, restricted = false;
+  bool finished = false, restricted = false;
 
   List<AuthorLink> authors;
   List<String> tags;
@@ -126,6 +126,7 @@ class ComicCover {
     'ts': tagSet.toList(),
     'in': shortIntro,
     'ad': restricted,
+    'fi': finished,
   };
 
   void loadJson(Map<String, dynamic> json) {
@@ -134,5 +135,6 @@ class ComicCover {
     tagSet = Set.from(json['ts']);
     shortIntro = json['in'];
     restricted = json['ad'];
+    finished = json['fi'] ?? false;
   }
 }

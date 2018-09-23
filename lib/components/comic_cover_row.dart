@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
 
-import '../store.dart';
 import '../models.dart';
+import '../routes.dart';
 
 class ComicCoverRow extends StatelessWidget {
-  ComicCoverRow(this._cover, { this.onComicPressed, this.onAuthorPressed });
+  ComicCoverRow(this._cover, this._context);
 
-  final VoidCallback onComicPressed;
-  final AuthorLinkCallback onAuthorPressed;
+  void _pressedComic() {
+    RouteHelper.navigateComic(_context, _cover);
+  }
+
+  void _pressedAuthor(final AuthorLink author) {
+    RouteHelper.navigateAuthor(_context, author);
+  }
 
   Widget _wrapTouch(Widget w) => GestureDetector(
     child: w,
-    onTap: onComicPressed,
+    onTap: _pressedComic,
   );
 
   final ComicCover _cover;
+  final BuildContext _context;
+
   @override
   Widget build(BuildContext context) => _wrapTouch(Container(
     height: 242.0,
@@ -42,7 +49,7 @@ class ComicCoverRow extends StatelessWidget {
             Text(
               _cover.name,
               style: TextStyle(
-                fontSize: 20.0,
+                fontSize: 19.0,
                 color: _cover.restricted ? Colors.pink[600] : Colors.deepPurple[900],
               ),
             ),
@@ -51,14 +58,14 @@ class ComicCoverRow extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '[${_cover.finished ? '完结' : '连载'}] ${_cover.lastChpTitle}',
+                  '[${_cover.finished ? '完结' : '连载'}] ${_cover.lastChpTitle ?? ''}',
                   style: TextStyle(
-                    fontSize: 15.0,
+                    fontSize: 14.0,
                     color: _cover.finished ? Colors.red[800] : Colors.green[800],
                   ),
                 ),
                 Text(
-                  '更新 ${_cover.updatedAt}',
+                  _cover.updatedAt == null ? '' : '更新于 ${_cover.updatedAt}',
                   style: TextStyle(
                     fontSize: 14.0,
                   ),
@@ -71,7 +78,7 @@ class ComicCoverRow extends StatelessWidget {
                 Text(
                   '[无作者数据]',
                   style: TextStyle(
-                    fontSize: 18.0,
+                    fontSize: 17.0,
                     color: Colors.red[600],
                   ),
                 ),
@@ -81,13 +88,12 @@ class ComicCoverRow extends StatelessWidget {
                   child: Text(
                     author.name,
                     style: TextStyle(
-                      fontSize: 18.0,
+                      fontSize: 17.0,
                       color: Colors.lightBlue[900],
                     ),
                   ),
                   onTap: () {
-                    if (onAuthorPressed == null) return;
-                    onAuthorPressed(author);
+                    _pressedAuthor(author);
                   },
                 )
               )).toList(),
@@ -103,7 +109,7 @@ class ComicCoverRow extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '${_cover.restricted ? '*' : ''}${_cover.score}',
+                  '${_cover.restricted ? '*' : ''}${_cover.score ?? ''}',
                   style: TextStyle(
                     fontSize: 16.0,
                   ),
@@ -112,7 +118,7 @@ class ComicCoverRow extends StatelessWidget {
             ),
             // Introduction - short
             Container(
-              height: 100.0,
+              height: 96.0,
               padding: const EdgeInsets.only(top: 5.0),
               decoration: BoxDecoration(
                 border: Border(top: BorderSide(color: Colors.orange[100])),

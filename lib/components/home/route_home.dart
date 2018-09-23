@@ -73,21 +73,14 @@ class _RouteHomeState extends State<RouteHome> {
   @override
   Widget build(BuildContext context) => Column(
     children: <Widget>[
-      Container(
-        height: 36.0,
-        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-        color: Colors.brown[900],
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Container(),
-            BlacklistButton(!_blacklistDisabled, () {
-              setState(() {
-                _blacklistDisabled = !_blacklistDisabled;
-              });
-            }),
-          ],
-        )
+      TopBarFrame(
+        right: <Widget>[
+          BlacklistButton(!_blacklistDisabled, () {
+            setState(() {
+              _blacklistDisabled = !_blacklistDisabled;
+            });
+          })
+        ],
       ),
       Expanded(child: _groups.isEmpty ?
         Progressing(size: 120.0, strokeWidth: 10.0) :

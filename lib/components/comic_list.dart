@@ -5,7 +5,6 @@ import './progressing.dart';
 import './list_top_bar.dart';
 import './comic_cover_row.dart';
 import '../models.dart';
-import '../routes.dart';
 import '../store.dart';
 
 typedef ComicFilterSelected = void Function(String filter, String order);
@@ -99,17 +98,8 @@ class _ComicListState extends State<ComicList> {
       padding: const EdgeInsets.all(0.0),
       itemBuilder: (_, i) => i == count ?
         Progressing(visible: _indicator && _fetching) :
-        ((cover) =>
-          ComicCoverRow(
-            cover,
-            onComicPressed: () {
-              RouteHelper.navigateComic(context, cover);
-            },
-            onAuthorPressed: (authorLink) {
-              RouteHelper.navigateAuthor(context, authorLink);
-            },
-          )
-        )(covers[i]),
+        ComicCoverRow(covers[i], context)
+        ,
     );
   }
 

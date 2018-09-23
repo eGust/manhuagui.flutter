@@ -142,26 +142,27 @@ class ComicBook extends ComicCover {
   Future<void> updateHistory({ final int lastChapterId, final bool updateCover = false }) async {
     final db = globals.localDb;
     final wc = 'book_id = $bookId';
-    final r = await db.rawQuery('SELECT max_read_chapter_id FROM books WHERE $wc');
+    final r = await db.rawQuery('SELECT max_chapter_id FROM books WHERE $wc');
 
     if (r.isEmpty) {
       await db.insert('books', {
         'book_id': bookId,
+        'name': name,
         'cover_json': jsonEncode(this),
         'is_favorate': 0,
-        'last_read_chapter_id': lastChapterId,
-        'max_read_chapter_id': lastChapterId,
+        'last_chapter_id': lastChapterId,
+        'max_chapter_id': lastChapterId,
       });
       return;
     }
 
-    final int maxChapterId = r.first['max_read_chapter_id'];
+    final int maxChapterId = r.first['max_chapter_id'];
     final Map<String, dynamic> attrs = {
-      'last_read_chapter_id': lastChapterId,
+      'last_chapter_id': lastChapterId,
     };
 
     if (updateCover) attrs['cover_json'] = jsonEncode(this);
-    if (lastChapterId > maxChapterId) attrs['max_read_chapter_id'] = lastChapterId;
+    if (lastChapterId > maxChapterId) attrs['max_chapter_id'] = lastChapterId;
 
     await db.update('books', attrs, where: wc);
   }

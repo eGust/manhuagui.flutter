@@ -47,6 +47,8 @@ class User {
 
   String _cookie, _user, _password;
 
+  String get name => _user;
+
   String get cookie => _cookie;
   void _setCookie(String value) {
     _cookie = value;
@@ -69,7 +71,7 @@ class User {
     return r;
   }
 
-  Future<String> login({ String user, String password, bool remember }) async {
+  Future<String> login({ String user, String password, bool remember = true }) async {
     final data = await postJsonRaw(
       buildActionUrl(AjaxAction.login),
       body: { 'txtUserName': user, 'txtPassword': password },
@@ -80,8 +82,8 @@ class User {
       final String rawCookie = data['headers']['set-cookie'];
       c = _reCookie.firstMatch(rawCookie)[1];
       _setCookie(c);
+      _user = user;
       if (remember) {
-        _user = user;
         _password = password;
       }
     }

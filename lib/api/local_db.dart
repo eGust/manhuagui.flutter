@@ -20,10 +20,11 @@ class LocalDb {
     1: {
       'books': {
         'book_id': 'INTEGER PRIMARY KEY',
+        'name': 'TEXT',
         'cover_json': 'TEXT',
         'is_favorate': 'INTEGER',
-        'last_read_chapter_id': 'INTEGER',
-        'max_read_chapter_id': 'INTEGER',
+        'last_chapter_id': 'INTEGER',
+        'max_chapter_id': 'INTEGER',
       },
       'chapters': {
         'chapter_id': 'INTEGER PRIMARY KEY',
