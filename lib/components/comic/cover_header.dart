@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../models.dart';
-import '../../store.dart';
 import '../../routes.dart';
 
 class CoverHeader extends StatelessWidget {

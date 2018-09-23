@@ -104,7 +104,7 @@ class _DialogBodyState extends State<DialogBody> {
     });
   }
 
-  List<Widget> buildFilters(columnCount) => List.from<Widget>(
+  List<Widget> buildFilters(columnCount) => List.from(
     data.groups.map((fg) => FilterGroupList(
       fg,
       data.selected[fg.key],
