@@ -70,7 +70,7 @@ class ListTopBar extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _BlacklistButton(blacklistEnabled, onPressedBlacklist),
+                BlacklistButton(blacklistEnabled, onPressedBlacklist),
                 _IconButton(
                   Icons.search,
                   onPressed: () {},
@@ -79,7 +79,7 @@ class ListTopBar extends StatelessWidget {
             ) : Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _BlacklistButton(blacklistEnabled, onPressedBlacklist),
+                BlacklistButton(blacklistEnabled, onPressedBlacklist),
                 _IconButton(Icons.refresh, onPressed: onPressedRefresh),
                 _IconButton(Icons.vertical_align_top, onPressed: onPressedScrollTop),
               ],
@@ -94,8 +94,8 @@ class ListTopBar extends StatelessWidget {
   static const ICON_COLOR = Colors.white;
 }
 
-class _BlacklistButton extends StatelessWidget {
-  _BlacklistButton(this.enabled, this.onPressed);
+class BlacklistButton extends StatelessWidget {
+  BlacklistButton(this.enabled, this.onPressed);
 
   final bool enabled;
   final VoidCallback onPressed;

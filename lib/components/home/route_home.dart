@@ -6,6 +6,7 @@ import '../../api.dart';
 import '../../models.dart';
 import '../../routes.dart';
 import '../progressing.dart';
+import '../list_top_bar.dart';
 import './sub_router.dart';
 
 final _router = SubRouter(
@@ -25,7 +26,9 @@ class RouteHome extends StatefulWidget {
 class _RouteHomeState extends State<RouteHome> {
   static List<MapEntry<String, List<ComicCover>>> comicGroups;
   static DateTime _updated;
+
   List<MapEntry<String, List<ComicCover>>> _groups = comicGroups ?? [];
+  bool _blacklistDisabled = false;
 
   Future<void> _refresh() async {
     if (_updated != null && DateTime.now().difference(_updated).inSeconds < 100)
@@ -61,32 +64,61 @@ class _RouteHomeState extends State<RouteHome> {
     _refresh();
   }
 
+  bool _notInBlacklist(ComicCover cover) =>
+    _blacklistDisabled ||
+    cover.tagSet == null ||
+    globals.blacklistSet.intersection(cover.tagSet).isEmpty
+    ;
+
   @override
-  Widget build(BuildContext context) => _groups.isEmpty ?
-    Progressing(size: 120.0, strokeWidth: 10.0) :
-    ListView(
-      children: _groups.map(
-        (group) => Column(
+  Widget build(BuildContext context) => Column(
+    children: <Widget>[
+      Container(
+        height: 36.0,
+        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+        color: Colors.brown[900],
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Container(
-              padding: const EdgeInsets.only(top: 2.0, bottom: 2.0),
-              child: Text(group.key,
-                style: TextStyle(
-                  fontSize: 16.0,
-                ),
-              ),
-            ),
-            Container(
-              height: 307.0,
-              child: ListView(
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                children: group.value.map((c) => _HomeCover(c)).toList(),
-              ),
-            ),
+            Container(),
+            BlacklistButton(!_blacklistDisabled, () {
+              setState(() {
+                _blacklistDisabled = !_blacklistDisabled;
+              });
+            }),
           ],
         )
-      ).toList(),
+      ),
+      Expanded(child: _groups.isEmpty ?
+        Progressing(size: 120.0, strokeWidth: 10.0) :
+        ListView(
+          padding: const EdgeInsets.all(0.0),
+          children: _groups.map(
+            (group) => Column(
+              children: <Widget>[
+                Container(
+                  padding: const EdgeInsets.only(top: 2.0, bottom: 2.0),
+                  child: Text(group.key,
+                    style: TextStyle(
+                      fontSize: 16.0,
+                    ),
+                  ),
+                ),
+                Container(
+                  height: 307.0,
+                  child: ListView(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal,
+                    children: group.value.where(_notInBlacklist)
+                      .map((c) => _HomeCover(c)).toList(),
+                  ),
+                ),
+              ],
+            )
+          ).toList(),
+        ),
+      ),
+    ],
   );
 }
 
@@ -108,9 +140,12 @@ class _HomeCover extends StatelessWidget {
     child: Column(
       children: <Widget>[
         GestureDetector(
-          child: Image.network(
-            cover.getImageUrl(),
-            headers: { 'Referer': 'https://m.manhuagui.com' },
+          child: SizedBox.fromSize(
+            size: const Size(180.0, 240.0),
+            child: Image.network(
+              cover.getImageUrl(),
+              headers: { 'Referer': 'https://m.manhuagui.com' },
+            ),
           ),
           onTap: () {
             RouteHelper.navigateComic(context, cover);
@@ -127,10 +162,15 @@ class _HomeCover extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(
-              cover.lastChpTitle,
-              style: TextStyle(
-                fontSize: 12.0
+            Container(
+              width: 160.0,
+              child: Text(
+                cover.lastChpTitle,
+                overflow: TextOverflow.fade,
+                softWrap: false,
+                style: TextStyle(
+                  fontSize: 12.0
+                ),
               ),
             ),
             Text(

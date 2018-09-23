@@ -21,7 +21,7 @@ class ComicCoverRow extends StatelessWidget {
     padding: const EdgeInsets.only(right: 6.0),
     decoration: BoxDecoration(
       border: Border(bottom: BorderSide(color: Colors.orange[300])),
-      color: _cover.restricted ? Colors.pink[50] : Colors.transparent,
+      color: _cover.restricted ? Colors.pink[50] : Colors.yellow[100],
     ),
     child: Row(children: [
       SizedBox(

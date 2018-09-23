@@ -19,10 +19,7 @@ class HomeComicList extends StatelessWidget {
 
 class HomeComicListManager extends ComicListManagerBase {
   HomeComicListManager(this.router) :
-    this.filterSelector = globals.metaData.createComicSelector(
-      order: pathOrderMap[router.path],
-      blacklist: globals.blacklistSet
-    );
+    this.filterSelector = globals.metaData.createComicSelector(pathOrderMap[router.path]);
 
   final SubRouter router;
   final FilterSelector filterSelector;
@@ -64,7 +61,7 @@ class HomeComicListManager extends ComicListManagerBase {
 
   @override
   bool notInBlacklist(ComicCover cover) =>
-    cover.tagSet == null || filterSelector.blacklist.intersection(cover.tagSet).isEmpty;
+    cover.tagSet == null || globals.blacklistSet.intersection(cover.tagSet).isEmpty;
 
   @override
   bool get isLastPage => filterSelector.page == filterSelector.pageCount;
@@ -99,7 +96,6 @@ class HomeComicListManager extends ComicListManagerBase {
               if (_pinned) return;
               Navigator.pop(context, null);
             },
-            blacklist: filterSelector.blacklist,
           ),
         ],
       ),

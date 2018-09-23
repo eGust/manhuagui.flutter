@@ -22,7 +22,7 @@ void main() async {
   final meta = WebsiteMetaData();
   await meta.refresh();
   print(jsonEncode(meta));
-  final selector = meta.createComicSelector();
+  final selector = meta.createComicSelector(null);
   print("$selector");
 
   selector.selectFilter(link: 'japan');

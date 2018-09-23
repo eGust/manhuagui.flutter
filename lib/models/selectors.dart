@@ -41,15 +41,13 @@ class SelectorMeta {
 }
 
 class FilterSelector {
-  FilterSelector(this.basePath, this.meta, { String order, Iterable<String> blacklist })
+  FilterSelector(this.basePath, this.meta, { String order })
     : this.order = order ?? meta.orders.first.linkBase
-    , this.blacklist = Set.from(blacklist ?? [])
     ;
   final SelectorMeta meta;
   final String basePath;
 
   String order;
-  Set<String> blacklist;
   int page = 1;
   int pageCount;
 
