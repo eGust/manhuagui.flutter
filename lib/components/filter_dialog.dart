@@ -6,7 +6,7 @@ import '../models.dart';
 typedef _PinChanged = void Function(bool);
 
 class DialogTopBar extends StatefulWidget {
-  DialogTopBar(this.title, this.pinned, { this.onPinChanged });
+  DialogTopBar(this.title, { this.pinned = true, this.onPinChanged });
 
   final String title;
   final bool pinned;
@@ -34,7 +34,15 @@ class _DialogTopBarState extends State<DialogTopBar> {
   @override
   Widget build(BuildContext context) => Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
+    children: _onPinChanged == null ? [
+      Text(_title),
+      FlatButton(
+        child: Icon(Icons.check),
+        onPressed: () {
+          Navigator.pop(context, null);
+        },
+      ),
+    ] : [
       FlatButton(
         child: Icon(
           _pinned ? Icons.lock : Icons.lock_open,
@@ -55,12 +63,16 @@ class _DialogTopBarState extends State<DialogTopBar> {
 }
 
 class DialogBody extends StatefulWidget {
-  DialogBody(this.groups, this.selected, { this.onSelectedFilter, this.blacklist });
+  DialogBody(
+    this.groups, this.selected,
+    { this.onSelectedFilter, this.blacklist, this.orders }
+  );
 
   final Map<String, String> selected;
   final List<FilterGroup> groups;
   final VoidCallback onSelectedFilter;
   final Set<String> blacklist;
+  final List<Order> orders;
 
   @override
   _DialogBodyState createState() => _DialogBodyState(this);
@@ -68,9 +80,10 @@ class DialogBody extends StatefulWidget {
 
 class _DialogBodyState extends State<DialogBody> {
   _DialogBodyState(this.data);
+
   final DialogBody data;
 
-  void selectedFilter(FilterGroup group, String link) {
+  void _onSelectedFilter(FilterGroup group, String link) {
     final grp = group.key;
     setState(() {
       if (data.selected[grp] == link) {
@@ -83,13 +96,37 @@ class _DialogBodyState extends State<DialogBody> {
     if (data.onSelectedFilter != null) data.onSelectedFilter();
   }
 
-  @override
-  Widget build(BuildContext context) => Column(
-    children: data.groups.map((fg) => FilterGroupList(
+  void _onSelectedOrder(Displayable order) {
+    final newOrder = order.value;
+    if (data.selected['order'] == newOrder) return;
+    setState(() {
+      data.selected['order'] = newOrder;
+    });
+  }
+
+  List<Widget> buildFilters(columnCount) => List.from<Widget>(
+    data.groups.map((fg) => FilterGroupList(
       fg,
       data.selected[fg.key],
-      onSelectedFilter: selectedFilter,
+      onSelectedFilter: _onSelectedFilter,
       blacklist: data.blacklist,
-    )).toList(),
+      columnCount: columnCount,
+    ))
+  );
+
+  List<Widget> buildFiltersWithOrder() {
+    final list = buildFilters(7);
+    list.add(OrderSelectGroup(
+      selected: data.selected['order'],
+      orders: data.orders,
+      onSelected: _onSelectedOrder,
+    ));
+    return list;
+  }
+
+  @override
+  Widget build(BuildContext context) => Column(
+    children: data.orders == null ?
+      buildFilters(5) : buildFiltersWithOrder()
   );
 }

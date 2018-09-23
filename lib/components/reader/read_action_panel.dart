@@ -33,12 +33,12 @@ class _ReadActionPanelState extends State<ReadActionPanel> {
       if (dx.abs() < dy.abs() * 3 || dx.abs() < 40.0) return;
       onPressed(offset: dx > 0 ? 0 - 1 : 0 + 1);
     },
-    onScaleStart: (details) {
-      logd('onScaleStart $details');
-    },
-    onScaleUpdate: (details) {
-      logd('onScaleUpdate $details');
-    },
+    // onScaleStart: (details) {
+    //   logd('onScaleStart $details');
+    // },
+    // onScaleUpdate: (details) {
+    //   logd('onScaleUpdate $details');
+    // },
     onTapUp: (details) {
       final x = details.globalPosition.dx;
       if (x > globals.prevThreshold && x < globals.nextThreshold) {

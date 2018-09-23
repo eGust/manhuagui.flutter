@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models.dart';
+import '../store.dart';
 import '../components/comic/comic_banner.dart';
 import '../components/comic/cover_header.dart';
 import '../components/comic/chapter_tabs.dart';
@@ -38,7 +39,7 @@ class _ComicScreenState extends State<ComicScreen> {
 
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.only(top: 20.0),
+    padding: EdgeInsets.only(top: globals.statusBarHeight),
     color: comic.finished ? Colors.pink[900] : Colors.lightBlue[900],
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

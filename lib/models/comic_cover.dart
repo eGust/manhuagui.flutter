@@ -13,8 +13,7 @@ class ComicCover {
     ;
 
   final int bookId;
-  String name, lastChpTitle, score;
-  DateTime updatedAt;
+  String name, lastChpTitle, score, updatedAt;
   bool finished, restricted = false;
 
   List<AuthorLink> authors;
@@ -37,7 +36,7 @@ class ComicCover {
   String getImageUrl({CoverSize size = CoverSize.lg}) =>
     "https://cf.hamreus.com/cpic/${_coverSizeMap[size]}$bookId.jpg";
 
-  static final RegExp _reDate = RegExp(r'(\d{4}-\d{2}-\d{2})');
+  static final reDate = RegExp(r'(\d{4}-\d{2}-\d{2})');
 
   static ComicCover fromMobileDom(Element element) {
     final bookId = int.parse(element.attributes['href'].split('/')[2]);
@@ -64,7 +63,7 @@ class ComicCover {
       final dds = element.querySelectorAll('dl > dd');
       if (dds.isNotEmpty) {
         cc.lastChpTitle = dds[2].text;
-        cc.updatedAt = DateTime.parse(dds[3].text);
+        cc.updatedAt = dds[3].text;
         return;
       }
 
@@ -86,7 +85,7 @@ class ComicCover {
       .replaceAll('更新至', '').replaceAll('[完]', '');
 
     final update = element.querySelector('.updateon');
-    cc.updatedAt = DateTime.parse(_reDate.firstMatch(update.text).group(1));
+    cc.updatedAt = reDate.firstMatch(update.text).group(1);
     cc.score = update.querySelector('em').text;
     return cc;
   }
@@ -97,7 +96,7 @@ class ComicCover {
     cc.finished = status.querySelector('span.green') != null;
     cc.lastChpTitle = status.querySelector('a').text.trim();
 
-    cc.updatedAt = DateTime.parse(status.querySelectorAll('span.red').last.text.trim());
+    cc.updatedAt = status.querySelectorAll('span.red').last.text.trim();
     cc.score = element.nextElementSibling.querySelector('.score-avg strong').text;
     return cc;
   }

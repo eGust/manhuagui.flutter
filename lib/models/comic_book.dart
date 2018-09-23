@@ -55,7 +55,7 @@ class ComicBook extends ComicCover {
     // lastChpTitle, updatedAt, finished
     final status = content.querySelector('li.status');
     lastChpTitle = status.querySelector('a').text;
-    updatedAt = DateTime.parse(status.querySelectorAll('span.red').last.text);
+    updatedAt = status.querySelectorAll('span.red').last.text;
     finished = status.querySelector('.dgreen') != null;
 
     // rank, tags, authors, alias, introduction

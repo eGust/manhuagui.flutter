@@ -9,8 +9,12 @@ import '../../models.dart';
 
 typedef ComicFilterSelected = void Function(String filter, String order);
 
-class HomeComicList extends ComicList {
-  HomeComicList(SubRouter router): super(HomeComicListManager(router));
+class HomeComicList extends StatelessWidget {
+  HomeComicList(this.router);
+  final SubRouter router;
+
+  @override
+  Widget build(BuildContext context) => ComicList(HomeComicListManager(router));
 }
 
 class HomeComicListManager extends ComicListManagerBase {
@@ -81,7 +85,8 @@ class HomeComicListManager extends ComicListManagerBase {
       barrierDismissible: false,
       builder: (context) => SimpleDialog(
         title: DialogTopBar(
-          router.label, _pinned,
+          router.label,
+          pinned: _pinned,
           onPinChanged: (bool pinned) {
             _pinned = pinned;
           },

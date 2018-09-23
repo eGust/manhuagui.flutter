@@ -7,7 +7,7 @@ window["\x65\x76\x61\x6c"](function(p,a,c,k,e,d){e=function(c){return(c<a?"":e(p
 final reWord = RegExp(r'\b\w+\b');
 
 String decryptChapterData(String zippedJson, int base, String lzTable) {
-  final Map<String, String> dictTable = lzDecompressFromBase64(lzTable)
+  final dictTable = lzDecompressFromBase64(lzTable)
     .split('|').asMap()
     .map((index, value) {
       final str = int2str(index, base);
@@ -38,9 +38,9 @@ String int2str(int number, int base) {
 
 // logic translated from: https://github.com/pieroxy/lz-string
 
-final Map<int, String> _b64Base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".split('').asMap();
-
-final Map<String, int> _b64 = Map.fromIterables(_b64Base.values, _b64Base.keys);
+final _b64Base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
+                  .split('').asMap();
+final _b64 = Map.fromIterables(_b64Base.values, _b64Base.keys);
 
 String _lzDecompress(List<int> source, int resetValue) {
   final size = source.length;

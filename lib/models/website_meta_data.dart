@@ -12,6 +12,8 @@ abstract class Displayable {
   String get value;
 }
 
+typedef SelectedDisplayable = void Function(Displayable);
+
 class Filter extends Displayable {
   Filter({ this.title, this.link });
   final String title;

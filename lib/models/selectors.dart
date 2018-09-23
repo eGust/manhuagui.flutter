@@ -10,6 +10,7 @@ class SelectorMeta {
   SelectorMeta({ this.filterGroups, this.orders })
     : linkGroupMap = _buildLinkGroupMap(filterGroups)
     , linkTitleMap = _buildLinkTitleMap(filterGroups)
+    , orderMap = Map.fromEntries(orders.map((order) => MapEntry(order.linkBase, order)))
     ;
 
   static Map<String, String> _buildLinkGroupMap(List<FilterGroup> filterGroups) {
@@ -35,6 +36,7 @@ class SelectorMeta {
   final List<FilterGroup> filterGroups;
   // final Map<String, FilterGroup> groupMap;
   final List<Order> orders;
+  final Map<String, Order> orderMap;
   final Map<String, String> linkGroupMap, linkTitleMap;
 }
 
@@ -52,6 +54,8 @@ class FilterSelector {
   int pageCount;
 
   Map<String, String> filters = {};
+
+  Order get currentOrder => meta.orderMap[order];
 
   void selectFilter({ String link, String group }) {
     if (link == null) {
@@ -84,6 +88,8 @@ class FilterSelector {
     pageCount ??= parsePageCount(doc);
     return doc;
   }
+
+  bool get isLastPage => page == pageCount;
 
   @override
   String toString() => fullPath;

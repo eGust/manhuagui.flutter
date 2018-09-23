@@ -39,7 +39,7 @@ class CoverHeader extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '更新 ${globals.formatDate(comic.updatedAt)}',
+                    '更新 ${comic.updatedAt}',
                     style: TextStyle(
                       fontSize: 14.0,
                     ),

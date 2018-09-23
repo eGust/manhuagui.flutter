@@ -2,29 +2,37 @@ import 'package:flutter/material.dart';
 
 import './touchable_icon.dart';
 
-class ComicListTopBar extends StatelessWidget {
-  ComicListTopBar({
+class ListTopBar extends StatelessWidget {
+  static const MIDDLE_TEXT_STYLE = TextStyle(color: Colors.white, fontSize: 17.0);
+
+  ListTopBar({
     this.onPressedScrollTop,
     this.onPressedFilters,
     this.onPressedRefresh,
     this.onPressedBlacklist,
     String filtersTitle,
-    this.listTitle,
+    String listTitle,
+    Widget child,
     this.isScreen = false,
-    this.enabledBlacklist = true,
-  }): this.filtersTitle = filtersTitle ?? '';
+    this.blacklistEnabled = true,
+  }): this.filtersTitle = filtersTitle ?? ''
+    , middle = child ?? (listTitle == null ?
+        const Text('') : Text(listTitle, style: MIDDLE_TEXT_STYLE)
+      )
+    ;
 
   final VoidCallback onPressedScrollTop, onPressedFilters, onPressedBlacklist, onPressedRefresh;
-  final String filtersTitle, listTitle;
-  final bool isScreen, enabledBlacklist;
+  final String filtersTitle;
+  final Widget middle;
+  final bool isScreen, blacklistEnabled;
 
   @override
-  Widget build(BuildContext context) =>
-    GestureDetector(
+  Widget build(BuildContext context) => Container(
+    child: GestureDetector(
       onTap: onPressedScrollTop,
       child: Container(
-        height: isScreen ? 56.0 : 36.0,
-        padding: isScreen ? const EdgeInsets.only(top: 20.0) : null,
+        height: 36.0,
+        padding: const EdgeInsets.only(left: 10.0, right: 10.0),
         color: Colors.brown[900],
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -33,13 +41,9 @@ class ComicListTopBar extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  isScreen ? Container(
-                    margin: const EdgeInsets.only(left: 8.0, right: 2.0),
-                    padding: const EdgeInsets.only(left: 3.0, right: 3.0),
-                    child: _IconButton(
-                      Icons.arrow_back_ios,
-                      onPressed: () { Navigator.pop(context); },
-                    ),
+                  isScreen ? _IconButton(
+                    Icons.arrow_back_ios,
+                    onPressed: () { Navigator.pop(context); },
                   ) : Container(),
                   FlatButton(
                     child: Row(
@@ -61,38 +65,30 @@ class ComicListTopBar extends StatelessWidget {
                 ],
               ),
             ),
-            Text(
-              listTitle ?? '',
-              style: TextStyle(color: Colors.amber[300], fontSize: 17.0),
-            ),
+            middle,
             isScreen ?
-            Container(
-              width: 150.0,
-              padding: const EdgeInsets.only(left: 40.0, right: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _BlacklistButton(enabledBlacklist, onPressedBlacklist),
-                  _IconButton(
-                    Icons.search,
-                    onPressed: () { Navigator.pop(context); }),
-                ],
-              ),
-            ) : Container(
-              width: 150.0,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _BlacklistButton(enabledBlacklist, onPressedBlacklist),
-                  _IconButton(Icons.refresh, onPressed: onPressedRefresh),
-                  _IconButton(Icons.vertical_align_top, onPressed: onPressedScrollTop),
-                ],
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _BlacklistButton(blacklistEnabled, onPressedBlacklist),
+                _IconButton(
+                  Icons.search,
+                  onPressed: () {},
+                ),
+              ],
+            ) : Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _BlacklistButton(blacklistEnabled, onPressedBlacklist),
+                _IconButton(Icons.refresh, onPressed: onPressedRefresh),
+                _IconButton(Icons.vertical_align_top, onPressed: onPressedScrollTop),
+              ],
             ),
           ],
         ),
       )
-    );
+    ),
+  );
 
   static const ICON_SIZE = 28.0;
   static const ICON_COLOR = Colors.white;
@@ -105,19 +101,21 @@ class _BlacklistButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   @override
-  Widget build(BuildContext context) => TouchableIcon(
-    enabled ? Icons.blur_off : Icons.blur_on,
-    size: ComicListTopBar.ICON_SIZE,
-    color: enabled ? Colors.red[200] : ComicListTopBar.ICON_COLOR,
-    onPressed: onPressed,
-  );
+  Widget build(BuildContext context) => onPressed == null ?
+    Container() :
+    TouchableIcon(
+      enabled ? Icons.blur_off : Icons.blur_on,
+      size: ListTopBar.ICON_SIZE,
+      color: enabled ? Colors.red[200] : ListTopBar.ICON_COLOR,
+      onPressed: onPressed,
+    );
 }
 
 class _IconButton extends StatelessWidget {
   _IconButton(this.icon, {
     Color color,
     this.onPressed,
-  }) : this.color = color ?? ComicListTopBar.ICON_COLOR;
+  }) : this.color = color ?? ListTopBar.ICON_COLOR;
 
   final IconData icon;
   final Color color;
@@ -126,7 +124,7 @@ class _IconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => TouchableIcon(
     icon,
-    size: ComicListTopBar.ICON_SIZE,
+    size: ListTopBar.ICON_SIZE,
     color: color,
     onPressed: onPressed,
   );

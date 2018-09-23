@@ -8,8 +8,22 @@ import '../models.dart';
 
 typedef ComicFilterSelected = void Function(String filter, String order);
 
-class AuthorScreen extends ComicList {
-  AuthorScreen(AuthorLink author): super(AuthorComicListManager(author));
+class AuthorScreen extends StatelessWidget {
+  AuthorScreen(this.author);
+  final AuthorLink author;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    children: <Widget>[
+      Container(
+        color: Colors.brown[900],
+        height: globals.statusBarHeight,
+      ),
+      Expanded(
+        child: ComicList(AuthorComicListManager(author)),
+      )
+    ],
+  );
 }
 
 class AuthorComicListManager extends ComicListManagerBase {
@@ -73,8 +87,8 @@ class AuthorComicListManager extends ComicListManagerBase {
         ),
         children: [
           Row(children: orderList.map((order) =>
-            FilterButton(
-              filter: order,
+            DisplayableButton(
+              item: order,
               selected: order == oldOrder,
               onPressed: () {
                 Navigator.pop(context, order);

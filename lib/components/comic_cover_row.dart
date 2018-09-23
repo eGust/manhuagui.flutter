@@ -58,7 +58,7 @@ class ComicCoverRow extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '更新 ${globals.formatDate(_cover.updatedAt)}',
+                  '更新 ${_cover.updatedAt}',
                   style: TextStyle(
                     fontSize: 14.0,
                   ),

@@ -25,7 +25,7 @@ class RouteHome extends StatefulWidget {
 class _RouteHomeState extends State<RouteHome> {
   static List<MapEntry<String, List<ComicCover>>> comicGroups;
   static DateTime _updated;
-  var _groups = comicGroups ?? [];
+  List<MapEntry<String, List<ComicCover>>> _groups = comicGroups ?? [];
 
   Future<void> _refresh() async {
     if (_updated != null && DateTime.now().difference(_updated).inSeconds < 100)
@@ -36,9 +36,17 @@ class _RouteHomeState extends State<RouteHome> {
     final grps = doc.querySelectorAll('.bar + .main-list').map((el) => MapEntry(
       el.previousElementSibling.querySelector('h2').text,
       el.querySelectorAll('li > a').map((a) => ComicCover.fromMobileDom(a)).toList()
-    )).toList();
-    final covers = grps.map((g) => g.value).expand((List<ComicCover> i) => i).toList();
-    await globals.remoteDb?.updateCovers(covers);
+    )).toList().reversed.toList();
+    final covers = Map.fromEntries(
+      grps.map((g) => g.value).expand((i) => i).map((c) => MapEntry(c.bookId, c))
+    );
+
+    if (!mounted) return;
+    setState(() {
+      _groups = grps;
+    });
+
+    await globals.updateCovers(covers);
     comicGroups = grps;
 
     if (!mounted) return;
@@ -55,12 +63,19 @@ class _RouteHomeState extends State<RouteHome> {
 
   @override
   Widget build(BuildContext context) => _groups.isEmpty ?
-    Progressing(size: 180.0, strokeWidth: 16.0) :
+    Progressing(size: 120.0, strokeWidth: 10.0) :
     ListView(
       children: _groups.map(
         (group) => Column(
           children: <Widget>[
-            Text(group.key),
+            Container(
+              padding: const EdgeInsets.only(top: 2.0, bottom: 2.0),
+              child: Text(group.key,
+                style: TextStyle(
+                  fontSize: 16.0,
+                ),
+              ),
+            ),
             Container(
               height: 307.0,
               child: ListView(
@@ -86,8 +101,9 @@ class _HomeCover extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    margin: const EdgeInsets.all(3.0),
+    margin: const EdgeInsets.only(left: 3.0, right: 3.0),
     padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+    color: cover.restricted ? Colors.pink[50] : Colors.yellow[100],
     width: 210.0,
     child: Column(
       children: <Widget>[
@@ -105,7 +121,7 @@ class _HomeCover extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             color: color,
-            fontSize: 15.0,
+            fontSize: 14.0,
           ),
         ),
         Row(
@@ -114,7 +130,7 @@ class _HomeCover extends StatelessWidget {
             Text(
               cover.lastChpTitle,
               style: TextStyle(
-                fontSize: 13.0
+                fontSize: 12.0
               ),
             ),
             Text(

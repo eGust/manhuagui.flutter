@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import './progressing.dart';
-import './comic_list_top_bar.dart';
+import './list_top_bar.dart';
 import './comic_cover_row.dart';
 import '../models.dart';
 import '../routes.dart';
@@ -60,11 +60,6 @@ class _ComicListState extends State<ComicList> {
       _fetching = true;
     });
     await _fetchNextPage();
-  }
-
-  void _nextPage() {
-    if (_fetching || !mounted) return;
-    _fetchNextPage();
   }
 
   void _scrollToTop() {
@@ -139,7 +134,8 @@ class _ComicListState extends State<ComicList> {
     super.initState();
     _scroller.addListener(() {
       if (_scroller.position.pixels + _NEXT_THRESHOLD > _scroller.position.maxScrollExtent) {
-        _nextPage();
+        if (_fetching || !mounted) return;
+        _fetchNextPage();
       }
     });
     stateManager.reset();
@@ -155,9 +151,9 @@ class _ComicListState extends State<ComicList> {
   @override
   Widget build(BuildContext context) => Column(
     children: <Widget>[
-      ComicListTopBar(
+      ListTopBar(
         isScreen: stateManager.isScreen,
-        enabledBlacklist: _blacklistEnabled,
+        blacklistEnabled: _blacklistEnabled,
         listTitle: stateManager.listTitle,
         filtersTitle: stateManager.filtersTitle,
         onPressedScrollTop: _scrollToTop,

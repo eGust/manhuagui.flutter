@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
   static final _sbColor = Colors.brown[900];
-  static final _bgColor = Colors.yellow[100];
+  static final _bgColor = Colors.yellow[50];
 
   @override
   void initState() {
@@ -84,13 +84,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     if (globals.screenSize == null) {
+      globals.statusBarHeight = MediaQuery.of(context).padding.top;
       globals.screenSize = MediaQuery.of(context).size;
+
       final w = globals.screenSize.width;
       globals.prevThreshold = w * 2 / 7;
       globals.nextThreshold = w * 5 / 7;
     }
+
     return Container(
-      padding: const EdgeInsets.only(top: 20.0),
+      padding: EdgeInsets.only(top: globals.statusBarHeight),
       color: _sbColor,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -19,13 +19,13 @@ class Store {
   CacheManager cache;
   Set<int> favorateBookIdSet = Set();
   Set<String> blacklistSet = Set();
-  static final DateFormat _df = DateFormat('yyyy-MM-dd');
-  static final DateFormat _tf = DateFormat('HH:mm');
+  static final _df = DateFormat('yyyy-MM-dd');
+  static final _tf = DateFormat('HH:mm');
   Size screenSize;
+  double statusBarHeight = 20.0;
   double prevThreshold, nextThreshold;
 
   String formatDate(DateTime date) => date == null ? '--' : _df.format(date);
-
   String formatTimeHM(DateTime time) => time == null ? '--' : _tf.format(time);
 
   static const _META_DATA_KEY = 'websiteMetaData';
@@ -44,13 +44,7 @@ class Store {
     storage.setString(_USER_KEY, jsonEncode(user));
   }
 
-  static bool _isDebug = false;
-  static bool get isDebug => _isDebug;
-
-  static bool _debugOnly() {
-    _isDebug = true;
-    return true;
-  }
+  static bool get isDebug => Logger.isDebug;
 
   Future<void> _loadStorage() async {
     storage = await SharedPreferences.getInstance();
@@ -97,7 +91,6 @@ class Store {
   }
 
   Future<void> initialize() async {
-    assert(_debugOnly());
     await _loadStorage();
     await Future.wait([
       _openRemoteDb(),

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
 enum LogLevel { info, debug, warning, error }
-
 enum TimestampStyle { timeOnly, noYear, dateTime }
 
-final Map<TimestampStyle, int> sliceStart = {
+final sliceStart = {
   TimestampStyle.dateTime:  0,
   TimestampStyle.noYear:    5,
   TimestampStyle.timeOnly:  11,
@@ -34,10 +33,19 @@ void _logError(LogLevel _, String msg, TimestampStyle s) {
 typedef void LogFunc(LogLevel level, String msg, TimestampStyle s);
 
 class Logger {
-  LogLevel level = LogLevel.debug;
+  static bool _checkDebug() {
+    var result = false;
+    assert(() {
+      result = true;
+      return true;
+    }());
+    return result;
+  }
+  static final isDebug = _checkDebug();
+  LogLevel level = isDebug ? LogLevel.warning : LogLevel.debug;
   TimestampStyle style = TimestampStyle.timeOnly;
 
-  static final Map<LogLevel, LogFunc> _logFuncs = {
+  static final _logFuncs = {
     LogLevel.info:    _logInfo,
     LogLevel.debug:   _logDebug,
     LogLevel.warning: _logWarning,
