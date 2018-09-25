@@ -31,7 +31,7 @@ class _RouteAuthorState extends State<RouteAuthor> {
     final filters = Map<String, String>.from(filterSelector.filters);
     filters['order'] = filterSelector.order;
 
-    await showDialog<String>(
+    await showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (context) => SimpleDialog(

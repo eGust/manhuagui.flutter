@@ -90,6 +90,10 @@ class User {
     return c;
   }
 
+  void logout() {
+    _cookie = null;
+  }
+
   Future<bool> _favorate(int bookId, AjaxAction action) async {
     if (!isLogin) return null;
 

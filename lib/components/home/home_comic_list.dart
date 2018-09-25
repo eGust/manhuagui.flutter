@@ -77,7 +77,7 @@ class HomeComicListManager extends ComicListManagerBase {
   Future<bool> showDialogChanged(BuildContext context) async {
     final filters = Map<String, String>.from(filterSelector.filters);
 
-    await showDialog<String>(
+    await showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (context) => SimpleDialog(
@@ -94,7 +94,7 @@ class HomeComicListManager extends ComicListManagerBase {
             filters,
             onSelectedFilter: () {
               if (_pinned) return;
-              Navigator.pop(context, null);
+              Navigator.pop(context);
             },
           ),
         ],
