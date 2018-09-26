@@ -48,7 +48,7 @@ class Chapter {
 
   Future<void> _refresh() async {
     _refreshing = true;
-    final doc = await fetchDom('$PROTOCOL://$DOMAIN$path');
+    final doc = await fetchDom('$PROTOCOL://$DOMAIN$path', headers: globals.user.cookieHeaders);
     final m = _reExtractParams.firstMatch(doc.querySelector('script:not([src])').text);
     final json = decryptChapterData(m[1], int.parse(m[2]), m[3]);
     final chapter = jsonDecode(json);

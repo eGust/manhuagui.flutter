@@ -22,7 +22,6 @@ class LocalDb {
         'book_id': 'INTEGER PRIMARY KEY',
         'name': 'TEXT',
         'cover_json': 'TEXT',
-        'is_favorate': 'INTEGER',
         'last_chapter_id': 'INTEGER',
         'max_chapter_id': 'INTEGER',
       },

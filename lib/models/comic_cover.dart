@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'package:html/dom.dart';
 
 import './author.dart';
@@ -7,14 +6,16 @@ enum CoverSize { min, xs, sm, md, lg, xl, max }
 
 class ComicCover {
   ComicCover(this.bookId, this.name);
-  ComicCover.fromLinkAttrs(LinkedHashMap<dynamic, String> linkAttrs)
-    : this.bookId = int.parse(linkAttrs['href'].split('/')[2])
-    , this.name = linkAttrs['title']
-    ;
+  static ComicCover fromLink(Element link) {
+    final attrs = link.attributes;
+    final bookId = int.parse(attrs['href'].split('/')[2]);
+    final name = attrs['title'];
+    return ComicCover(bookId, name);
+  }
 
   final int bookId;
   String name, lastChpTitle, score, updatedAt;
-  bool finished = false, restricted = false;
+  bool finished = false, restricted = false, isFavorite = false;
 
   List<AuthorLink> authors;
   List<String> tags;
@@ -79,7 +80,7 @@ class ComicCover {
 
   static ComicCover fromDesktopDom(Element element) {
     final cover = element.querySelector('a.bcover');
-    final cc = ComicCover.fromLinkAttrs(cover.attributes);
+    final cc = ComicCover.fromLink(cover);
     cc.finished = cover.querySelectorAll('.sl').isEmpty;
     cc.lastChpTitle = cover.querySelector('.tt').text
       .replaceAll('更新至', '').replaceAll('[完]', '');
@@ -91,7 +92,7 @@ class ComicCover {
   }
 
   static ComicCover fromAuthorDom(Element element) {
-    final cc = ComicCover.fromLinkAttrs(element.querySelector('dt > a').attributes);
+    final cc = ComicCover.fromLink(element.querySelector('dt > a'));
     final status = element.querySelector('dd.status');
     cc.finished = status.querySelector('span.green') != null;
     cc.lastChpTitle = status.querySelector('a').text.trim();
@@ -101,24 +102,17 @@ class ComicCover {
     return cc;
   }
 
-  static ComicCover fromDomAuto(Element element) {
-    if (element.localName == 'a') return fromMobileDom(element);
-    if (element.localName == 'li') return fromDesktopDom(element);
-    if (element.className.contains('book-detail')) fromDesktopDom(element);
-    return null;
-  }
-
   static Iterable<ComicCover> parseDesktop(Document doc) => doc
     .querySelectorAll('ul#contList > li')
-    .map((li) => ComicCover.fromDesktopDom(li));
+    .map(ComicCover.fromDesktopDom);
 
   static Iterable<ComicCover> parseAuthor(Document doc) => doc
     .querySelectorAll('.book-result ul li .book-detail')
-    .map((detail) => ComicCover.fromAuthorDom(detail));
+    .map(ComicCover.fromAuthorDom);
 
-  static Iterable<ComicCover> parseFavorate(Document doc) => doc
+  static Iterable<ComicCover> parseFavorite(Document doc) => doc
     .querySelectorAll('li > a')
-    .map((a) => ComicCover.fromDesktopDom(a));
+    .map(ComicCover.fromMobileDom);
 
   Map<String, dynamic> toJson() => {
     'as': authors,

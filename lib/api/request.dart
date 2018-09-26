@@ -9,6 +9,11 @@ Future<Document> fetchDom(String url, { Map<String, String> headers }) async {
   return parse(html);
 }
 
+Future<Document> fetchAjaxDom(String url, { Map<String, String> headers }) async {
+  final html = await http.read(url, headers: headers);
+  return parse('<html>$html</html>');
+}
+
 Future<Map<String, dynamic>> getJson(String url, { Map<String, String> headers }) async {
   final json = await http.read(url, headers: headers);
   return jsonDecode(json);

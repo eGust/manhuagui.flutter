@@ -17,7 +17,7 @@ class Store {
   RemoteDb remoteDb;
   Database localDb;
   CacheManager cache;
-  Set<int> favorateBookIdSet = Set();
+  Set<int> favoriteBookIdSet = Set();
   Set<String> blacklistSet = Set();
   static final _df = DateFormat('yyyy-MM-dd');
   static final _tf = DateFormat('HH:mm');
@@ -30,7 +30,7 @@ class Store {
 
   static const _META_DATA_KEY = 'websiteMetaData';
   static const _USER_KEY = 'user';
-  static const _FAVORATES_KEY = 'favorates';
+  static const _FAVORITES_KEY = 'favorites';
   static const _BLACKLIST = 'blacklist';
 
   Future<void> refreshMetaData() async {
@@ -39,7 +39,7 @@ class Store {
 
   void save() {
     storage.setString(_META_DATA_KEY, jsonEncode(metaData));
-    storage.setString(_FAVORATES_KEY, jsonEncode(favorateBookIdSet.toList()));
+    storage.setString(_FAVORITES_KEY, jsonEncode(favoriteBookIdSet.toList()));
     storage.setString(_BLACKLIST, jsonEncode(blacklistSet.toList()));
     storage.setString(_USER_KEY, jsonEncode(user));
   }
@@ -101,12 +101,15 @@ class Store {
     ]);
 
     // sets
-    favorateBookIdSet = Set.from(_loadStorageJson(_FAVORATES_KEY) ?? []);
+    favoriteBookIdSet = Set.from(_loadStorageJson(_FAVORITES_KEY) ?? []);
     // blacklistSet = Set.from(['danmei']);
     blacklistSet = Set.from(_loadStorageJson(_BLACKLIST) ?? ['danmei']);
   }
 
   Future<void> updateCovers(final Map<int, ComicCover> coverMap) async {
+    coverMap.values.forEach((cover) {
+      cover.isFavorite = favoriteBookIdSet.contains(cover.bookId);
+    });
     final books = await localDb.query('books',
       columns: ['book_id', 'cover_json'],
       where: 'book_id IN (${coverMap.keys.join(',')})',
@@ -115,8 +118,22 @@ class Store {
       final cover = coverMap.remove(book['book_id']);
       cover.loadJson(jsonDecode(book['cover_json']));
     });
+
     if (remoteDb != null) {
       await remoteDb.updateCovers(coverMap.values.toList());
+    }
+  }
+
+  Future<void> syncFavorites() async {
+    final remote = await user.getAllFavorites();
+    final toSync = favoriteBookIdSet.difference(remote).toList();
+
+    favoriteBookIdSet.addAll(remote);
+    save();
+    for (var bookId in toSync) {
+      await Future.delayed(const Duration(milliseconds: 2500), () {});
+      if (!user.isLogin) return;
+      await user.addFavorite(bookId);
     }
   }
 }

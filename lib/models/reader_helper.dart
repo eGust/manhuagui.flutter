@@ -99,7 +99,7 @@ class ReaderHelper {
 
   Future<void> openChapter() async {
     ready = false;
-    await updateCurrentChapter(updateCover: true);
+    await updateCurrentChapter(updateCover: !comic.isFavorite);
 
     pageIndex ??= 0;
     if (pageIndex < 0) {

@@ -24,6 +24,7 @@ class _ComicScreenState extends State<ComicScreen> {
   void _refresh() async {
     final book = ComicBook.fromCover(comic);
     await book.update();
+    book.updateFavorite();
     if (!mounted) return;
 
     setState(() {

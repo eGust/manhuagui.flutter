@@ -28,6 +28,7 @@ class ComicBook extends ComicCover {
     score = cover.score;
     updatedAt = cover.updatedAt;
 
+    isFavorite = cover.isFavorite;
     finished = cover.finished;
     restricted = cover.restricted;
     shortIntro = cover.shortIntro;
@@ -48,7 +49,7 @@ class ComicBook extends ComicCover {
   String get voteUrl => 'http://www.manhuagui.com/tools/vote.ashx?act=get&bid=$bookId';
 
   Future<void> _updateMain() async {
-    var doc = await fetchDom(url);
+    var doc = await fetchDom(url, headers: globals.user.cookieHeaders);
     final content = doc.querySelector('.book-cont');
     if (name == null) name = content.querySelector('.book-title > h1').text;
 
@@ -139,6 +140,21 @@ class ComicBook extends ComicCover {
       ).toStringAsFixed(1);
   }
 
+  Future<void> updateFavorite() async {
+    if (!isFavorite) return;
+    final db = globals.localDb;
+    final wc = 'book_id = $bookId';
+    final r = await db.rawQuery('SELECT max_chapter_id FROM books WHERE $wc');
+    final attrs = <String, dynamic>{ 'name': name, 'cover_json': jsonEncode(this) };
+
+    if (r.isEmpty) {
+      attrs['book_id'] = bookId;
+      await db.insert('books', attrs);
+      return;
+    }
+    await db.update('books', attrs, where: wc);
+  }
+
   Future<void> updateHistory({ final int lastChapterId, final bool updateCover = false }) async {
     final db = globals.localDb;
     final wc = 'book_id = $bookId';
@@ -149,7 +165,6 @@ class ComicBook extends ComicCover {
         'book_id': bookId,
         'name': name,
         'cover_json': jsonEncode(this),
-        'is_favorate': 0,
         'last_chapter_id': lastChapterId,
         'max_chapter_id': lastChapterId,
       });
@@ -167,9 +182,21 @@ class ComicBook extends ComicCover {
     await db.update('books', attrs, where: wc);
   }
 
+  Future<void> _syncFavorite() async {
+    if (!globals.user.isLogin) return;
+    final remote = await globals.user.isFavorite(bookId);
+    final local = globals.favoriteBookIdSet.contains(bookId);
+    isFavorite = remote || local;
+    if (remote == local) return;
+
+    globals.favoriteBookIdSet.add(bookId);
+    if (!remote) globals.user.addFavorite(bookId);
+  }
+
   Future<void> update() =>
     Future.wait([
       _updateMain(),
       _updateScore(),
+      _syncFavorite(),
     ]);
 }
