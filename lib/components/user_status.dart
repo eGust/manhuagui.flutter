@@ -21,16 +21,19 @@ class _UserStatusButtonState extends State<UserStatusButton> {
   final double iconSize, fontSize;
   final User user;
 
-  void showUserDialog() => showDialog<void>(
-    context: context,
-    barrierDismissible: false,
-    builder: (context) => SimpleDialog(
-      title: Center(child: user.isLogin ? const Text('已登录') : const Text('用户登录')),
-      children: [
-        user.isLogin ? LogoutForm() : LoginForm(),
-      ],
-    ),
-  );
+  void showUserDialog() async {
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => SimpleDialog(
+        title: Center(child: user.isLogin ? const Text('已登录') : const Text('用户登录')),
+        children: [
+          user.isLogin ? LogoutForm() : LoginForm(),
+        ],
+      ),
+    );
+    setState(() { });
+  }
 
   @override
   Widget build(BuildContext context) => Container(
@@ -44,7 +47,7 @@ class _UserStatusButtonState extends State<UserStatusButton> {
             size: iconSize,
             color: user.isLogin ? Colors.yellow[500] : Colors.red[200],
           ),
-          Text(user.isLogin ? ' ${user.username}' : '（未登录）',
+          Text(user.isLogin ? ' ${user.nickname}' : '（未登录）',
             style: TextStyle(
               fontSize: fontSize,
               color: user.isLogin ? Colors.white : Colors.red[200],

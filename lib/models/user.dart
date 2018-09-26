@@ -50,6 +50,7 @@ class User {
 
   String get nickname => _nickname;
   String get username => _username;
+  String get password => _password;
 
   String get cookie => _cookie;
   void _setCookie(String value) {

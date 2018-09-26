@@ -12,8 +12,11 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  final _username = TextEditingController();
-  final _password = TextEditingController();
+  static String getUsername() => globals.user.username ?? '';
+  static String getPassword() => globals.user.password ?? '';
+
+  final _username = TextEditingController(text: getUsername());
+  final _password = TextEditingController(text: getPassword());
 
   LoginStatus _status = LoginStatus.initial;
   // bool _remember = true;
