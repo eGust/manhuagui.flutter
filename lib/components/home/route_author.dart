@@ -135,7 +135,7 @@ class _RouteAuthorState extends State<RouteAuthor> {
         onPressedScrollTop: () {
           _scroller.animateTo(
             0.1,
-            duration: const Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 500),
             curve: Curves.fastOutSlowIn,
           );
         },

@@ -1,8 +1,15 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 import './sub_router.dart';
+import '../user_status.dart';
+import '../progressing.dart';
+import '../list_top_bar.dart';
+import '../comic_cover_row.dart';
+import '../../store.dart';
+import '../../models.dart';
 
-class RouteFavorite extends StatelessWidget {
+class RouteFavorite extends StatefulWidget {
   static final router = SubRouter(
     'favorite',
     Icons.favorite,
@@ -11,13 +18,93 @@ class RouteFavorite extends StatelessWidget {
   );
 
   @override
-  Widget build(BuildContext context) =>
-    Text(
-      'favorite',
-      textDirection: TextDirection.ltr,
-      style: TextStyle(
-        color: Colors.blueAccent.shade700,
-        fontSize: 20.0
-      ),
+  _RouteFavoriteState createState() => _RouteFavoriteState();
+}
+
+class _RouteFavoriteState extends State<RouteFavorite> {
+  final _scroller = ScrollController();
+  final _bookIds = Set<int>();
+  final _comics = <ComicCover>[];
+
+  int _page = 0;
+  bool _isLastPage = false, _fetching = true, _indicator = false;
+
+  static const _NEXT_THRESHOLD = 2500.0; // > 10 items
+
+  void _scrollToTop() {
+    _scroller.animateTo(
+      0.1,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.fastOutSlowIn,
     );
+  }
+
+  Future<void> _refresh({ bool indicator = false }) async {
+    setState(() {
+      _indicator = indicator;
+      _page = 0;
+      _isLastPage = false;
+      _fetching = true;
+      _comics.clear();
+      _bookIds.clear();
+    });
+    await _fetchNextPage();
+  }
+
+  Future<void> _fetchNextPage() async {
+    if (_isLastPage || !mounted || !globals.user.isLogin) return;
+    setState(() {
+      _fetching = true;
+    });
+
+    _page += 1;
+    final rawCovers = await globals.user.getFavorites(pageNo: _page);
+    final covers = rawCovers.where((c) => !_bookIds.contains(c.bookId)).toList();
+    final coverMap = Map.fromEntries(covers.map((c) => MapEntry(c.bookId, c)));
+    await globals.updateCovers(coverMap);
+    _isLastPage = covers.isEmpty;
+
+    if (!mounted) return;
+    setState(() {
+      _fetching = false;
+      _comics.addAll(covers);
+      _bookIds.addAll(covers.map((c) => c.bookId));
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scroller.addListener(() {
+      if (_scroller.position.pixels + _NEXT_THRESHOLD > _scroller.position.maxScrollExtent) {
+        if (_fetching || !mounted) return;
+        _fetchNextPage();
+      }
+    });
+    _refresh(indicator: true);
+  }
+
+  @override
+  void dispose() {
+    _scroller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Column(
+    children: <Widget>[
+      TopBarFrame(onPressed: _scrollToTop),
+      Expanded(child: RefreshIndicator(
+        onRefresh: _refresh,
+        child: ListView.builder(
+          controller: _scroller,
+          itemCount: _comics.length + 1,
+          padding: const EdgeInsets.all(0.0),
+          itemBuilder: (_, i) => i == _comics.length ?
+            Progressing(visible: _indicator && _fetching) :
+            ComicCoverRow(_comics[i], context),
+        ),
+      )),
+    ],
+  );
 }

@@ -121,7 +121,7 @@ class User {
   Future<List<ComicCover>> getFavorites({ int pageNo = 1 }) async {
     if (!isLogin) return [];
     final doc = await fetchAjaxDom('$_PAGE_FAVORITE_URL$pageNo', headers: cookieHeaders);
-    return ComicCover.parseFavorite(doc);
+    return ComicCover.parseFavorite(doc).toList();
   }
 
   static const _COVER_LINK = '.dy_content_li h3 > a';

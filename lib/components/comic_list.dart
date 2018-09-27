@@ -37,10 +37,11 @@ class _ComicListState extends State<ComicList> {
   _ComicListState(this.stateManager);
 
   final ComicListManagerBase stateManager;
+  final _comics = <ComicCover>[];
+  final _bookIds = Set<int>();
+  final _scroller = ScrollController();
+
   bool _blacklistEnabled = true, _fetching = false, _indicator = false;
-  List<ComicCover> comics = [];
-  Set<int> bookIds = Set();
-  ScrollController _scroller = ScrollController();
 
   Future<void> _showFilterDialog({ bool isInitial = false }) async {
     final changed = await stateManager.showDialogChanged(context);
@@ -54,8 +55,8 @@ class _ComicListState extends State<ComicList> {
     setState(() {
       _indicator = indicator;
       stateManager.resetPageIndex();
-      comics.clear();
-      bookIds.clear();
+      _comics.clear();
+      _bookIds.clear();
       _fetching = true;
     });
     await _fetchNextPage();
@@ -64,7 +65,7 @@ class _ComicListState extends State<ComicList> {
   void _scrollToTop() {
     _scroller.animateTo(
       0.1,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 500),
       curve: Curves.fastOutSlowIn,
     );
   }
@@ -76,21 +77,21 @@ class _ComicListState extends State<ComicList> {
     });
 
     final rawCovers = await stateManager.fetchNextPage();
-    final covers = rawCovers.where((c) => !bookIds.contains(c.bookId)).toList();
+    final covers = rawCovers.where((c) => !_bookIds.contains(c.bookId)).toList();
     final coverMap = Map.fromEntries(covers.map((c) => MapEntry(c.bookId, c)));
     await globals.updateCovers(coverMap);
 
     if (!mounted) return;
     setState(() {
       _fetching = false;
-      comics.addAll(covers);
-      bookIds.addAll(covers.map((c) => c.bookId));
+      _comics.addAll(covers);
+      _bookIds.addAll(covers.map((c) => c.bookId));
     });
   }
 
   Widget _buildCoverList() {
     final covers = stateManager.useBlacklist && _blacklistEnabled ?
-      comics.where(stateManager.notInBlacklist).toList() : comics;
+      _comics.where(stateManager.notInBlacklist).toList() : _comics;
     final count = covers.length;
     return ListView.builder(
       controller: _scroller,
@@ -98,8 +99,7 @@ class _ComicListState extends State<ComicList> {
       padding: const EdgeInsets.all(0.0),
       itemBuilder: (_, i) => i == count ?
         Progressing(visible: _indicator && _fetching) :
-        ComicCoverRow(covers[i], context)
-        ,
+        ComicCoverRow(covers[i], context),
     );
   }
 

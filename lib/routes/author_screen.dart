@@ -19,9 +19,7 @@ class AuthorScreen extends StatelessWidget {
         color: Colors.brown[900],
         height: globals.statusBarHeight,
       ),
-      Expanded(
-        child: ComicList(AuthorComicListManager(author)),
-      )
+      Expanded(child: ComicList(AuthorComicListManager(author))),
     ],
   );
 }
