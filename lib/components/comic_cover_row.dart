@@ -74,29 +74,38 @@ class ComicCoverRow extends StatelessWidget {
             ),
             // Authors
             Row(
-              children: _cover.authors == null ? [
-                Text(
-                  '[无作者数据]',
-                  style: TextStyle(
-                    fontSize: 17.0,
-                    color: Colors.red[600],
-                  ),
-                ),
-              ] : _cover.authors.map((author) => Container(
-                padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-                child: GestureDetector(
-                  child: Text(
-                    author.name,
-                    style: TextStyle(
-                      fontSize: 17.0,
-                      color: Colors.lightBlue[900],
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  children: _cover.authors == null ? [
+                    Text(
+                      '[无作者数据]',
+                      style: TextStyle(
+                        fontSize: 17.0,
+                        color: Colors.red[600],
+                      ),
                     ),
-                  ),
-                  onTap: () {
-                    _pressedAuthor(author);
-                  },
-                )
-              )).toList(),
+                  ] : _cover.authors.map((author) => Container(
+                    padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                    child: GestureDetector(
+                      child: Text(
+                        author.name,
+                        style: TextStyle(
+                          fontSize: 17.0,
+                          color: Colors.lightBlue[900],
+                        ),
+                      ),
+                      onTap: () {
+                        _pressedAuthor(author);
+                      },
+                    )
+                  )).toList(),
+                ),
+                _cover.isFavorite ?
+                  const Icon(Icons.favorite, color: Colors.red, size: 30.0) :
+                  const Icon(Icons.favorite_border, color: Colors.orange, size: 30.0),
+              ],
             ),
             // Tags
             Row(

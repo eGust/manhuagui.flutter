@@ -98,7 +98,7 @@ class _RouteHomeState extends State<RouteHome> {
                   ),
                 ),
                 Container(
-                  height: 307.0,
+                  height: 295.0,
                   child: ListView(
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
@@ -134,11 +134,22 @@ class _HomeCover extends StatelessWidget {
       children: <Widget>[
         GestureDetector(
           child: SizedBox.fromSize(
-            size: const Size(180.0, 240.0),
-            child: Image.network(
-              cover.getImageUrl(),
-              headers: { 'Referer': 'https://m.manhuagui.com' },
-            ),
+            size: const Size.fromHeight(240.0),
+            child: Stack(
+              fit: StackFit.expand,
+              children: <Widget>[
+                Image.network(
+                  cover.getImageUrl(),
+                  headers: { 'Referer': 'https://m.manhuagui.com' },
+                ),
+                Positioned(
+                  top: 2.0,
+                  child: cover.isFavorite ?
+                    const Icon(Icons.favorite_border, color: Colors.red) :
+                    const Text(''),
+                ),
+              ],
+            )
           ),
           onTap: () {
             RouteHelper.navigateComic(context, cover);

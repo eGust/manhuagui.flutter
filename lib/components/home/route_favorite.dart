@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import './sub_router.dart';
-import '../user_status.dart';
 import '../progressing.dart';
 import '../list_top_bar.dart';
 import '../comic_cover_row.dart';
@@ -27,7 +26,7 @@ class _RouteFavoriteState extends State<RouteFavorite> {
   final _comics = <ComicCover>[];
 
   int _page = 0;
-  bool _isLastPage = false, _fetching = true, _indicator = false;
+  bool _isLastPage = false, _fetching = false, _indicator = false;
 
   static const _NEXT_THRESHOLD = 2500.0; // > 10 items
 
@@ -81,7 +80,22 @@ class _RouteFavoriteState extends State<RouteFavorite> {
         _fetchNextPage();
       }
     });
-    _refresh(indicator: true);
+
+    if (globals.user.isLogin) {
+      _refresh(indicator: true);
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback(_askLogin);
+    }
+  }
+
+  void _askLogin(Duration _) {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('此功能需要登录！'),
+      ),
+    );
   }
 
   @override
