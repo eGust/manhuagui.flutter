@@ -83,7 +83,6 @@ class _ReaderScreenState extends State<ReaderScreen> with TickerProviderStateMix
   }
 
   void _onAnimationFinished(final int actionId) async {
-    print("AnimationFinished $actionId == $_slideActionId");
     if (!mounted || actionId != _slideActionId) return;
     var next = _nextEntry;
     final direction = _direction;

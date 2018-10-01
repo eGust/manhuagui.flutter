@@ -98,7 +98,7 @@ class _RouteHomeState extends State<RouteHome> {
                   ),
                 ),
                 Container(
-                  height: 295.0,
+                  height: 297.0,
                   child: ListView(
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
