@@ -70,6 +70,12 @@ class _ComicListState extends State<ComicList> {
     );
   }
 
+  void _updateHistory() async {
+    await globals.updateChapterProgresses(_comics);
+    if (!mounted) return;
+    setState(() {});
+  }
+
   Future<void> _fetchNextPage() async {
     if (stateManager.isLastPage) return;
     setState(() {
@@ -99,7 +105,7 @@ class _ComicListState extends State<ComicList> {
       padding: const EdgeInsets.all(0.0),
       itemBuilder: (_, i) => i == count ?
         Progressing(visible: _indicator && _fetching) :
-        ComicCoverRow(covers[i], context),
+        ComicCoverRow(covers[i], context, onPopComic: _updateHistory),
     );
   }
 

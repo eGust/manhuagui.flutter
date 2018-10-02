@@ -145,7 +145,7 @@ class _HomeCover extends StatelessWidget {
                 Positioned(
                   top: 2.0,
                   child: cover.isFavorite ?
-                    const Icon(Icons.favorite_border, color: Colors.red) :
+                    const Icon(Icons.favorite, color: Colors.red) :
                     const Text(''),
                 ),
               ],
@@ -169,7 +169,7 @@ class _HomeCover extends StatelessWidget {
             Container(
               width: 160.0,
               child: Text(
-                cover.lastChpTitle,
+                cover.lastUpdatedChapter,
                 overflow: TextOverflow.fade,
                 softWrap: false,
                 style: TextStyle(

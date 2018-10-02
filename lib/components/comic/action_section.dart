@@ -3,9 +3,14 @@ import 'package:flutter/material.dart';
 import '../../models.dart';
 
 class ActionSection extends StatelessWidget {
-  ActionSection(this.comic);
+  ActionSection(this.comic, {
+    @required this.onToggleFavorite,
+    @required this.favorite,
+  });
 
   final ComicBook comic;
+  final VoidCallback onToggleFavorite;
+  final int favorite;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -15,9 +20,12 @@ class ActionSection extends StatelessWidget {
     child: Row(
       children: <Widget>[
         GestureDetector(
+          onTap: onToggleFavorite,
           child: Container(
             width: 50.0,
-            child: comic.isFavorite ?
+            padding: favorite == -1 ? const EdgeInsets.only(left: 10.0, right: 10.0) : null,
+            child: favorite == -1 ?
+              const SizedBox(height: 30.0, child: const CircularProgressIndicator()) : favorite == 1 ?
               const Icon(Icons.favorite, color: Colors.red, size: 36.0) :
               const Icon(Icons.favorite_border, color: Colors.orange, size: 36.0),
           ),

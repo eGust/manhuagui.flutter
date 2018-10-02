@@ -4,10 +4,14 @@ import '../models.dart';
 import '../routes.dart';
 
 class ComicCoverRow extends StatelessWidget {
-  ComicCoverRow(this._cover, this._context);
+  ComicCoverRow(this._cover, this._context, { this.onPopComic });
 
-  void _pressedComic() {
-    RouteHelper.navigateComic(_context, _cover);
+  final VoidCallback onPopComic;
+
+  void _pressedComic() async {
+    await RouteHelper.navigateComic(_context, _cover);
+    if (onPopComic == null) return;
+    onPopComic();
   }
 
   void _pressedAuthor(final AuthorLink author) {
@@ -58,9 +62,9 @@ class ComicCoverRow extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '[${_cover.finished ? '完结' : '连载'}] ${_cover.lastChpTitle ?? ''}',
+                  '[${_cover.progress}] ${_cover.lastUpdatedChapterTitle}',
                   style: TextStyle(
-                    fontSize: 14.0,
+                    fontSize: 15.0,
                     color: _cover.finished ? Colors.red[800] : Colors.green[800],
                   ),
                 ),
@@ -125,9 +129,33 @@ class ComicCoverRow extends StatelessWidget {
                 ),
               ],
             ),
+            // Read Progress
+            _cover.maxReadChapter == null && _cover.lastReadChapter == null ?
+              Container() :
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    '[阅读进度] ${_cover.maxReadChapterTitle} ',
+                    overflow: TextOverflow.fade,
+                    style: const TextStyle(
+                      fontSize: 14.0,
+                      color: Colors.blueAccent,
+                    ),
+                  ),
+                  Text(
+                    '[上次阅读] ${_cover.lastReadChapterTitle}',
+                    overflow: TextOverflow.fade,
+                    style: const TextStyle(
+                      fontSize: 14.0,
+                      color: Colors.deepPurple,
+                    ),
+                  ),
+                ],
+              ),
             // Introduction - short
             Container(
-              height: 96.0,
+              height: 87.0,
               padding: const EdgeInsets.only(top: 5.0),
               decoration: BoxDecoration(
                 border: Border(top: BorderSide(color: Colors.orange[100])),

@@ -24,11 +24,10 @@ class ComicBook extends ComicCover {
   Map<int, Chapter> chapterMap = {};
 
   ComicBook.fromCover(ComicCover cover): super(cover.bookId, cover.name) {
-    lastChpTitle = cover.lastChpTitle;
+    lastUpdatedChapter = cover.lastUpdatedChapter;
     score = cover.score;
     updatedAt = cover.updatedAt;
 
-    isFavorite = cover.isFavorite;
     finished = cover.finished;
     restricted = cover.restricted;
     shortIntro = cover.shortIntro;
@@ -53,9 +52,9 @@ class ComicBook extends ComicCover {
     final content = doc.querySelector('.book-cont');
     if (name == null) name = content.querySelector('.book-title > h1').text;
 
-    // lastChpTitle, updatedAt, finished
+    // lastUpdatedChapter, updatedAt, finished
     final status = content.querySelector('li.status');
-    lastChpTitle = status.querySelector('a').text;
+    lastUpdatedChapter = status.querySelector('a').text;
     updatedAt = status.querySelectorAll('span.red').last.text;
     finished = status.querySelector('.dgreen') != null;
 
@@ -171,7 +170,7 @@ class ComicBook extends ComicCover {
       return;
     }
 
-    final int maxChapterId = r.first['max_chapter_id'];
+    final int maxChapterId = r.first['max_chapter_id'] ?? 0;
     final Map<String, dynamic> attrs = {
       'last_chapter_id': lastChapterId,
     };
@@ -186,7 +185,6 @@ class ComicBook extends ComicCover {
     if (!globals.user.isLogin) return;
     final remote = await globals.user.isFavorite(bookId);
     final local = globals.favoriteBookIdSet.contains(bookId);
-    isFavorite = remote || local;
     if (remote == local) return;
 
     globals.favoriteBookIdSet.add(bookId);

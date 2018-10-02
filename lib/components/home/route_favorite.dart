@@ -104,6 +104,12 @@ class _RouteFavoriteState extends State<RouteFavorite> {
     super.dispose();
   }
 
+  void _updateHistory() async {
+    await globals.updateChapterProgresses(_comics);
+    if (!mounted) return;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) => Column(
     children: <Widget>[
@@ -116,7 +122,7 @@ class _RouteFavoriteState extends State<RouteFavorite> {
           padding: const EdgeInsets.all(0.0),
           itemBuilder: (_, i) => i == _comics.length ?
             Progressing(visible: _indicator && _fetching) :
-            ComicCoverRow(_comics[i], context),
+            ComicCoverRow(_comics[i], context, onPopComic: _updateHistory),
         ),
       )),
     ],

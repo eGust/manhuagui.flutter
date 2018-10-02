@@ -1,6 +1,7 @@
 import 'package:html/dom.dart';
 
 import './author.dart';
+import '../store.dart';
 
 enum CoverSize { min, xs, sm, md, lg, xl, max }
 
@@ -14,8 +15,14 @@ class ComicCover {
   }
 
   final int bookId;
-  String name, lastChpTitle, score, updatedAt;
-  bool finished = false, restricted = false, isFavorite = false;
+  String name, lastUpdatedChapter, lastReadChapter, maxReadChapter, score, updatedAt;
+  bool finished = false, restricted = false;
+  bool get isFavorite => globals.favoriteBookIdSet.contains(bookId);
+
+  String get lastUpdatedChapterTitle => lastUpdatedChapter ?? '';
+  String get lastReadChapterTitle => lastReadChapter ?? '';
+  String get maxReadChapterTitle => maxReadChapter ?? '';
+  String get progress => finished ? '完结' : '连载';
 
   List<AuthorLink> authors;
   List<String> tags;
@@ -63,14 +70,14 @@ class ComicCover {
     (() {
       final dds = element.querySelectorAll('dl > dd');
       if (dds.isNotEmpty) {
-        cc.lastChpTitle = dds[2].text;
+        cc.lastUpdatedChapter = dds[2].text;
         cc.updatedAt = dds[3].text;
         return;
       }
 
       final le = element.querySelector('p > span');
       if (le != null) {
-        cc.lastChpTitle = le.text;
+        cc.lastUpdatedChapter = le.text;
         return;
       }
     })();
@@ -82,7 +89,7 @@ class ComicCover {
     final cover = element.querySelector('a.bcover');
     final cc = ComicCover.fromLink(cover);
     cc.finished = cover.querySelectorAll('.sl').isEmpty;
-    cc.lastChpTitle = cover.querySelector('.tt').text
+    cc.lastUpdatedChapter = cover.querySelector('.tt').text
       .replaceAll('更新至', '').replaceAll('[完]', '');
 
     final update = element.querySelector('.updateon');
@@ -95,7 +102,7 @@ class ComicCover {
     final cc = ComicCover.fromLink(element.querySelector('dt > a'));
     final status = element.querySelector('dd.status');
     cc.finished = status.querySelector('span.green') != null;
-    cc.lastChpTitle = status.querySelector('a').text.trim();
+    cc.lastUpdatedChapter = status.querySelector('a').text.trim();
 
     cc.updatedAt = status.querySelectorAll('span.red').last.text.trim();
     cc.score = element.nextElementSibling.querySelector('.score-avg strong').text;

@@ -107,21 +107,55 @@ class Store {
   }
 
   Future<void> updateCovers(final Map<int, ComicCover> coverMap) async {
-    coverMap.values.forEach((cover) {
-      cover.isFavorite = favoriteBookIdSet.contains(cover.bookId);
-    });
-    final books = await localDb.query('books',
-      columns: ['book_id', 'cover_json'],
-      where: 'book_id IN (${coverMap.keys.join(',')})',
-    );
+    final books = await globals.localDb.rawQuery('''
+    SELECT books.book_id, books.cover_json
+      , last_chapter.title last_chapter_title
+      , max_chapter.title max_chapter_title
+    FROM books
+    LEFT JOIN chapters last_chapter ON last_chapter.chapter_id = last_chapter_id
+    LEFT JOIN chapters max_chapter ON max_chapter.chapter_id = max_chapter_id
+    WHERE books.book_id IN (${coverMap.keys.join(',')})
+    ''');
     books.forEach((book) {
       final cover = coverMap.remove(book['book_id']);
       cover.loadJson(jsonDecode(book['cover_json']));
+      cover.lastReadChapter = book['last_chapter_title'];
+      cover.maxReadChapter = book['max_chapter_title'];
     });
 
     if (remoteDb != null) {
       await remoteDb.updateCovers(coverMap.values.toList());
     }
+  }
+
+  Future<void> updateChapterProgresses(List<ComicCover> comics) async {
+    if (comics.isEmpty) return;
+
+    final bookIds = comics.map((c) => c.bookId.toString());
+    final books = await globals.localDb.rawQuery('''
+    SELECT books.book_id
+      , last_chapter.title last_chapter_title
+      , max_chapter.title max_chapter_title
+    FROM books
+    LEFT JOIN chapters last_chapter ON last_chapter.chapter_id = last_chapter_id
+    LEFT JOIN chapters max_chapter ON max_chapter.chapter_id = max_chapter_id
+    WHERE books.book_id IN (${bookIds.join(',')})
+    ''');
+
+    final lastMap = <int, String>{};
+    final maxMap = <int, String>{};
+    books.forEach((book) {
+      final int bookId = book['book_id'];
+      final String lastTitle = book['last_chapter_title'];
+      final String maxTitle = book['max_chapter_title'];
+      if (lastTitle != null) lastMap[bookId] = lastTitle;
+      if (maxTitle != null) maxMap[bookId] = maxTitle;
+    });
+
+    comics.forEach((comic) {
+      comic.lastReadChapter = lastMap[comic.bookId];
+      comic.maxReadChapter = maxMap[comic.bookId];
+    });
   }
 
   Future<void> syncFavorites() async {
@@ -135,6 +169,18 @@ class Store {
       if (!user.isLogin) return;
       await user.addFavorite(bookId);
     }
+  }
+
+  Future<void> toggleFavorite(final ComicCover comic) async {
+    final bookId = comic.bookId;
+    if (comic.isFavorite) {
+      favoriteBookIdSet.remove(bookId);
+      await user.removeFavorite(bookId);
+    } else {
+      favoriteBookIdSet.add(bookId);
+      await user.addFavorite(bookId);
+    }
+    save();
   }
 }
 

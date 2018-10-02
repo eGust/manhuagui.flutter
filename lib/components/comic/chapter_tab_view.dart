@@ -4,55 +4,55 @@ import '../progressing.dart';
 import '../../routes.dart';
 import '../../models.dart';
 
-class ChapterTabs extends StatelessWidget {
-  ChapterTabs(this.comic);
+class ChapterTabView extends StatelessWidget {
+  ChapterTabView(this.comic, this.controller);
 
   final ComicBook comic;
+  final TabController controller;
 
   @override
   Widget build(BuildContext context) => Expanded(
     child: Container(
       color: Colors.white,
       child: comic.chapterGroups.isEmpty ? Progressing(size: 80.0, strokeWidth: 8.0) :
-        DefaultTabController(
-          length: comic.chapterGroups.length,
-          child: Column(children: [
-            Container(
-              color: Colors.amber[800],
-              height: 36.0,
-              child: TabBar(
-                indicatorColor: Colors.yellow,
-                labelStyle: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
-                ),
-                unselectedLabelStyle: TextStyle(
-                  fontWeight: FontWeight.normal,
-                ),
-                unselectedLabelColor: Colors.grey[800],
-                tabs: comic.chapterGroups.map((grp) => Tab(text: grp)).toList(),
+        Column(children: [
+          Container(
+            color: Colors.amber[800],
+            height: 36.0,
+            child: TabBar(
+              controller: controller,
+              indicatorColor: Colors.yellow,
+              labelStyle: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
               ),
+              unselectedLabelStyle: TextStyle(
+                fontWeight: FontWeight.normal,
+              ),
+              unselectedLabelColor: Colors.grey[800],
+              tabs: comic.chapterGroups.map((grp) => Tab(text: grp)).toList(),
             ),
-            Expanded(child: TabBarView(
-              children: comic.chapterGroups.map((grp) => SingleChildScrollView(
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(3.0, 1.0, 3.0, 15.0),
-                  child: Wrap(
-                    children: comic.groupedChapterIdListMap[grp]
-                      .map((chId) =>
-                        ChapterButton(
-                          comic.chapterMap[chId],
-                          onPressed: (chapter) {
-                            RouteHelper.navigateReader(context, ReaderHelper(comic, chapter));
-                          },
-                        )
-                      ).toList(),
-                  ),
+          ),
+          Expanded(child: TabBarView(
+            controller: controller,
+            children: comic.chapterGroups.map((grp) => SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(3.0, 1.0, 3.0, 15.0),
+                child: Wrap(
+                  children: comic.groupedChapterIdListMap[grp]
+                    .map((chId) =>
+                      ChapterButton(
+                        comic.chapterMap[chId],
+                        onPressed: (chapter) async {
+                          RouteHelper.navigateReader(context, ReaderHelper(comic, chapter));
+                        },
+                      )
+                    ).toList(),
                 ),
-              )).toList(),
-            )),
-          ]),
-        ),
+              ),
+            )).toList(),
+          )),
+        ]),
     ),
   );
 }

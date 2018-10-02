@@ -31,7 +31,7 @@ class CoverHeader extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '[${comic.finished ? '完结' : '连载'}] ${comic.lastChpTitle}',
+                    '[${comic.finished ? '完结' : '连载'}] ${comic.lastUpdatedChapter}',
                     style: TextStyle(
                       fontSize: 15.0,
                       color: comic.finished ? Colors.red[800] : Colors.green[800],
