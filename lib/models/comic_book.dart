@@ -24,7 +24,6 @@ class ComicBook extends ComicCover {
   Map<int, Chapter> chapterMap = {};
 
   ComicBook.fromCover(ComicCover cover): super(cover.bookId, cover.name) {
-    lastUpdatedChapter = cover.lastUpdatedChapter;
     score = cover.score;
     updatedAt = cover.updatedAt;
 
@@ -36,6 +35,13 @@ class ComicBook extends ComicCover {
     tags = List.from(cover.tags ?? []);
     tagSet = Set.from(cover.tagSet ?? []);
     history = Map.from(cover.history);
+
+    lastChapterId = cover.lastChapterId;
+    lastChapterPage = cover.lastChapterPage;
+    lastUpdatedChapter = cover.lastUpdatedChapter;
+    maxChapterId = cover.maxChapterId;
+    maxReadChapter = cover.maxReadChapter;
+    maxChapterPage = cover.maxChapterPage;
   }
 
   Chapter groupPrevOf(Chapter ch) => chapterMap[ch?.groupPrevId];
@@ -46,6 +52,20 @@ class ComicBook extends ComicCover {
 
   String get url => "$PROTOCOL://$DOMAIN$path";
   String get voteUrl => 'http://www.manhuagui.com/tools/vote.ashx?act=get&bid=$bookId';
+
+  Future<void> _updateChapters() async {
+    final chMap = await globals.localDb.query('chapters',
+      columns: ['chapter_id', 'read_at'],
+      where: 'book_id = ?',
+      whereArgs: [bookId],
+    );
+
+    chMap.forEach((ch) {
+      final int chapterId = ch['chapter_id'];
+      final int readAt = ch['read_at'];
+      chapterMap[chapterId]?.readAt = readAt;
+    });
+  }
 
   Future<void> _updateMain() async {
     var doc = await fetchDom(url, headers: globals.user.cookieHeaders);
@@ -118,6 +138,8 @@ class ComicBook extends ComicCover {
         groupedChapterIdListMap[groupName] = groupChapterIdList;
         return groupName;
       }).toList();
+
+    await _updateChapters();
   }
 
   Future<void> _updateScore() async {
@@ -197,4 +219,7 @@ class ComicBook extends ComicCover {
       _updateScore(),
       _syncFavorite(),
     ]);
+
+  List<int> chapterIdsOfGroup(int groupIndex) =>
+    groupedChapterIdListMap[chapterGroups[groupIndex]];
 }

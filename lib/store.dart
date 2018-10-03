@@ -108,9 +108,10 @@ class Store {
 
   Future<void> updateCovers(final Map<int, ComicCover> coverMap) async {
     final books = await globals.localDb.rawQuery('''
-    SELECT books.book_id, books.cover_json
-      , last_chapter.title last_chapter_title
-      , max_chapter.title max_chapter_title
+    SELECT books.book_id
+      , cover_json, last_chapter_id, max_chapter_id
+      , last_chapter.title last_chapter_title, last_chapter.read_page
+      , max_chapter.title max_chapter_title, max_chapter.read_page
     FROM books
     LEFT JOIN chapters last_chapter ON last_chapter.chapter_id = last_chapter_id
     LEFT JOIN chapters max_chapter ON max_chapter.chapter_id = max_chapter_id
@@ -119,7 +120,11 @@ class Store {
     books.forEach((book) {
       final cover = coverMap.remove(book['book_id']);
       cover.loadJson(jsonDecode(book['cover_json']));
+      cover.lastChapterId = book['last_chapter_id'];
+      cover.lastChapterPage = book['last_chapter_page'];
       cover.lastReadChapter = book['last_chapter_title'];
+      cover.maxChapterId = book['max_chapter_id'];
+      cover.maxChapterPage = book['max_chapter_page'];
       cover.maxReadChapter = book['max_chapter_title'];
     });
 
@@ -131,30 +136,26 @@ class Store {
   Future<void> updateChapterProgresses(List<ComicCover> comics) async {
     if (comics.isEmpty) return;
 
-    final bookIds = comics.map((c) => c.bookId.toString());
-    final books = await globals.localDb.rawQuery('''
+    final coverMap = Map.fromEntries(comics.map((c) => MapEntry(c.bookId, c)));
+    final rows = await globals.localDb.rawQuery('''
     SELECT books.book_id
-      , last_chapter.title last_chapter_title
-      , max_chapter.title max_chapter_title
+      , last_chapter_id, max_chapter_id
+      , last_chapter.title last_chapter_title, last_chapter.read_page
+      , max_chapter.title max_chapter_title, max_chapter.read_page
     FROM books
-    LEFT JOIN chapters last_chapter ON last_chapter.chapter_id = last_chapter_id
+    INNER JOIN chapters last_chapter ON last_chapter.chapter_id = last_chapter_id
     LEFT JOIN chapters max_chapter ON max_chapter.chapter_id = max_chapter_id
-    WHERE books.book_id IN (${bookIds.join(',')})
+    WHERE books.book_id IN (${coverMap.keys.join(',')})
     ''');
 
-    final lastMap = <int, String>{};
-    final maxMap = <int, String>{};
-    books.forEach((book) {
-      final int bookId = book['book_id'];
-      final String lastTitle = book['last_chapter_title'];
-      final String maxTitle = book['max_chapter_title'];
-      if (lastTitle != null) lastMap[bookId] = lastTitle;
-      if (maxTitle != null) maxMap[bookId] = maxTitle;
-    });
-
-    comics.forEach((comic) {
-      comic.lastReadChapter = lastMap[comic.bookId];
-      comic.maxReadChapter = maxMap[comic.bookId];
+    rows.forEach((row) {
+      final cover = coverMap[row['book_id']];
+      cover.lastChapterId = row['last_chapter_id'];
+      cover.lastChapterPage = row['last_chapter_page'];
+      cover.lastReadChapter = row['last_chapter_title'];
+      cover.maxChapterId = row['max_chapter_id'];
+      cover.maxChapterPage = row['max_chapter_page'];
+      cover.maxReadChapter = row['max_chapter_title'];
     });
   }
 

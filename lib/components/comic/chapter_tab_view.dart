@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../progressing.dart';
-import '../../routes.dart';
 import '../../models.dart';
 
 class ChapterTabView extends StatelessWidget {
-  ChapterTabView(this.comic, this.controller);
+  ChapterTabView(this.comic, { this.controller, this.onPressed });
 
   final ComicBook comic;
   final TabController controller;
+  final PressedChapter onPressed;
 
   @override
   Widget build(BuildContext context) => Expanded(
@@ -17,19 +17,21 @@ class ChapterTabView extends StatelessWidget {
       child: comic.chapterGroups.isEmpty ? Progressing(size: 80.0, strokeWidth: 8.0) :
         Column(children: [
           Container(
-            color: Colors.amber[800],
+            color: Colors.yellow[800],
             height: 36.0,
             child: TabBar(
               controller: controller,
-              indicatorColor: Colors.yellow,
+              indicatorColor: Colors.deepOrange[900],
               labelStyle: TextStyle(
-                fontSize: 16.0,
+                fontSize: 17.0,
                 fontWeight: FontWeight.bold,
               ),
               unselectedLabelStyle: TextStyle(
+                fontSize: 16.0,
                 fontWeight: FontWeight.normal,
               ),
-              unselectedLabelColor: Colors.grey[800],
+              labelColor: Colors.deepOrange[900],
+              unselectedLabelColor: Colors.white,
               tabs: comic.chapterGroups.map((grp) => Tab(text: grp)).toList(),
             ),
           ),
@@ -43,9 +45,7 @@ class ChapterTabView extends StatelessWidget {
                     .map((chId) =>
                       ChapterButton(
                         comic.chapterMap[chId],
-                        onPressed: (chapter) async {
-                          RouteHelper.navigateReader(context, ReaderHelper(comic, chapter));
-                        },
+                        onPressed: onPressed,
                       )
                     ).toList(),
                 ),
@@ -69,26 +69,26 @@ class ChapterButton extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     margin: const EdgeInsets.fromLTRB(8.0, 6.0, 8.0, 6.0),
     child: RawMaterialButton(
-      shape: RoundedRectangleBorder(
-        side: BorderSide(color: Colors.orange, width: 2.0),
-        borderRadius: BorderRadius.all(Radius.circular(12.0)),
+      shape: const RoundedRectangleBorder(
+        side: const BorderSide(color: Colors.orange, width: 2.0),
+        borderRadius: const BorderRadius.all(Radius.circular(12.0)),
       ),
-      fillColor: Colors.amber[400],
-      splashColor: Colors.orange[400],
+      fillColor: chapter.neverRead ? Colors.yellow[300] : Colors.red[700],
+      splashColor: Colors.orange,
       padding: const EdgeInsets.fromLTRB(16.0, 5.0, 14.0, 4.0),
       child: Column(
         children: [
           Text(
             chapter.title,
             style: TextStyle(
-              color: Colors.brown[900],
+              color: chapter.neverRead ? Colors.brown[900] : Colors.yellow[100],
               fontSize: 15.0,
             ),
           ),
           Text(
             '${chapter.pageCount} pics',
             style: TextStyle(
-              color: Colors.grey[700],
+              color: chapter.neverRead ? Colors.grey[700] : Colors.grey[300],
               fontSize: 12.0,
             ),
           ),

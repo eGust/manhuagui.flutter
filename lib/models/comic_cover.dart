@@ -16,6 +16,7 @@ class ComicCover {
 
   final int bookId;
   String name, lastUpdatedChapter, lastReadChapter, maxReadChapter, score, updatedAt;
+  int lastChapterId, lastChapterPage, maxChapterId, maxChapterPage;
   bool finished = false, restricted = false;
   bool get isFavorite => globals.favoriteBookIdSet.contains(bookId);
 

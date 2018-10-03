@@ -29,9 +29,10 @@ class _RouteHistoryState extends State<RouteHistory> {
 
   void _loadHistory() async {
     final rows = await globals.localDb.rawQuery('''
-    SELECT books.book_id, books.name, books.cover_json
-      , last_chapter.title last_chapter_title
-      , max_chapter.title max_chapter_title
+    SELECT books.book_id, books.name
+      , cover_json, last_chapter_id, max_chapter_id
+      , last_chapter.title last_chapter_title, last_chapter.read_page
+      , max_chapter.title max_chapter_title, max_chapter.read_page
     FROM books
     INNER JOIN chapters last_chapter ON last_chapter.chapter_id = last_chapter_id
     LEFT JOIN chapters max_chapter ON max_chapter.chapter_id = max_chapter_id
@@ -43,7 +44,11 @@ class _RouteHistoryState extends State<RouteHistory> {
       comics = rows.map((row) {
           final cc = ComicCover(row['book_id'], row['name']);
           cc.loadJson(jsonDecode(row['cover_json']));
+          cc.lastChapterId = row['last_chapter_id'];
+          cc.lastChapterPage = row['last_chapter_page'];
           cc.lastReadChapter = row['last_chapter_title'];
+          cc.maxChapterId = row['max_chapter_id'];
+          cc.maxChapterPage = row['max_chapter_page'];
           cc.maxReadChapter = row['max_chapter_title'];
           return cc;
         }).toList();

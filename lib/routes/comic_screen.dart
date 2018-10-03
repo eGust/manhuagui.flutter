@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../models.dart';
 import '../store.dart';
+import '../routes.dart';
 import '../components/comic/comic_banner.dart';
 import '../components/comic/cover_header.dart';
 import '../components/comic/chapter_tab_view.dart';
-import '../components/comic/action_section.dart';
 
 class ComicScreen extends StatefulWidget {
   ComicScreen(this.cover);
@@ -30,6 +30,7 @@ class _ComicScreenState extends State<ComicScreen> with SingleTickerProviderStat
     setState(() {
       comic = book;
       _tabController = TabController(vsync: this, length: comic.chapterGroups.length);
+      _tabController.addListener(_onTabChanging);
     });
   }
 
@@ -61,6 +62,62 @@ class _ComicScreenState extends State<ComicScreen> with SingleTickerProviderStat
     });
   }
 
+  void _onChapterPressed(chapter) async {
+    await RouteHelper.navigateReader(context, ReaderHelper(comic, chapter));
+    if (!mounted) return;
+    setState(() { });
+  }
+
+  int _tabIndex = 0;
+
+  void _onTabChanging() {
+    if (!_tabController.indexIsChanging) return;
+    setState(() {
+      _tabIndex = _tabController.index;
+    });
+  }
+
+  static const _FAV_SYNC = SizedBox(height: 30.0, child: CircularProgressIndicator());
+  static const _FAV_YES = Icon(Icons.favorite, color: Colors.red, size: 36.0);
+  static const _FAV_NO = Icon(Icons.favorite_border, color: Colors.orange, size: 36.0);
+  static const _FAV_PADDING = EdgeInsets.only(left: 10.0, right: 10.0);
+
+  List<Widget> _buildReadButtons() {
+    final buttons = <Widget>[];
+    if (_tabController == null) return buttons;
+
+    final chLast = comic.chapterMap[comic.lastChapterId ?? 0];
+    if (chLast != null) {
+      buttons.add(
+        _ReadButton('继续上次：${chLast.title}',
+          color: Colors.purple,
+          onPressed: () {},
+        ),
+      );
+    }
+
+    final chapterIds = comic.chapterIdsOfGroup(_tabIndex);
+    final chMax = chapterIds.map((chId) => comic.chapterMap[chId])
+                    .firstWhere((ch) => !ch.neverRead, orElse: () => null);
+    if (chMax != null && chMax != chLast) {
+      buttons.add(
+        _ReadButton('续读：${chMax.title}',
+          color: Colors.red,
+          onPressed: () {},
+        ),
+      );
+    }
+
+    final chFirst = comic.chapterMap[chapterIds.last];
+    buttons.add(
+      _ReadButton('开始阅读：${chFirst.title}',
+        onPressed: () {},
+      ),
+    );
+
+    return buttons;
+  }
+
   @override
   Widget build(BuildContext context) => Container(
     padding: EdgeInsets.only(top: globals.statusBarHeight),
@@ -71,12 +128,60 @@ class _ComicScreenState extends State<ComicScreen> with SingleTickerProviderStat
       children: <Widget>[
         ComicBanner(comic.name),
         CoverHeader(comic),
-        ActionSection(comic,
-          onToggleFavorite: _toggleFavorite,
-          favorite: _favorite,
+        Container(
+          height: 44.0,
+          padding: const EdgeInsets.only(left: 16.0, right: 10.0),
+          color: Colors.grey[200],
+          child: Row(
+            children: <Widget>[
+              GestureDetector(
+                onTap: _toggleFavorite,
+                child: Container(
+                  width: 50.0,
+                  padding: _favorite == -1 ? _FAV_PADDING : null,
+                  child: _favorite == -1 ? _FAV_SYNC :
+                          _favorite == 1 ? _FAV_YES : _FAV_NO,
+                ),
+              ),
+              Expanded(child: Row(
+                children: _buildReadButtons(),
+              )),
+            ],
+          ),
         ),
-        ChapterTabView(comic, _tabController),
+        ChapterTabView(comic,
+          controller: _tabController,
+          onPressed: _onChapterPressed,
+        ),
       ],
+    ),
+  );
+}
+
+class _ReadButton extends StatelessWidget {
+  _ReadButton(this.title, {
+    @required this.onPressed,
+    Color color,
+    this.flex = 1,
+  }) : this._color = color ?? Colors.orange[900];
+
+  final String title;
+  final Color _color;
+  final VoidCallback onPressed;
+  final int flex;
+
+  @override
+  Widget build(BuildContext context) => Expanded(
+    flex: flex,
+    child: Container(
+      margin: const EdgeInsets.only(left: 6.0, right: 6.0),
+      child: RawMaterialButton(
+        padding: const EdgeInsets.only(left: 24.0, right: 24.0),
+        fillColor: _color,
+        splashColor: Colors.brown,
+        child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 17.0)),
+        onPressed: onPressed,
+      ),
     ),
   );
 }
