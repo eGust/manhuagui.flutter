@@ -38,7 +38,17 @@ class ReaderHelper {
 
   Future<void> updateCurrentChapter({ bool updateCover = false }) async {
     final loading = current.load();
-    comic.updateHistory(lastChapterId: current.chapterId, updateCover: updateCover);
+    comic.lastChapterId = current.chapterId;
+    comic.lastChapterPage = pageIndex;
+    comic.lastReadChapter = current.title;
+
+    if (current.chapterId >= comic.maxChapterId ?? 0) {
+      comic.maxChapterId = current.chapterId;
+      comic.maxChapterPage = pageIndex;
+      comic.maxReadChapter = current.title;
+    }
+
+    comic.updateHistory(updateCover: updateCover);
     await loading;
     prevChapter?.load();
     nextChapter?.load();

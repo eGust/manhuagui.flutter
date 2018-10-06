@@ -41,6 +41,7 @@ class _RouteAuthorState extends State<RouteAuthor> {
             filterSelector.meta.filterGroups,
             filters,
             orders: filterSelector.meta.orders,
+            blacklist: Set.from(globals.blacklistSet),
           ),
         ],
       ),
@@ -175,7 +176,7 @@ class AuthorCard extends StatelessWidget {
   Widget build(BuildContext context) => Card(
     child: GestureDetector(
       onTap: () {
-        RouteHelper.navigateAuthor(context, author);
+        RouteHelper.pushAuthor(context, author);
       },
       child: Container(
         padding: const EdgeInsets.all(10.0),

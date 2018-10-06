@@ -32,8 +32,8 @@ class ComicCover {
   Map<String, int> history = {};
 
   static const Map<CoverSize, String> _coverSizeMap = {
-    CoverSize.min: 's/', // 92 * 122
-    CoverSize.xs: 'l/', // 78 * 104
+    CoverSize.min: 'l/', // 78 * 104
+    CoverSize.xs: 's/', // 92 * 122
     CoverSize.sm: 'm/', // 114 * 152
     CoverSize.md: 'b/', // 132 * 176
     CoverSize.lg: 'h/', // 180 * 240
@@ -108,6 +108,15 @@ class ComicCover {
     cc.updatedAt = status.querySelectorAll('span.red').last.text.trim();
     cc.score = element.nextElementSibling.querySelector('.score-avg strong').text;
     return cc;
+  }
+
+  static ComicCover fromSearchJson(Map<String, dynamic> json) {
+    final id = int.parse((json['u'] as String).split('/')[2]);
+    final cover = ComicCover(id, json['t']);
+    cover.finished = json['s'];
+    cover.lastUpdatedChapter = json['ct'];
+    cover.authors = (json['a'] as String).split(',').map((a) => AuthorLink(0, a)).toList();
+    return cover;
   }
 
   static Iterable<ComicCover> parseDesktop(Document doc) => doc

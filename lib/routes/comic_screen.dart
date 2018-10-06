@@ -62,8 +62,9 @@ class _ComicScreenState extends State<ComicScreen> with SingleTickerProviderStat
     });
   }
 
-  void _onChapterPressed(chapter) async {
-    await RouteHelper.navigateReader(context, ReaderHelper(comic, chapter));
+  void _onChapterPressed(final Chapter chapter, { final int startPage }) async {
+    final helper = ReaderHelper(comic, chapter, pageIndex: startPage);
+    await RouteHelper.pushReader(context, helper);
     if (!mounted) return;
     setState(() { });
   }
@@ -89,9 +90,11 @@ class _ComicScreenState extends State<ComicScreen> with SingleTickerProviderStat
     final chLast = comic.chapterMap[comic.lastChapterId ?? 0];
     if (chLast != null) {
       buttons.add(
-        _ReadButton('继续上次：${chLast.title}',
+        _ReadButton('上次：${chLast.title}',
           color: Colors.purple,
-          onPressed: () {},
+          onPressed: () {
+            _onChapterPressed(chLast, startPage: comic.lastChapterPage);
+          },
         ),
       );
     }
@@ -103,7 +106,9 @@ class _ComicScreenState extends State<ComicScreen> with SingleTickerProviderStat
       buttons.add(
         _ReadButton('续读：${chMax.title}',
           color: Colors.red,
-          onPressed: () {},
+          onPressed: () {
+            _onChapterPressed(chMax, startPage: chMax.maxPage);
+          },
         ),
       );
     }
@@ -111,7 +116,10 @@ class _ComicScreenState extends State<ComicScreen> with SingleTickerProviderStat
     final chFirst = comic.chapterMap[chapterIds.last];
     buttons.add(
       _ReadButton('开始阅读：${chFirst.title}',
-        onPressed: () {},
+        flex: buttons.isEmpty ? 1 : 0,
+        onPressed: () {
+          _onChapterPressed(chFirst);
+        },
       ),
     );
 
@@ -130,7 +138,7 @@ class _ComicScreenState extends State<ComicScreen> with SingleTickerProviderStat
         CoverHeader(comic),
         Container(
           height: 44.0,
-          padding: const EdgeInsets.only(left: 16.0, right: 10.0),
+          padding: const EdgeInsets.only(left: 6.0, right: 5.0),
           color: Colors.grey[200],
           child: Row(
             children: <Widget>[
@@ -174,12 +182,15 @@ class _ReadButton extends StatelessWidget {
   Widget build(BuildContext context) => Expanded(
     flex: flex,
     child: Container(
-      margin: const EdgeInsets.only(left: 6.0, right: 6.0),
+      margin: const EdgeInsets.only(left: 2.0, right: 2.0),
       child: RawMaterialButton(
-        padding: const EdgeInsets.only(left: 24.0, right: 24.0),
+        padding: const EdgeInsets.only(left: 18.0, right: 18.0),
         fillColor: _color,
         splashColor: Colors.brown,
-        child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 17.0)),
+        child: Text(title,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(color: Colors.white, fontSize: 17.0),
+        ),
         onPressed: onPressed,
       ),
     ),

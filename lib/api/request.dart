@@ -41,3 +41,11 @@ Future<Map<String, dynamic>> postJsonQuery(String url, String json) async {
   final data = utf8.decode(response.bodyBytes);
   return jsonDecode(data);
 }
+
+const _SEARCH_BASE_URL = 'https://www.manhuagui.com/tools/word.ashx';
+
+Future<List<Map<String, dynamic>>> searchPreview(final String key) async {
+  final url = '$_SEARCH_BASE_URL?key=${Uri.encodeQueryComponent(key)}';
+  final json = await http.read(url);
+  return List.from<Map<String, dynamic>>(jsonDecode(json));
+}

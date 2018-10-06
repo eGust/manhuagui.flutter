@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import './sub_router.dart';
+import '../../routes.dart';
 
 export './sub_router.dart';
 export '../../api.dart';
@@ -35,7 +36,9 @@ class SideBar extends StatelessWidget {
       children: <Widget>[
         IconLabelButton(
           Icons.search,
-          onPressed: () {},
+          onPressed: () {
+            RouteHelper.pushSearch(context);
+          },
         ),
         Container(
           child: Column(

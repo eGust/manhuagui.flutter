@@ -34,7 +34,7 @@ class _RouteHomeState extends State<RouteHome> {
     if (_updated != null && DateTime.now().difference(_updated).inSeconds < 100)
       return;
 
-    final doc = await fetchDom('http://m.manhuagui.com/');
+    final doc = await fetchDom('https://m.manhuagui.com/');
     _updated = DateTime.now();
     final grps = doc.querySelectorAll('.bar + .main-list').map((el) => MapEntry(
       el.previousElementSibling.querySelector('h2').text,
@@ -152,7 +152,7 @@ class _HomeCover extends StatelessWidget {
             )
           ),
           onTap: () {
-            RouteHelper.navigateComic(context, cover);
+            RouteHelper.pushComic(context, cover);
           },
         ),
         Text(

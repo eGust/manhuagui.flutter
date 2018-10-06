@@ -51,19 +51,19 @@ class ComicBook extends ComicCover {
   Chapter nextOf(Chapter ch) => chapterMap[ch?.nextChpId];
 
   String get url => "$PROTOCOL://$DOMAIN$path";
-  String get voteUrl => 'http://www.manhuagui.com/tools/vote.ashx?act=get&bid=$bookId';
+  String get voteUrl => 'https://www.manhuagui.com/tools/vote.ashx?act=get&bid=$bookId';
 
   Future<void> _updateChapters() async {
     final chMap = await globals.localDb.query('chapters',
-      columns: ['chapter_id', 'read_at'],
+      columns: ['chapter_id', 'read_at', 'read_page'],
       where: 'book_id = ?',
       whereArgs: [bookId],
     );
 
     chMap.forEach((ch) {
-      final int chapterId = ch['chapter_id'];
-      final int readAt = ch['read_at'];
-      chapterMap[chapterId]?.readAt = readAt;
+      final chapter = chapterMap[ch['chapter_id']];
+      chapter?.readAt = ch['read_at'];
+      chapter?.maxPage = ch['read_page'];
     });
   }
 
@@ -176,7 +176,7 @@ class ComicBook extends ComicCover {
     await db.update('books', attrs, where: wc);
   }
 
-  Future<void> updateHistory({ final int lastChapterId, final bool updateCover = false }) async {
+  Future<void> updateHistory({ final bool updateCover = false }) async {
     final db = globals.localDb;
     final wc = 'book_id = $bookId';
     final r = await db.rawQuery('SELECT max_chapter_id FROM books WHERE $wc');
@@ -192,14 +192,11 @@ class ComicBook extends ComicCover {
       return;
     }
 
-    final int maxChapterId = r.first['max_chapter_id'] ?? 0;
-    final Map<String, dynamic> attrs = {
+    final attrs = <String, dynamic>{
       'last_chapter_id': lastChapterId,
+      'max_chapter_id': maxChapterId,
     };
-
     if (updateCover) attrs['cover_json'] = jsonEncode(this);
-    if (lastChapterId > maxChapterId) attrs['max_chapter_id'] = lastChapterId;
-
     await db.update('books', attrs, where: wc);
   }
 

@@ -34,7 +34,7 @@ class Chapter {
 
   final int chapterId, bookId;
   final String title;
-  int pageCount, readAt;
+  int pageCount, readAt, maxPage;
   int groupPrevId, groupNextId;
 
   String prevChpId, nextChpId, basePath, signature;
@@ -43,7 +43,7 @@ class Chapter {
   String get path => '/comic/$bookId/$chapterId.html';
   bool get neverRead => readAt == null;
 
-  String getPageUrl(int index) => 'http://i.hamreus.com$basePath${pages[index]}$signature';
+  String getPageUrl(int index) => 'https://i.hamreus.com$basePath${pages[index]}$signature';
 
   bool _refreshing = false, _ready = false;
 
@@ -77,6 +77,7 @@ class Chapter {
     final wc = 'chapter_id = $chapterId';
     final r = await db.rawQuery('SELECT chapter_id FROM chapters WHERE $wc');
     readAt = DateTime.now().millisecondsSinceEpoch;
+    maxPage = (maxPage ?? -1) < pageIndex ? pageIndex : maxPage;
 
     if (r.isEmpty) {
       return db.insert('chapters', {
@@ -84,14 +85,14 @@ class Chapter {
         'title': title,
         'book_id': bookId,
         'read_at': readAt,
-        'read_page': pageIndex,
+        'read_page': maxPage,
       });
     }
 
     return db.update('chapters',
       {
         'read_at': readAt,
-        'read_page': pageIndex,
+        'read_page': maxPage,
       },
       where: wc,
     );

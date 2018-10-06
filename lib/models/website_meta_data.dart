@@ -4,7 +4,7 @@ import 'package:html/dom.dart';
 import './selectors.dart';
 import '../api/request.dart';
 
-const PROTOCOL = 'http';
+const PROTOCOL = 'https';
 const DOMAIN = 'www.manhuagui.com';
 
 abstract class Displayable {

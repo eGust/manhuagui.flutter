@@ -92,6 +92,7 @@ class HomeComicListManager extends ComicListManagerBase {
           DialogBody(
             filterSelector.meta.filterGroups,
             filters,
+            blacklist: Set.from(globals.blacklistSet),
             onSelectedFilter: () {
               if (_pinned) return;
               Navigator.pop(context);

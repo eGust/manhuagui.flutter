@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../touchable_icon.dart';
+import '../../routes.dart';
 
 class ComicBanner extends StatelessWidget {
   ComicBanner(this.title);
@@ -32,6 +33,9 @@ class ComicBanner extends StatelessWidget {
           Icons.search,
           size: 28.0,
           color: Colors.white,
+          onPressed: () {
+            RouteHelper.pushSearch(context);
+          },
         ),
       ],
     ),

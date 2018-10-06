@@ -9,13 +9,13 @@ class ComicCoverRow extends StatelessWidget {
   final VoidCallback onPopComic;
 
   void _pressedComic() async {
-    await RouteHelper.navigateComic(_context, _cover);
+    await RouteHelper.pushComic(_context, _cover);
     if (onPopComic == null) return;
     onPopComic();
   }
 
   void _pressedAuthor(final AuthorLink author) {
-    RouteHelper.navigateAuthor(_context, author);
+    RouteHelper.pushAuthor(_context, author);
   }
 
   Widget _wrapTouch(Widget w) => GestureDetector(

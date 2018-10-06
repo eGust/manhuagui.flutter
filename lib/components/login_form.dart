@@ -65,7 +65,7 @@ class _LoginFormState extends State<LoginForm> {
           TextFormField(
             controller: _username,
             autofocus: true,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: '用户名',
               labelStyle: TextStyle(color: Colors.red)
             ),
@@ -73,7 +73,7 @@ class _LoginFormState extends State<LoginForm> {
           TextFormField(
             controller: _password,
             obscureText: true,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: '密码',
             ),
           ),
