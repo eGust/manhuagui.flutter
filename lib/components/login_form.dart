@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../store.dart';
 
@@ -53,11 +54,33 @@ class _LoginFormState extends State<LoginForm> {
     }
   }
 
+  static const REGISTER_URL = 'https://www.manhuagui.com/user/register';
+
+  void _register() async {
+    if (await canLaunch(REGISTER_URL)) {
+      await launch(REGISTER_URL);
+    } else {
+      await showDialog<void>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('无法打开外部链接'),
+          content: Center(child: RaisedButton(
+            child: const Text('确定'),
+            color: Colors.red,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) => Container(
     margin: const EdgeInsets.only(left: 30.0, right: 30.0),
     width: 280.0,
-    height: 240.0,
+    height: 300.0,
     child: Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children:
@@ -87,7 +110,7 @@ class _LoginFormState extends State<LoginForm> {
           //   },
           // ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               SizedBox(
                 width: 120.0,
@@ -112,6 +135,24 @@ class _LoginFormState extends State<LoginForm> {
                 ),
               ),
             ],
+          ),
+          SizedBox(
+            height: 48.0,
+            child: RaisedButton(
+              color: Colors.green[900],
+              child: Row(
+                children: <Widget>[
+                  const Icon(Icons.open_in_browser, color: Colors.white, size: 36.0),
+                  Expanded(
+                    child: Center(child: const Text('网站注册', style: const TextStyle(
+                      fontSize: 18.0,
+                      color: Colors.white,
+                    )))
+                  ),
+                ],
+              ),
+              onPressed: _register,
+            ),
           ),
         ] :
         _status == LoginStatus.pending ? [

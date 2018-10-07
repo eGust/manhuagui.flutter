@@ -24,6 +24,7 @@ dependencies:
   intl: any
   sqflite: any
   flutter_cache_manager: any
+  url_launcher: any
 
 dev_dependencies:
   flutter_test:

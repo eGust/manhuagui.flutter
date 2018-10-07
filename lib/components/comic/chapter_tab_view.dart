@@ -70,12 +70,12 @@ class ChapterButton extends StatelessWidget {
     margin: const EdgeInsets.fromLTRB(8.0, 6.0, 8.0, 6.0),
     child: RawMaterialButton(
       shape: const RoundedRectangleBorder(
-        side: const BorderSide(color: Colors.orange, width: 2.0),
-        borderRadius: const BorderRadius.all(Radius.circular(12.0)),
+        side: BorderSide(color: Colors.orange, width: 2.0),
+        borderRadius: BorderRadius.all(Radius.circular(12.0)),
       ),
       fillColor: chapter.neverRead ? Colors.yellow[300] : Colors.red[700],
       splashColor: Colors.orange,
-      padding: const EdgeInsets.fromLTRB(16.0, 5.0, 14.0, 4.0),
+      padding: const EdgeInsets.fromLTRB(16.0, 5.0, 16.0, 5.0),
       child: Column(
         children: [
           Text(

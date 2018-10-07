@@ -41,7 +41,7 @@ class _RouteAuthorState extends State<RouteAuthor> {
             filterSelector.meta.filterGroups,
             filters,
             orders: filterSelector.meta.orders,
-            blacklist: Set.from(globals.blacklistSet),
+            blacklist: globals.blacklistSet,
           ),
         ],
       ),
