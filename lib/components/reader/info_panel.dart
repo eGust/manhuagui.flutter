@@ -102,7 +102,7 @@ class InfoPanel extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Text(
-                        '${pageIndex + 1} / $pageCount',
+                        '${pageIndex == null ? '' : pageIndex + 1} / $pageCount',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 15.0,
@@ -112,7 +112,7 @@ class InfoPanel extends StatelessWidget {
                         divisions: pageCount - 1,
                         min: 1.0,
                         max: pageCount.toDouble(),
-                        value: (pageIndex + 1).toDouble(),
+                        value: ((pageIndex ?? 0) + 1).toDouble(),
                         activeColor: Colors.white,
                         inactiveColor: Colors.white,
                         onChangeEnd: (value) {

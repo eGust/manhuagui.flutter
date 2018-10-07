@@ -42,7 +42,7 @@ class ReaderHelper {
     comic.lastChapterPage = pageIndex;
     comic.lastReadChapter = current.title;
 
-    if (current.chapterId >= comic.maxChapterId ?? 0) {
+    if (current.chapterId >= (comic.maxChapterId ?? 0)) {
       comic.maxChapterId = current.chapterId;
       comic.maxChapterPage = pageIndex;
       comic.maxReadChapter = current.title;
