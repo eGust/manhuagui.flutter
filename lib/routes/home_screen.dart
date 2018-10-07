@@ -16,7 +16,7 @@ class HomeScreen extends StatefulWidget{
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   String _path = 'home';
   String get path => _path;
   set path(String val) {
@@ -46,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
 
     _sbSettings = convertSideBarItem(RouteConfiguration.router);
     sbItemMap = {
@@ -79,6 +80,29 @@ class _HomeScreenState extends State<HomeScreen> {
       _routeCache[path] = w;
     }
     return w;
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.inactive: {
+        globals.pause();
+        break;
+      }
+      case AppLifecycleState.resumed: {
+        globals.resucme();
+        break;
+      }
+      default: {
+        logd('statechanged: $state');
+      }
+    }
   }
 
   @override

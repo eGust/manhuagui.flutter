@@ -183,6 +183,15 @@ class Store {
     }
     save();
   }
+
+  Future<void> pause() async {
+    save();
+  }
+
+  Future<void> resucme() async {
+    _openRemoteDb();
+    _openLocalDb();
+  }
 }
 
 final Store globals = Store();
