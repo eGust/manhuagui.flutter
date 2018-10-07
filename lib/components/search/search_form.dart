@@ -8,17 +8,19 @@ import '../touchable_icon.dart';
 typedef OnSearchCallback = void Function(String);
 
 class SearchForm extends StatefulWidget {
-  SearchForm(this.onSearch);
+  SearchForm(this.searchText, { this.onSearch });
+  final String searchText;
   final OnSearchCallback onSearch;
   @override
-  _SearchFormState createState() => _SearchFormState(onSearch);
+  _SearchFormState createState() => _SearchFormState(this);
 }
 
 class _SearchFormState extends State<SearchForm> {
-  _SearchFormState(this.onSearch);
+  _SearchFormState(this.parent):
+    _key = TextEditingController(text: parent.searchText);
 
-  final OnSearchCallback onSearch;
-  final _key = TextEditingController(text: '');
+  final SearchForm parent;
+  final TextEditingController _key;
 
   @override
   void initState() {
@@ -65,6 +67,11 @@ class _SearchFormState extends State<SearchForm> {
     });
   }
 
+  void _onPressedSearch() {
+    if (parent.onSearch == null) return;
+    parent.onSearch(_key.text);
+  }
+
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -72,15 +79,20 @@ class _SearchFormState extends State<SearchForm> {
       // header
       Container(
         color: Colors.brown[900],
+        padding: const EdgeInsets.only(left: 12.0, right: 12.0),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             TouchableIcon(Icons.arrow_back_ios,
               color: Colors.white,
               onPressed: () { Navigator.pop(context); },
             ),
             Container(
-              margin: const EdgeInsets.only(left: 5.0, right: 5.0),
-              child: const Icon(Icons.search, size: 30.0, color: Colors.grey),
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+              child: const Text('漫画搜索', style: TextStyle(
+                color: Colors.white,
+                fontSize: 18.0,
+              )),
             ),
             Expanded(
               child: TextFormField(
@@ -94,28 +106,55 @@ class _SearchFormState extends State<SearchForm> {
               ),
             ),
             Container(
-              margin: const EdgeInsets.only(left: 5.0, right: 5.0),
+              margin: const EdgeInsets.only(left: 10.0),
               child: RaisedButton(
-                color: Colors.red[900],
+                color: Colors.deepOrange[900],
                 textColor: Colors.white,
-                child: const Text('搜索', style: const TextStyle(fontSize: 18.0)),
-                onPressed: () {},
+                child: _lastSearched.isEmpty ?
+                  const Icon(Icons.search, size: 30.0, color: Colors.grey) :
+                  const Icon(Icons.search, size: 30.0, color: Colors.white),
+                onPressed: _lastSearched.isEmpty ? null : _onPressedSearch,
               ),
             ),
           ],
         ),
       ),
     ] + (_searching ? <Widget>[
-      Container(
-        alignment: Alignment.topCenter,
-        padding: const EdgeInsets.all(30.0),
-        child: SizedBox(
-          width: 50.0,
-          height: 50.0,
-          child: CircularProgressIndicator(strokeWidth: 5.0),
+        Container(
+          alignment: Alignment.topCenter,
+          padding: const EdgeInsets.all(30.0),
+          child: const SizedBox(
+            width: 50.0,
+            height: 50.0,
+            child: CircularProgressIndicator(strokeWidth: 5.0),
+          ),
         ),
-      ),
-    ] : List.from<Widget>(_covers.map((cover) => _SearchCover(cover)))),
+      ] : List.from<Widget>(_covers.map((cover) => _SearchCover(cover)))
+    ) + (
+      _covers.isEmpty ? <Widget>[
+        Container(
+          alignment: Alignment.topCenter,
+          padding: const EdgeInsets.all(20.0),
+          child: const Text('最多显示10条预览', style: TextStyle(
+            color: Colors.grey,
+            fontSize: 22.0,
+          )),
+        ),
+      ] : <Widget>[
+        GestureDetector(
+          onTap: _onPressedSearch,
+          child: Container(
+            alignment: Alignment.center,
+            padding: const EdgeInsets.all(15.0),
+            color: Colors.red,
+            child: const Text('显示全部 ...', style: TextStyle(
+              color: Colors.white,
+              fontSize: 18.0,
+            )),
+          ),
+        ),
+      ]
+    ),
   );
 }
 
