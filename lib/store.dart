@@ -70,6 +70,7 @@ class Store {
   }
 
   Future<void> _openRemoteDb() async {
+    remoteDb = null;
     remoteDb = await RemoteDb.create(uri: MONGO_DB_URL);
   }
 

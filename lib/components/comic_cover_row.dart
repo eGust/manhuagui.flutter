@@ -133,22 +133,30 @@ class ComicCoverRow extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(
-                    '[阅读进度] ${_cover.maxReadChapterTitle} ',
-                    overflow: TextOverflow.fade,
-                    style: const TextStyle(
-                      fontSize: 13.0,
-                      color: Colors.blueAccent,
+                  Expanded(child: Container(
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.only(right: 5.0),
+                    child: Text(
+                      '[阅读进度] ${_cover.maxReadChapterTitle} ',
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 13.0,
+                        color: Colors.blueAccent,
+                      ),
                     ),
-                  ),
-                  Text(
-                    '[上次阅读] ${_cover.lastReadChapterTitle}',
-                    overflow: TextOverflow.fade,
-                    style: const TextStyle(
-                      fontSize: 13.0,
-                      color: Colors.deepPurple,
+                  )),
+                  Expanded(child: Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(left: 5.0),
+                    child: Text(
+                      '[上次阅读] ${_cover.lastReadChapterTitle}',
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 13.0,
+                        color: Colors.deepPurple,
+                      ),
                     ),
-                  ),
+                  )),
                 ],
               ),
           ]) + <Widget>[
