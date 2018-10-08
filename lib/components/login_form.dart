@@ -58,7 +58,7 @@ class _LoginFormState extends State<LoginForm> {
 
   void _register() async {
     if (await canLaunch(REGISTER_URL)) {
-      await launch(REGISTER_URL);
+      await launch(REGISTER_URL, forceSafariVC: false);
     } else {
       await showDialog<void>(
         context: context,
@@ -113,13 +113,22 @@ class _LoginFormState extends State<LoginForm> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               SizedBox(
-                width: 120.0,
-                height: 40.0,
+                width: 180.0,
+                height: 48.0,
                 child: RaisedButton(
-                  color: Colors.lightBlue[800],
-                  textColor: Colors.white,
-                  child: const Text('登录', style: const TextStyle(fontSize: 18.0)),
-                  onPressed: anyEmtpy ? null : _startLogin,
+                  color: Colors.green[900],
+                  child: Row(
+                    children: <Widget>[
+                      const Icon(Icons.open_in_browser, color: Colors.white, size: 36.0),
+                      Expanded(
+                        child: Center(child: const Text('网站注册', style: const TextStyle(
+                          fontSize: 18.0,
+                          color: Colors.white,
+                        )))
+                      ),
+                    ],
+                  ),
+                  onPressed: _register,
                 ),
               ),
               SizedBox(
@@ -139,19 +148,12 @@ class _LoginFormState extends State<LoginForm> {
           SizedBox(
             height: 48.0,
             child: RaisedButton(
-              color: Colors.green[900],
-              child: Row(
-                children: <Widget>[
-                  const Icon(Icons.open_in_browser, color: Colors.white, size: 36.0),
-                  Expanded(
-                    child: Center(child: const Text('网站注册', style: const TextStyle(
-                      fontSize: 18.0,
-                      color: Colors.white,
-                    )))
-                  ),
-                ],
+              color: Colors.lightBlue[800],
+              textColor: Colors.white,
+              child: Center(
+                child: const Text('登 录', style: const TextStyle(fontSize: 21.0))
               ),
-              onPressed: _register,
+              onPressed: anyEmtpy ? null : _startLogin,
             ),
           ),
         ] :

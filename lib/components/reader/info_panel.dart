@@ -143,7 +143,7 @@ class InfoPanel extends StatelessWidget {
               disabledColor: _disabledColor,
               size: 32.0,
               onPressed: () {
-                onChapterChanged(offset: 0 - 1);
+                onChapterChanged(offset: 0 + 1);
               },
             ),
           ],

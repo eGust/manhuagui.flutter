@@ -28,10 +28,10 @@ class ComicCoverRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => _wrapTouch(Container(
-    height: 242.0,
+    height: 241.0,
     padding: const EdgeInsets.only(right: 6.0),
     decoration: BoxDecoration(
-      border: Border(bottom: BorderSide(color: Colors.orange[300])),
+      border: const Border(bottom: BorderSide(color: Colors.amber)),
       color: _cover.restricted ? Colors.pink[50] : Colors.yellow[100],
     ),
     child: Row(children: [
@@ -44,7 +44,7 @@ class ComicCoverRow extends StatelessWidget {
         ),
       ),
       Expanded(child: Container(
-        padding: const EdgeInsets.all(6.0),
+        padding: const EdgeInsets.fromLTRB(6.0, 5.0, 6.0, 5.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -53,7 +53,7 @@ class ComicCoverRow extends StatelessWidget {
             Text(
               _cover.name,
               style: TextStyle(
-                fontSize: 19.0,
+                fontSize: _cover.name.length < 27 ? 19.0 : 17.0,
                 color: _cover.restricted ? Colors.pink[600] : Colors.deepPurple[900],
               ),
             ),
@@ -64,15 +64,13 @@ class ComicCoverRow extends StatelessWidget {
                 Text(
                   '[${_cover.progress}] ${_cover.lastUpdatedChapterTitle}',
                   style: TextStyle(
-                    fontSize: 15.0,
+                    fontSize: 14.0,
                     color: _cover.finished ? Colors.red[800] : Colors.green[800],
                   ),
                 ),
                 Text(
                   _cover.updatedAt == null ? '' : '更新于 ${_cover.updatedAt}',
-                  style: TextStyle(
-                    fontSize: 14.0,
-                  ),
+                  style: const TextStyle(fontSize: 14.0),
                 ),
               ],
             ),
@@ -107,8 +105,8 @@ class ComicCoverRow extends StatelessWidget {
                   )).toList(),
                 ),
                 _cover.isFavorite ?
-                  const Icon(Icons.favorite, color: Colors.red, size: 30.0) :
-                  const Icon(Icons.favorite_border, color: Colors.orange, size: 30.0),
+                  const Icon(Icons.favorite, color: Colors.red, size: 24.0) :
+                  const Icon(Icons.favorite_border, color: Colors.orange, size: 24.0),
               ],
             ),
             // Tags
@@ -118,20 +116,20 @@ class ComicCoverRow extends StatelessWidget {
                 Text(
                   (_cover.tags ?? ['[无类型数据]']).join(' '),
                   style: TextStyle(
-                    fontSize: 16.0,
+                    fontSize: 15.0,
                   ),
                 ),
                 Text(
                   '${_cover.restricted ? '*' : ''}${_cover.score ?? ''}',
                   style: TextStyle(
-                    fontSize: 16.0,
+                    fontSize: 15.0,
                   ),
                 ),
               ],
             ),
+          ] + (_cover.maxReadChapter == null && _cover.lastReadChapter == null ?
+            <Widget>[] : <Widget>[
             // Read Progress
-            _cover.maxReadChapter == null && _cover.lastReadChapter == null ?
-              Container() :
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -139,7 +137,7 @@ class ComicCoverRow extends StatelessWidget {
                     '[阅读进度] ${_cover.maxReadChapterTitle} ',
                     overflow: TextOverflow.fade,
                     style: const TextStyle(
-                      fontSize: 14.0,
+                      fontSize: 13.0,
                       color: Colors.blueAccent,
                     ),
                   ),
@@ -147,15 +145,16 @@ class ComicCoverRow extends StatelessWidget {
                     '[上次阅读] ${_cover.lastReadChapterTitle}',
                     overflow: TextOverflow.fade,
                     style: const TextStyle(
-                      fontSize: 14.0,
+                      fontSize: 13.0,
                       color: Colors.deepPurple,
                     ),
                   ),
                 ],
               ),
+          ]) + <Widget>[
             // Introduction - short
             Container(
-              height: 87.0,
+              height: 83.0,
               padding: const EdgeInsets.only(top: 5.0),
               decoration: BoxDecoration(
                 border: Border(top: BorderSide(color: Colors.orange[100])),
@@ -164,7 +163,7 @@ class ComicCoverRow extends StatelessWidget {
                 child: Text(
                   _cover.shortIntro ?? '无简介数据',
                   style: TextStyle(
-                    fontSize: 15.0,
+                    fontSize: 14.0,
                   ),
                 ),
               ),
