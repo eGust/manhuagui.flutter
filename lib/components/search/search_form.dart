@@ -129,7 +129,7 @@ class _SearchFormState extends State<SearchForm> {
             child: CircularProgressIndicator(strokeWidth: 5.0),
           ),
         ),
-      ] : List.from<Widget>(_covers.map((cover) => _SearchCover(cover)))
+      ] : List<Widget>.from(_covers.map((cover) => _SearchCover(cover)))
     ) + (
       _covers.isEmpty ? <Widget>[
         Container(

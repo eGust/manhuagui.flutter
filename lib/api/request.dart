@@ -47,5 +47,5 @@ const _SEARCH_BASE_URL = 'https://www.manhuagui.com/tools/word.ashx';
 Future<List<Map<String, dynamic>>> searchPreview(final String key) async {
   final url = '$_SEARCH_BASE_URL?key=${Uri.encodeQueryComponent(key)}';
   final json = await http.read(url);
-  return List.from<Map<String, dynamic>>(jsonDecode(json));
+  return List<Map<String, dynamic>>.from(jsonDecode(json));
 }

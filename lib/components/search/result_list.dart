@@ -68,7 +68,7 @@ class _ResultListState extends State<ResultList> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: List.from<Widget>(
+              children: List<Widget>.from(
                 _ORDER_MAP.entries.map((pair) =>
                   RaisedButton(
                     onPressed: () {
