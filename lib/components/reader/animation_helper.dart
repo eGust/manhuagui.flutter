@@ -20,23 +20,14 @@ class AnimationHelper {
     _posLeftRightTo = tweenLRT.animate(animation);
     _posRightLeftFr = tweenRLF.animate(animation);
     _posRightLeftTo = tweenRLT.animate(animation);
-
-    _posLeftRightFr.addStatusListener(_animationStatusChanged);
-    _posRightLeftFr.addStatusListener(_animationStatusChanged);
   }
-
-  int _actionId;
 
   void play(final int actionId) {
-    _actionId = actionId;
     _controller.reset();
-    _controller.forward();
-  }
-
-  void _animationStatusChanged(final AnimationStatus status) {
-    if (status != AnimationStatus.completed || onAnimationFinished == null || _actionId == null) return;
-    onAnimationFinished(_actionId);
-    _actionId = null;
+    _controller.forward().whenComplete(() {
+      if (onAnimationFinished == null) return;
+      onAnimationFinished(actionId);
+    });
   }
 
   void dispose() {
