@@ -18,13 +18,14 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.2
-  shared_preferences: any
-  mongo_dart: any
   intl: any
+  mongo_dart: any
+  shared_preferences: any
   sqflite: any
-  flutter_cache_manager: any
   url_launcher: any
+
+  flutter_cache_store:
+    git: git://github.com/eGust/flutter_cache_store.git
 
 dev_dependencies:
   flutter_test:

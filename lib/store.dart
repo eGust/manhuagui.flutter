@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter_cache_store/flutter_cache_store.dart';
 
 import './models.dart';
 import './api.dart';
@@ -16,7 +18,7 @@ class Store {
   User user;
   RemoteDb remoteDb;
   Database localDb;
-  CacheManager cache;
+  CacheStore cache;
   Set<int> favoriteBookIdSet = Set();
   Set<String> blacklistSet = Set();
   static final _df = DateFormat('yyyy-MM-dd');
@@ -79,16 +81,25 @@ class Store {
   }
 
   Future<void> _openCache() async {
-    if (isDebug) {
-      CacheManager.maxNrOfCacheObjects = 9999;
-      CacheManager.inBetweenCleans = const Duration(minutes: 2);
-      CacheManager.maxAgeCacheObject = const Duration(minutes: 5);
-    } else {
-      CacheManager.maxNrOfCacheObjects = 9999;
-      CacheManager.inBetweenCleans = const Duration(days: 5);
-      CacheManager.maxAgeCacheObject = const Duration(days: 10);
+    cache = await CacheStore.getInstance();
+  }
+
+  Future<void> _cleanLegacy() async {
+    final tmpPath = (await getTemporaryDirectory()).path;
+    logd('tmpPath = $tmpPath');
+    final dir = Directory('${tmpPath}cache');
+    if (await dir.exists()) {
+      await dir.delete(recursive: true);
     }
-    cache = await CacheManager.getInstance();
+  }
+
+  Future<void> cleanCacheManager() async {
+    return Future.wait([
+      _cleanLegacy(),
+      storage.remove('lib_cached_image_data'),
+      storage.remove('lib_cached_image_data_last_clean'),
+      cache.clearAll(),
+    ]);
   }
 
   Future<void> initialize() async {

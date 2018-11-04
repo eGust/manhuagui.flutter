@@ -99,7 +99,8 @@ class ReaderHelper {
     => ready ? _findImageEntry(current, pageIndex + offset) : null;
 
   void updateCurrentPageAndCacheSiblings() {
-    updateCurrentChapter();
+    comic.updateHistory();
+    current.updateHistory(pageIndex);
     CACHE_SIBLINGS.forEach(_cacheSiblingImageFile);
   }
 

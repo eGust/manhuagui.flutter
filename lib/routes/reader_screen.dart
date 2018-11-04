@@ -23,7 +23,7 @@ class _ReaderScreenState extends State<ReaderScreen> with TickerProviderStateMix
   _ReaderScreenState(final this.helper) {
     StatusBar.hide();
     AnimationHelper.circleSize = globals.screenSize.width / 4;
-    AnimationHelper.strokeWidth = 10.0;
+    AnimationHelper.strokeWidth = 8.0;
     _animation = AnimationHelper(this, _onAnimationFinished);
   }
 
