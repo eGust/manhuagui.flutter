@@ -23,9 +23,7 @@ dependencies:
   shared_preferences: any
   sqflite: any
   url_launcher: any
-
-  flutter_cache_store:
-    git: git://github.com/eGust/flutter_cache_store.git
+  flutter_cache_store: any
 
 dev_dependencies:
   flutter_test:

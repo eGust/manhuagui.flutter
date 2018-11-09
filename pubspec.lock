@@ -77,7 +77,7 @@ packages:
       name: fixnum
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.10.8"
+    version: "0.10.9"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -86,12 +86,10 @@ packages:
   flutter_cache_store:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "5db79b1b8b26b9a8f807841f809b45f0e1ad76d2"
-      url: "git://github.com/eGust/flutter_cache_store.git"
-    source: git
-    version: "0.0.3"
+      name: flutter_cache_store
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1-beta"
   flutter_test:
     dependency: "direct dev"
     description: flutter
