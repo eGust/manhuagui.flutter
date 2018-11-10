@@ -84,7 +84,7 @@ class ReaderHelper {
       globals.cache.getFile(
         chapter.getPageUrl(page),
         headers: IMAGE_HEADERS,
-        key: '${chapter.bookId}/${chapter.chapterId}.webp',
+        key: '${chapter.bookId}/${chapter.chapterId}/p$page.webp',
       );
 
   Future<ImageEntry> _findImageEntry(
