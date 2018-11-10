@@ -7,7 +7,8 @@ abstract class StatusBar {
   static set hidden(bool value) {
     if (value == _hidden) return;
     _hidden = value;
-    SystemChrome.setEnabledSystemUIOverlays(value ? [] : SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIOverlays(
+        value ? [] : SystemUiOverlay.values);
   }
 
   static void init() {

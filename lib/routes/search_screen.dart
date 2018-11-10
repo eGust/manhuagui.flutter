@@ -28,15 +28,16 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) => Column(
-    children: <Widget>[
-      Container(
-        color: Colors.brown[900],
-        height: globals.statusBarHeight,
-      ),
-      Expanded(child: _inputing ?
-        SearchForm(_searchKey, onSearch: _onSearch) :
-        ResultList(_searchKey, onResearch: _onResearch),
-      ),
-    ],
-  );
+        children: <Widget>[
+          Container(
+            color: Colors.brown[900],
+            height: globals.statusBarHeight,
+          ),
+          Expanded(
+            child: _inputing
+                ? SearchForm(_searchKey, onSearch: _onSearch)
+                : ResultList(_searchKey, onResearch: _onResearch),
+          ),
+        ],
+      );
 }

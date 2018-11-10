@@ -7,7 +7,8 @@ export './sub_router.dart';
 export '../../api.dart';
 
 class SideBarItem {
-  SideBarItem(this.router, {
+  SideBarItem(
+    this.router, {
     this.onPressed,
     this.focused = false,
   });
@@ -17,8 +18,8 @@ class SideBarItem {
 }
 
 class SideBar extends StatelessWidget {
-  SideBar(this._mainButtons, this._settings, { Color color }):
-    this.color = color ?? Colors.brown[900];
+  SideBar(this._mainButtons, this._settings, {Color color})
+      : this.color = color ?? Colors.brown[900];
 
   static const _SIDE_BAR_WIDTH = 72.0;
 
@@ -28,39 +29,41 @@ class SideBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    width: _SIDE_BAR_WIDTH,
-    color: color,
-    padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        IconLabelButton(
-          Icons.search,
-          onPressed: () {
-            RouteHelper.pushSearch(context);
-          },
+        width: _SIDE_BAR_WIDTH,
+        color: color,
+        padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            IconLabelButton(
+              Icons.search,
+              onPressed: () {
+                RouteHelper.pushSearch(context);
+              },
+            ),
+            Container(
+              child: Column(
+                children: _mainButtons
+                    .map((item) => IconLabelButton.forSideBar(item))
+                    .toList(),
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              ),
+            ),
+            IconLabelButton.forSideBar(_settings),
+          ],
         ),
-        Container(
-          child: Column(
-            children: _mainButtons.map((item) => IconLabelButton.forSideBar(item)).toList(),
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          ),
-        ),
-        IconLabelButton.forSideBar(_settings),
-      ],
-    ),
-  );
+      );
 }
 
 class IconLabelButton extends StatelessWidget {
-  IconLabelButton(this.icon, { this.focused = false, this.onPressed, this.label });
+  IconLabelButton(this.icon,
+      {this.focused = false, this.onPressed, this.label});
 
   IconLabelButton.forSideBar(SideBarItem item)
-    : this.onPressed = item.onPressed
-    , this.icon = item.router.icon
-    , this.label = item.router.label
-    , this.focused = item.focused
-    ;
+      : this.onPressed = item.onPressed,
+        this.icon = item.router.icon,
+        this.label = item.router.label,
+        this.focused = item.focused;
 
   final VoidCallback onPressed;
   final IconData icon;
@@ -73,28 +76,30 @@ class IconLabelButton extends StatelessWidget {
   List<Widget> _createChildren() {
     final color = focused ? _focusedColor : _normalColor;
     final iconItem = Icon(
-        icon,
-        color: color,
-        size: 45.0,
-      );
-    final text = label == null ? null : Text(
-        label,
-        style: TextStyle(
-          color: color,
-          fontSize: 14.0,
-        ),
-      );
+      icon,
+      color: color,
+      size: 45.0,
+    );
+    final text = label == null
+        ? null
+        : Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontSize: 14.0,
+            ),
+          );
 
     return label == null ? [iconItem] : [iconItem, text];
   }
 
   @override
   Widget build(BuildContext context) => Container(
-    child: FlatButton(
-      onPressed: onPressed,
-      padding: const EdgeInsets.fromLTRB(5.0, 12.0, 5.0, 12.0),
-      child: Column(children: _createChildren()),
-    ),
-    margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
-  );
+        child: FlatButton(
+          onPressed: onPressed,
+          padding: const EdgeInsets.fromLTRB(5.0, 12.0, 5.0, 12.0),
+          child: Column(children: _createChildren()),
+        ),
+        margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+      );
 }

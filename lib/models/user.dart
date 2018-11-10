@@ -3,7 +3,13 @@ import 'dart:async';
 import '../api.dart';
 import '../models.dart';
 
-enum AjaxAction { checkLogin, login, checkFavorite, addFavorite, removeFavorite }
+enum AjaxAction {
+  checkLogin,
+  login,
+  checkFavorite,
+  addFavorite,
+  removeFavorite
+}
 
 final Map<AjaxAction, String> _actionMap = {
   AjaxAction.checkLogin: 'user_check_login', // GET
@@ -14,21 +20,25 @@ final Map<AjaxAction, String> _actionMap = {
 };
 
 class User {
-  static const _BASE_AJAX_URL = 'https://www.manhuagui.com/tools/submit_ajax.ashx';
-  static const _PAGE_FAVORITE_URL = 'https://m.manhuagui.com/user/book/?ajax=1&page=';
+  static const _BASE_AJAX_URL =
+      'https://www.manhuagui.com/tools/submit_ajax.ashx';
+  static const _PAGE_FAVORITE_URL =
+      'https://m.manhuagui.com/user/book/?ajax=1&page=';
   static const _SHELF_URL = 'https://www.manhuagui.com/user/book/shelf';
 
-  static String buildActionUrl(AjaxAction action, { Map<String, String> queryParams }) {
+  static String buildActionUrl(AjaxAction action,
+      {Map<String, String> queryParams}) {
     final parts = <String>['$_BASE_AJAX_URL?action=${_actionMap[action]}'];
     if (queryParams != null) {
-      parts.addAll(queryParams.entries.map((entry) => '${entry.key}=${entry.value}'));
+      parts.addAll(
+          queryParams.entries.map((entry) => '${entry.key}=${entry.value}'));
     }
     return parts.join('&');
   }
 
   static final _reCookie = RegExp(r'(my=[^;]+)');
 
-  User({ String username, String password, String cookie }) {
+  User({String username, String password, String cookie}) {
     _username = username;
     _password = password;
     _setCookie(cookie);
@@ -36,7 +46,8 @@ class User {
 
   Future<bool> initialize() async {
     if (_cookie != null) {
-      final res = await getJson(buildActionUrl(AjaxAction.checkLogin), headers: cookieHeaders);
+      final res = await getJson(buildActionUrl(AjaxAction.checkLogin),
+          headers: cookieHeaders);
       if (res['status'] == 1) return true;
       _setCookie(null);
     }
@@ -58,7 +69,7 @@ class User {
     if (_cookie == null) {
       cookieHeaders = {};
     } else {
-      cookieHeaders = { 'cookie': value };
+      cookieHeaders = {'cookie': value};
     }
   }
 
@@ -68,16 +79,20 @@ class User {
 
   Future<bool> checkLogin() async {
     if (_cookie == null) return false;
-    final res = await getJson(buildActionUrl(AjaxAction.checkLogin), headers: cookieHeaders);
+    final res = await getJson(buildActionUrl(AjaxAction.checkLogin),
+        headers: cookieHeaders);
     final r = res['status'] == 1;
-    if (!r) { _setCookie(null); }
+    if (!r) {
+      _setCookie(null);
+    }
     return r;
   }
 
-  Future<String> login({ String username, String password, bool remember = true }) async {
+  Future<String> login(
+      {String username, String password, bool remember = true}) async {
     final data = await postJsonRaw(
       buildActionUrl(AjaxAction.login),
-      body: { 'txtUserName': username, 'txtPassword': password },
+      body: {'txtUserName': username, 'txtPassword': password},
     );
 
     String c;
@@ -103,24 +118,30 @@ class User {
 
     Map<String, dynamic> res;
     if (action == AjaxAction.checkFavorite) {
-      final url = buildActionUrl(AjaxAction.checkFavorite, queryParams: { 'book_id': '$bookId' });
+      final url = buildActionUrl(AjaxAction.checkFavorite,
+          queryParams: {'book_id': '$bookId'});
       res = await getJson(url, headers: cookieHeaders);
     } else {
       final url = buildActionUrl(action);
-      res = await postJson(url, headers: cookieHeaders, body: { 'book_id': '$bookId' });
+      res = await postJson(url,
+          headers: cookieHeaders, body: {'book_id': '$bookId'});
     }
     return res['status'] == 1;
   }
 
-  Future<bool> isFavorite(int bookId) => _favorite(bookId, AjaxAction.checkFavorite);
+  Future<bool> isFavorite(int bookId) =>
+      _favorite(bookId, AjaxAction.checkFavorite);
 
-  Future<bool> addFavorite(int bookId) => _favorite(bookId, AjaxAction.addFavorite);
+  Future<bool> addFavorite(int bookId) =>
+      _favorite(bookId, AjaxAction.addFavorite);
 
-  Future<bool> removeFavorite(int bookId) => _favorite(bookId, AjaxAction.removeFavorite);
+  Future<bool> removeFavorite(int bookId) =>
+      _favorite(bookId, AjaxAction.removeFavorite);
 
-  Future<List<ComicCover>> getFavorites({ int pageNo = 1 }) async {
+  Future<List<ComicCover>> getFavorites({int pageNo = 1}) async {
     if (!isLogin) return [];
-    final doc = await fetchAjaxDom('$_PAGE_FAVORITE_URL$pageNo', headers: cookieHeaders);
+    final doc = await fetchAjaxDom('$_PAGE_FAVORITE_URL$pageNo',
+        headers: cookieHeaders);
     return ComicCover.parseFavorite(doc).toList();
   }
 
@@ -137,7 +158,8 @@ class User {
       r.add(cover.bookId);
     });
 
-    final pageCount = shelf.querySelectorAll('.page-foot > .flickr > a[href]').length;
+    final pageCount =
+        shelf.querySelectorAll('.page-foot > .flickr > a[href]').length;
     for (var pageNo = 2; pageNo <= pageCount; pageNo += 1) {
       await Future.delayed(const Duration(milliseconds: 2500), () {});
       if (!isLogin) return r;
@@ -151,11 +173,11 @@ class User {
   }
 
   Map<String, dynamic> toJson() => {
-    'cookie': _cookie,
-    'username': _username,
-    'nickname': _nickname,
-    'password': _password,
-  };
+        'cookie': _cookie,
+        'username': _username,
+        'nickname': _nickname,
+        'password': _password,
+      };
 
   User.fromJson(Map<String, dynamic> json) {
     _setCookie(json['cookie']);

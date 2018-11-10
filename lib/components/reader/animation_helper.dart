@@ -6,7 +6,8 @@ enum SlideDirection { leftToRight, rightToLeft }
 typedef AnimationFinished = void Function(int);
 
 class AnimationHelper {
-  AnimationHelper(final TickerProviderStateMixin provider, final this.onAnimationFinished) {
+  AnimationHelper(
+      final TickerProviderStateMixin provider, final this.onAnimationFinished) {
     _controller = AnimationController(
       duration: const Duration(milliseconds: 200),
       vsync: provider,
@@ -36,33 +37,35 @@ class AnimationHelper {
 
   static double circleSize, strokeWidth;
 
-  Widget buildImageWidget(final File file)
-    => file != null ?
-      Container(
-        child: Image.file(file,
+  Widget buildImageWidget(final File file) => file != null
+      ? Container(
+          child: Image.file(
+          file,
           fit: BoxFit.contain,
           // scale: 1.0,
-        )
-      ) :
-      Center(
-        child: SizedBox(
-          width: circleSize,
-          height: circleSize,
-          child: CircularProgressIndicator(strokeWidth: strokeWidth),
-        ),
-      );
+        ))
+      : Center(
+          child: SizedBox(
+            width: circleSize,
+            height: circleSize,
+            child: CircularProgressIndicator(strokeWidth: strokeWidth),
+          ),
+        );
 
-  List<Widget> _doGenerateWidgets(final File current, final File next, final SlideDirection direction) {
+  List<Widget> _doGenerateWidgets(
+      final File current, final File next, final SlideDirection direction) {
     final from = buildImageWidget(current);
     if (direction == null) return [from];
     final to = buildImageWidget(next);
-    return direction == SlideDirection.leftToRight ? [
-        SlideTransition(position: _posLeftRightFr, child: from),
-        SlideTransition(position: _posLeftRightTo, child: to),
-      ] : [
-        SlideTransition(position: _posRightLeftFr, child: from),
-        SlideTransition(position: _posRightLeftTo, child: to),
-      ];
+    return direction == SlideDirection.leftToRight
+        ? [
+            SlideTransition(position: _posLeftRightFr, child: from),
+            SlideTransition(position: _posLeftRightTo, child: to),
+          ]
+        : [
+            SlideTransition(position: _posRightLeftFr, child: from),
+            SlideTransition(position: _posRightLeftTo, child: to),
+          ];
   }
 
   List<Widget> makeWidgets({
@@ -79,7 +82,10 @@ class AnimationHelper {
   final AnimationFinished onAnimationFinished;
   CurvedAnimation animation;
   AnimationController _controller;
-  Animation<Offset> _posLeftRightFr, _posLeftRightTo, _posRightLeftFr, _posRightLeftTo;
+  Animation<Offset> _posLeftRightFr,
+      _posLeftRightTo,
+      _posRightLeftFr,
+      _posRightLeftTo;
 
   static final tweenLRF = Tween(
     begin: Offset.zero,

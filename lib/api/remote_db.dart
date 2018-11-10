@@ -26,17 +26,20 @@ class RemoteDb {
         'bookId': comic['id'],
         'categories': attrs['cs'],
         'introduction': attrs['sm'],
-        'authors': (attrs['as'] as List).map((author) => {
-          'authorId': author['i'],
-          'name': author['n'],
-        }).toList(),
+        'authors': (attrs['as'] as List)
+            .map((author) => {
+                  'authorId': author['i'],
+                  'name': author['n'],
+                })
+            .toList(),
       };
     }).toList();
   }
 
   Future<void> updateCovers(List<ComicCover> covers) async {
     final bookMap = Map.fromEntries(covers.map((c) => MapEntry(c.bookId, c)));
-    final list = await dcComic.find(where.oneFrom('id', bookMap.keys.toList())).toList();
+    final list =
+        await dcComic.find(where.oneFrom('id', bookMap.keys.toList())).toList();
     list.forEach((comic) {
       final Map<String, dynamic> attrs = jsonDecode(comic['data']);
       final cover = bookMap[comic['id']];
@@ -46,13 +49,14 @@ class RemoteDb {
       cover.shortIntro = attrs['sm'];
       cover.restricted = attrs['ad'] == 1;
       cover.authors = (attrs['as'] as List)
-        .map((author) => AuthorLink(author['i'], author['n'])).toList();
+          .map((author) => AuthorLink(author['i'], author['n']))
+          .toList();
     });
   }
 
   DbCollection dcComic;
 
-  static Future<RemoteDb> create({ String uri }) async {
+  static Future<RemoteDb> create({String uri}) async {
     if (uri == null) return null;
     final r = RemoteDb(uri);
     await r.initialize();

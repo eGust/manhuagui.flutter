@@ -13,6 +13,7 @@ abstract class ComicListManagerBase {
   void reset() {
     resetPageIndex();
   }
+
   bool get popupFilterDialog;
   void onInitialized() {}
   void resetPageIndex();
@@ -21,7 +22,10 @@ abstract class ComicListManagerBase {
   bool get isLastPage;
   bool get isScreen => false;
   bool get useBlacklist => true;
-  bool notInBlacklist(ComicCover comic) { return true; }
+  bool notInBlacklist(ComicCover comic) {
+    return true;
+  }
+
   Future<Iterable<ComicCover>> fetchNextPage();
   Future<bool> showDialogChanged(BuildContext context);
 }
@@ -43,14 +47,14 @@ class _ComicListState extends State<ComicList> {
 
   bool _blacklistEnabled = true, _fetching = false, _indicator = false;
 
-  Future<void> _showFilterDialog({ bool isInitial = false }) async {
+  Future<void> _showFilterDialog({bool isInitial = false}) async {
     final changed = await stateManager.showDialogChanged(context);
     if (!mounted) return;
     if (changed || isInitial) _refresh();
     if (isInitial) stateManager.onInitialized();
   }
 
-  Future<void> _refresh({ bool indicator = true }) async {
+  Future<void> _refresh({bool indicator = true}) async {
     if (!mounted || _fetching) return;
     setState(() {
       _indicator = indicator;
@@ -83,7 +87,8 @@ class _ComicListState extends State<ComicList> {
     });
 
     final rawCovers = await stateManager.fetchNextPage();
-    final covers = rawCovers.where((c) => !_bookIds.contains(c.bookId)).toList();
+    final covers =
+        rawCovers.where((c) => !_bookIds.contains(c.bookId)).toList();
     final coverMap = Map.fromEntries(covers.map((c) => MapEntry(c.bookId, c)));
     await globals.updateCovers(coverMap);
 
@@ -96,16 +101,17 @@ class _ComicListState extends State<ComicList> {
   }
 
   Widget _buildCoverList() {
-    final covers = stateManager.useBlacklist && _blacklistEnabled ?
-      _comics.where(stateManager.notInBlacklist).toList() : _comics;
+    final covers = stateManager.useBlacklist && _blacklistEnabled
+        ? _comics.where(stateManager.notInBlacklist).toList()
+        : _comics;
     final count = covers.length;
     return ListView.builder(
       controller: _scroller,
       itemCount: count + 1,
       padding: const EdgeInsets.all(0.0),
-      itemBuilder: (_, i) => i == count ?
-        Progressing(visible: _indicator && _fetching) :
-        ComicCoverRow(covers[i], context, onPopComic: _updateHistory),
+      itemBuilder: (_, i) => i == count
+          ? Progressing(visible: _indicator && _fetching)
+          : ComicCoverRow(covers[i], context, onPopComic: _updateHistory),
     );
   }
 
@@ -129,7 +135,8 @@ class _ComicListState extends State<ComicList> {
   void initState() {
     super.initState();
     _scroller.addListener(() {
-      if (_scroller.position.pixels + _NEXT_THRESHOLD > _scroller.position.maxScrollExtent) {
+      if (_scroller.position.pixels + _NEXT_THRESHOLD >
+          _scroller.position.maxScrollExtent) {
         if (_fetching || !mounted) return;
         _fetchNextPage();
       }
@@ -146,23 +153,23 @@ class _ComicListState extends State<ComicList> {
 
   @override
   Widget build(BuildContext context) => Column(
-    children: <Widget>[
-      ListTopBar(
-        isScreen: stateManager.isScreen,
-        blacklistEnabled: _blacklistEnabled,
-        listTitle: stateManager.listTitle,
-        filtersTitle: stateManager.filtersTitle,
-        onPressedScrollTop: _scrollToTop,
-        onPressedFilters: _showFilterDialog,
-        onPressedBlacklist: _switchBlacklist,
-        onPressedRefresh: _refresh,
-      ),
-      Expanded(
-        child: RefreshIndicator(
-          onRefresh: () => _refresh(indicator: false),
-          child: _buildCoverList(),
-        ),
-      ),
-    ],
-  );
+        children: <Widget>[
+          ListTopBar(
+            isScreen: stateManager.isScreen,
+            blacklistEnabled: _blacklistEnabled,
+            listTitle: stateManager.listTitle,
+            filtersTitle: stateManager.filtersTitle,
+            onPressedScrollTop: _scrollToTop,
+            onPressedFilters: _showFilterDialog,
+            onPressedBlacklist: _switchBlacklist,
+            onPressedRefresh: _refresh,
+          ),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () => _refresh(indicator: false),
+              child: _buildCoverList(),
+            ),
+          ),
+        ],
+      );
 }

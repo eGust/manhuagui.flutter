@@ -38,11 +38,11 @@ class LocalDb {
   static void _createTables(Database db, int version) async {
     final tables = TABLES[version];
     for (var tableName in tables.keys) {
-      final columns = tables[tableName].entries.map((p) => '${p.key} ${p.value}');
+      final columns =
+          tables[tableName].entries.map((p) => '${p.key} ${p.value}');
       await db.execute('CREATE TABLE $tableName (${columns.join(', ')})');
     }
   }
 
-  static void _migrate(Database db, int oldVersion, int newVersion) {
-  }
+  static void _migrate(Database db, int oldVersion, int newVersion) {}
 }

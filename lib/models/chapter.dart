@@ -43,14 +43,17 @@ class Chapter {
   String get path => '/comic/$bookId/$chapterId.html';
   bool get neverRead => readAt == null;
 
-  String getPageUrl(int index) => 'https://i.hamreus.com$basePath${pages[index]}$signature';
+  String getPageUrl(int index) =>
+      'https://i.hamreus.com$basePath${pages[index]}$signature';
 
   bool _refreshing = false, _ready = false;
 
   Future<void> _refresh() async {
     _refreshing = true;
-    final doc = await fetchDom('$PROTOCOL://$DOMAIN$path', headers: globals.user.cookieHeaders);
-    final m = _reExtractParams.firstMatch(doc.querySelector('script:not([src])').text);
+    final doc = await fetchDom('$PROTOCOL://$DOMAIN$path',
+        headers: globals.user.cookieHeaders);
+    final m = _reExtractParams
+        .firstMatch(doc.querySelector('script:not([src])').text);
     final json = decryptChapterData(m[1], int.parse(m[2]), m[3]);
     final chapter = jsonDecode(json);
     pages = List<String>.from(chapter['files']);
@@ -89,7 +92,8 @@ class Chapter {
       });
     }
 
-    return db.update('chapters',
+    return db.update(
+      'chapters',
       {
         'read_at': readAt,
         'read_page': maxPage,
@@ -101,9 +105,9 @@ class Chapter {
 
 final _reExtractParams = RegExp(
   r"\);return\s+\w+;}\(" +
-  r"'[\w\.]+\(({[^']+?})\)\.\w+\(\);'" + // 'c.r( 111 ).M();'
-  r",(\d+),\d+,'([^']+)'" + // , 222 ,67, ' 333 '
-  r"\['\\x73\\x70\\x6c\\x69\\x63']",
+      r"'[\w\.]+\(({[^']+?})\)\.\w+\(\);'" + // 'c.r( 111 ).M();'
+      r",(\d+),\d+,'([^']+)'" + // , 222 ,67, ' 333 '
+      r"\['\\x73\\x70\\x6c\\x69\\x63']",
 );
 
 String _safeId(int n) => n > 0 ? n.toString() : null;

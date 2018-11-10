@@ -11,13 +11,13 @@ class ImageEntry {
   final int page;
 
   @override
-  String toString() => '${chapter.title}  ${page+1} / ${chapter.pageCount}';
+  String toString() => '${chapter.title}  ${page + 1} / ${chapter.pageCount}';
 
   Future<File> loadFile() => ReaderHelper.getCachedImageFile(chapter, page);
 }
 
 class ReaderHelper {
-  ReaderHelper(final this.comic, final this._current, { final this.pageIndex });
+  ReaderHelper(final this.comic, final this._current, {final this.pageIndex});
 
   final ComicBook comic;
   Chapter _current;
@@ -36,7 +36,7 @@ class ReaderHelper {
   Chapter get prevChapter => comic.groupPrevOf(current);
   Chapter get nextChapter => comic.groupNextOf(current);
 
-  Future<void> updateCurrentChapter({ bool updateCover = false }) async {
+  Future<void> updateCurrentChapter({bool updateCover = false}) async {
     final loading = current.load();
     comic.lastChapterId = current.chapterId;
     comic.lastChapterPage = pageIndex;
@@ -58,8 +58,8 @@ class ReaderHelper {
     _current = chapter;
   }
 
-  static const IMAGE_HEADERS = const { 'Referer': 'https://m.manhuagui.com' };
-  static const CACHE_SIBLINGS = [0-2, 0-1, 0+1, 0+2, 0+3, 0+4];
+  static const IMAGE_HEADERS = const {'Referer': 'https://m.manhuagui.com'};
+  static const CACHE_SIBLINGS = [0 - 2, 0 - 1, 0 + 1, 0 + 2, 0 + 3, 0 + 4];
   Map<int, Map<int, ImageEntry>> imageCache = {};
 
   ImageEntry getCachedEntry(final Chapter chapter, final int page) {
@@ -79,24 +79,29 @@ class ReaderHelper {
     return r;
   }
 
-  static Future<File> getCachedImageFile(final Chapter chapter, final int page) =>
-    globals.cache.getFile(chapter.getPageUrl(page), headers: IMAGE_HEADERS);
+  static Future<File> getCachedImageFile(
+          final Chapter chapter, final int page) =>
+      globals.cache.getFile(chapter.getPageUrl(page), headers: IMAGE_HEADERS);
 
-  Future<ImageEntry> _findImageEntry(final Chapter chapter, final int index) async {
+  Future<ImageEntry> _findImageEntry(
+      final Chapter chapter, final int index) async {
     if (chapter == null) return null;
-    if (index >= 0 && index < chapter.pageCount) return getCachedEntry(chapter, index);
+    if (index >= 0 && index < chapter.pageCount)
+      return getCachedEntry(chapter, index);
 
-    final next = index < 0 ? comic.groupPrevOf(chapter) : comic.groupNextOf(chapter);
+    final next =
+        index < 0 ? comic.groupPrevOf(chapter) : comic.groupNextOf(chapter);
     if (next == null) return null;
     await next.load();
-    return _findImageEntry(next, index < 0 ? index + next.pageCount : index - chapter.pageCount);
+    return _findImageEntry(
+        next, index < 0 ? index + next.pageCount : index - chapter.pageCount);
   }
 
-  ImageEntry get currentEntry
-    => ready ? getCachedEntry(current, pageIndex) : null;
+  ImageEntry get currentEntry =>
+      ready ? getCachedEntry(current, pageIndex) : null;
 
-  Future<ImageEntry> getSiblingEntry(final int offset)
-    => ready ? _findImageEntry(current, pageIndex + offset) : null;
+  Future<ImageEntry> getSiblingEntry(final int offset) =>
+      ready ? _findImageEntry(current, pageIndex + offset) : null;
 
   void updateCurrentPageAndCacheSiblings() {
     comic.updateHistory();

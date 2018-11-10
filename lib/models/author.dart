@@ -14,18 +14,17 @@ class AuthorLink {
   final String name;
 
   Map<String, dynamic> toJson() => {
-    'author_id': authorId,
-    'name': name,
-  };
+        'author_id': authorId,
+        'name': name,
+      };
 
   AuthorLink.fromJson(Map<String, dynamic> json)
-    : authorId = json['author_id']
-    , name = json['name']
-    ;
+      : authorId = json['author_id'],
+        name = json['name'];
 }
 
 class AuthorCover extends AuthorLink {
-  AuthorCover({ final int authorId, final String name }): super(authorId, name);
+  AuthorCover({final int authorId, final String name}) : super(authorId, name);
   static AuthorCover fromDom(Element li) {
     final a = li.querySelector('a');
     final author = AuthorCover(
@@ -47,15 +46,14 @@ class AuthorCover extends AuthorLink {
   int comicCount;
 
   static Iterable<AuthorCover> parseDesktop(Document doc) => doc
-    .querySelectorAll('ul#contList > li')
-    .map((li) => AuthorCover.fromDom(li));
+      .querySelectorAll('ul#contList > li')
+      .map((li) => AuthorCover.fromDom(li));
 }
 
 class AuthorPage extends AuthorLink {
   AuthorPage.fromLink(AuthorLink link, Order order)
-    : this.order = order
-    , super(link.authorId, link.name)
-    ;
+      : this.order = order,
+        super(link.authorId, link.name);
   Order order;
   int page = 1, pageCount;
 

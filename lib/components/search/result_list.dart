@@ -10,7 +10,7 @@ import '../../models.dart';
 import '../../api.dart';
 
 class ResultList extends StatefulWidget {
-  ResultList(this.searchKey, { this.onResearch });
+  ResultList(this.searchKey, {this.onResearch});
   final String searchKey;
   final VoidCallback onResearch;
 
@@ -49,43 +49,45 @@ class _ResultListState extends State<ResultList> {
       context: context,
       barrierDismissible: false,
       builder: (context) => SimpleDialog(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            const Text('排序'),
-            TouchableIcon(Icons.close,
-              onPressed: () {
-                Navigator.pop(context, null);
-              },
-            )
-          ],
-        ),
-        children: [
-          Container(
-            padding: const EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 10.0),
-            width: 240.0,
-            height: 240.0,
-            child: Column(
+            title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: List<Widget>.from(
-                _ORDER_MAP.entries.map((pair) =>
-                  RaisedButton(
-                    onPressed: () {
-                      Navigator.pop(context, pair.key);
-                    },
-                    color: pair.key == _order ? Colors.deepOrange[800] : Colors.orange[700],
-                    child: Text(pair.value, style: TextStyle(
-                      color: pair.key == _order ? Colors.white : Colors.brown[700],
-                      fontSize: 18.0,
-                    )),
-                  )
+              children: <Widget>[
+                const Text('排序'),
+                TouchableIcon(
+                  Icons.close,
+                  onPressed: () {
+                    Navigator.pop(context, null);
+                  },
                 )
-              ),
-            )
-          )
-        ],
-      ),
+              ],
+            ),
+            children: [
+              Container(
+                  padding: const EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 10.0),
+                  width: 240.0,
+                  height: 240.0,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: List<Widget>.from(
+                        _ORDER_MAP.entries.map((pair) => RaisedButton(
+                              onPressed: () {
+                                Navigator.pop(context, pair.key);
+                              },
+                              color: pair.key == _order
+                                  ? Colors.deepOrange[800]
+                                  : Colors.orange[700],
+                              child: Text(pair.value,
+                                  style: TextStyle(
+                                    color: pair.key == _order
+                                        ? Colors.white
+                                        : Colors.brown[700],
+                                    fontSize: 18.0,
+                                  )),
+                            ))),
+                  ))
+            ],
+          ),
     );
 
     if (newOrder == null) return;
@@ -93,8 +95,8 @@ class _ResultListState extends State<ResultList> {
     _refresh(indicator: true);
   }
 
-  String get url
-    => '$_BASE_URL${parent.search}$_order${_page > 1 ? '_p$_page' : ''}.html';
+  String get url =>
+      '$_BASE_URL${parent.search}$_order${_page > 1 ? '_p$_page' : ''}.html';
 
   void _scrollToTop() {
     _scroller.animateTo(
@@ -104,7 +106,7 @@ class _ResultListState extends State<ResultList> {
     );
   }
 
-  Future<void> _refresh({ bool indicator = false }) async {
+  Future<void> _refresh({bool indicator = false}) async {
     setState(() {
       _indicator = indicator;
       _page = 0;
@@ -140,7 +142,8 @@ class _ResultListState extends State<ResultList> {
   void initState() {
     super.initState();
     _scroller.addListener(() {
-      if (_scroller.position.pixels + _NEXT_THRESHOLD > _scroller.position.maxScrollExtent) {
+      if (_scroller.position.pixels + _NEXT_THRESHOLD >
+          _scroller.position.maxScrollExtent) {
         if (_fetching || !mounted) return;
         _fetchNextPage();
       }
@@ -168,62 +171,70 @@ class _ResultListState extends State<ResultList> {
   }
 
   bool _isComicNotInBlacklist(ComicCover cover) =>
-    globals.blacklistSet.intersection(cover.tagSet).isEmpty;
+      globals.blacklistSet.intersection(cover.tagSet).isEmpty;
 
   List<ComicCover> get _filteredComicList =>
-    _useBlacklist ? _comics.where(_isComicNotInBlacklist).toList() : _comics;
+      _useBlacklist ? _comics.where(_isComicNotInBlacklist).toList() : _comics;
 
   @override
   Widget build(BuildContext context) => Column(
-    children: <Widget>[
-      TopBarFrame(
-        left: <Widget>[
-          TouchableIcon(
-            Icons.arrow_back_ios,
-            size: 28.0,
-            color: Colors.white,
-            onPressed: () { Navigator.pop(context); },
-          ),
-          FlatButton(
-            onPressed: _switchOrder,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  child: const Icon(Icons.filter_list, color: Colors.yellow, size: 28.0),
-                  margin: const EdgeInsets.only(right: 10.0),
+        children: <Widget>[
+          TopBarFrame(
+            left: <Widget>[
+              TouchableIcon(
+                Icons.arrow_back_ios,
+                size: 28.0,
+                color: Colors.white,
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              FlatButton(
+                onPressed: _switchOrder,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      child: const Icon(Icons.filter_list,
+                          color: Colors.yellow, size: 28.0),
+                      margin: const EdgeInsets.only(right: 10.0),
+                    ),
+                    Text(_ORDER_MAP[_order],
+                        style: const TextStyle(
+                            color: Colors.yellow, fontSize: 16.0)),
+                  ],
                 ),
-                Text(_ORDER_MAP[_order], style: const TextStyle(color: Colors.yellow, fontSize: 16.0)),
-              ],
+              ),
+            ],
+            middle: Text('搜索：${parent.searchKey}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18.0,
+                )),
+            right: <Widget>[
+              BlacklistButton(_useBlacklist, _toggleBlacklist),
+              TouchableIcon(
+                Icons.edit,
+                size: 28.0,
+                color: Colors.white,
+                onPressed: parent.onResearch,
+              ),
+            ],
+            onPressed: _scrollToTop,
+          ),
+          Expanded(
+              child: RefreshIndicator(
+            onRefresh: _refresh,
+            child: ListView.builder(
+              controller: _scroller,
+              itemCount: _filteredComicList.length + 1,
+              padding: const EdgeInsets.all(0.0),
+              itemBuilder: (_, i) => i == _filteredComicList.length
+                  ? Progressing(visible: _indicator && _fetching)
+                  : ComicCoverRow(_filteredComicList[i], context,
+                      onPopComic: _updateHistory),
             ),
-          ),
+          )),
         ],
-        middle: Text('搜索：${parent.searchKey}', style: const TextStyle(
-          color: Colors.white,
-          fontSize: 18.0,
-        )),
-        right: <Widget>[
-          BlacklistButton(_useBlacklist, _toggleBlacklist),
-          TouchableIcon(
-            Icons.edit,
-            size: 28.0,
-            color: Colors.white,
-            onPressed: parent.onResearch,
-          ),
-        ],
-        onPressed: _scrollToTop,
-      ),
-      Expanded(child: RefreshIndicator(
-        onRefresh: _refresh,
-        child: ListView.builder(
-          controller: _scroller,
-          itemCount: _filteredComicList.length + 1,
-          padding: const EdgeInsets.all(0.0),
-          itemBuilder: (_, i) => i == _filteredComicList.length ?
-            Progressing(visible: _indicator && _fetching) :
-            ComicCoverRow(_filteredComicList[i], context, onPopComic: _updateHistory),
-        ),
-      )),
-    ],
-  );
+      );
 }

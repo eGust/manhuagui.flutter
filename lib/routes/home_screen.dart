@@ -12,7 +12,7 @@ import '../components/home/route_configuration.dart';
 
 import '../store.dart';
 
-class HomeScreen extends StatefulWidget{
+class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
@@ -32,13 +32,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   List<SideBarItem> sbItemList;
   SideBarItem _sbSettings;
 
-  SideBarItem convertSideBarItem(SubRouter router) =>
-    SideBarItem(
-      router,
-      onPressed: () => setState(() {
-        this.path = router.path;
-      }),
-    );
+  SideBarItem convertSideBarItem(SubRouter router) => SideBarItem(
+        router,
+        onPressed: () => setState(() {
+              this.path = router.path;
+            }),
+      );
 
   static final _sbColor = Colors.brown[900];
   static final _bgColor = Colors.yellow[50];
@@ -91,17 +90,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
-      case AppLifecycleState.inactive: {
-        globals.pause();
-        break;
-      }
-      case AppLifecycleState.resumed: {
-        globals.resucme();
-        break;
-      }
-      default: {
-        logd('statechanged: $state');
-      }
+      case AppLifecycleState.inactive:
+        {
+          globals.pause();
+          break;
+        }
+      case AppLifecycleState.resumed:
+        {
+          globals.resucme();
+          break;
+        }
+      default:
+        {
+          logd('statechanged: $state');
+        }
     }
   }
 

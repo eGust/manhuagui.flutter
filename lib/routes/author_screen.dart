@@ -14,21 +14,21 @@ class AuthorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-    children: <Widget>[
-      Container(
-        color: Colors.brown[900],
-        height: globals.statusBarHeight,
-      ),
-      Expanded(child: ComicList(AuthorComicListManager(author))),
-    ],
-  );
+        children: <Widget>[
+          Container(
+            color: Colors.brown[900],
+            height: globals.statusBarHeight,
+          ),
+          Expanded(child: ComicList(AuthorComicListManager(author))),
+        ],
+      );
 }
 
 class AuthorComicListManager extends ComicListManagerBase {
   AuthorComicListManager(AuthorLink link)
-    : author = AuthorPage.fromLink(link, globals.metaData.comicListOrders.first)
-    , orderList = globals.metaData.comicListOrders
-    ;
+      : author =
+            AuthorPage.fromLink(link, globals.metaData.comicListOrders.first),
+        orderList = globals.metaData.comicListOrders;
 
   final AuthorPage author;
   final List<Order> orderList;
@@ -70,31 +70,33 @@ class AuthorComicListManager extends ComicListManagerBase {
       context: context,
       barrierDismissible: false,
       builder: (context) => SimpleDialog(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(),
-            Text('排序'),
-            FlatButton(
-              child: Icon(Icons.check),
-              onPressed: () {
-                Navigator.pop(context, oldOrder);
-              },
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(),
+                Text('排序'),
+                FlatButton(
+                  child: Icon(Icons.check),
+                  onPressed: () {
+                    Navigator.pop(context, oldOrder);
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
-        children: [
-          Row(children: orderList.map((order) =>
-            DisplayableButton(
-              item: order,
-              selected: order == oldOrder,
-              onPressed: () {
-                Navigator.pop(context, order);
-              },
-            )).toList(),
+            children: [
+              Row(
+                children: orderList
+                    .map((order) => DisplayableButton(
+                          item: order,
+                          selected: order == oldOrder,
+                          onPressed: () {
+                            Navigator.pop(context, order);
+                          },
+                        ))
+                    .toList(),
+              ),
+            ],
           ),
-        ],
-      ),
     );
 
     return oldOrder != author.order;

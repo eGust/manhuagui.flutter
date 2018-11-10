@@ -4,22 +4,24 @@ import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart';
 
-Future<Document> fetchDom(String url, { Map<String, String> headers }) async {
+Future<Document> fetchDom(String url, {Map<String, String> headers}) async {
   final html = await http.read(url, headers: headers);
   return parse(html);
 }
 
-Future<Document> fetchAjaxDom(String url, { Map<String, String> headers }) async {
+Future<Document> fetchAjaxDom(String url, {Map<String, String> headers}) async {
   final html = await http.read(url, headers: headers);
   return parse('<html>$html</html>');
 }
 
-Future<Map<String, dynamic>> getJson(String url, { Map<String, String> headers }) async {
+Future<Map<String, dynamic>> getJson(String url,
+    {Map<String, String> headers}) async {
   final json = await http.read(url, headers: headers);
   return jsonDecode(json);
 }
 
-Future<Map<String, Map<String, dynamic>>> postJsonRaw(String url, { Map<String, String> body, Map<String, String> headers }) async {
+Future<Map<String, Map<String, dynamic>>> postJsonRaw(String url,
+    {Map<String, String> body, Map<String, String> headers}) async {
   final response = await http.post(url, headers: headers, body: body);
   return {
     'headers': response.headers,
@@ -27,7 +29,8 @@ Future<Map<String, Map<String, dynamic>>> postJsonRaw(String url, { Map<String, 
   };
 }
 
-Future<Map<String, dynamic>> postJson(String url, { Map<String, String> body, Map<String, String> headers }) async {
+Future<Map<String, dynamic>> postJson(String url,
+    {Map<String, String> body, Map<String, String> headers}) async {
   final response = await http.post(url, headers: headers, body: body);
   return jsonDecode(response.body);
 }
@@ -35,7 +38,7 @@ Future<Map<String, dynamic>> postJson(String url, { Map<String, String> body, Ma
 Future<Map<String, dynamic>> postJsonQuery(String url, String json) async {
   final response = await http.post(
     url,
-    headers: { 'Content-Type': 'application/json' },
+    headers: {'Content-Type': 'application/json'},
     body: json,
   );
   final data = utf8.decode(response.bodyBytes);

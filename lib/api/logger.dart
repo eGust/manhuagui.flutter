@@ -4,12 +4,13 @@ enum LogLevel { info, debug, warning, error }
 enum TimestampStyle { timeOnly, noYear, dateTime }
 
 final sliceStart = {
-  TimestampStyle.dateTime:  0,
-  TimestampStyle.noYear:    5,
-  TimestampStyle.timeOnly:  11,
+  TimestampStyle.dateTime: 0,
+  TimestampStyle.noYear: 5,
+  TimestampStyle.timeOnly: 11,
 };
 
-String _timestamp(TimestampStyle ts) => DateTime.now().toString().substring(sliceStart[ts]);
+String _timestamp(TimestampStyle ts) =>
+    DateTime.now().toString().substring(sliceStart[ts]);
 
 void _logInfo(LogLevel level, String msg, TimestampStyle s) {
   if (level != LogLevel.info) return;
@@ -41,15 +42,16 @@ class Logger {
     }());
     return result;
   }
+
   static final isDebug = _checkDebug();
   LogLevel level = isDebug ? LogLevel.warning : LogLevel.debug;
   TimestampStyle style = TimestampStyle.timeOnly;
 
   static final _logFuncs = {
-    LogLevel.info:    _logInfo,
-    LogLevel.debug:   _logDebug,
+    LogLevel.info: _logInfo,
+    LogLevel.debug: _logDebug,
     LogLevel.warning: _logWarning,
-    LogLevel.error:   _logError,
+    LogLevel.error: _logError,
   };
 
   void log(LogLevel lvl, String msg) {

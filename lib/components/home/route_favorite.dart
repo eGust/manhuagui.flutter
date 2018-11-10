@@ -39,7 +39,7 @@ class _RouteFavoriteState extends State<RouteFavorite> {
     );
   }
 
-  Future<void> _refresh({ bool indicator = false }) async {
+  Future<void> _refresh({bool indicator = false}) async {
     setState(() {
       _indicator = indicator;
       _page = 0;
@@ -59,7 +59,8 @@ class _RouteFavoriteState extends State<RouteFavorite> {
 
     _page += 1;
     final rawCovers = await globals.user.getFavorites(pageNo: _page);
-    final covers = rawCovers.where((c) => !_bookIds.contains(c.bookId)).toList();
+    final covers =
+        rawCovers.where((c) => !_bookIds.contains(c.bookId)).toList();
     final coverMap = Map.fromEntries(covers.map((c) => MapEntry(c.bookId, c)));
     await globals.updateCovers(coverMap);
     _isLastPage = covers.isEmpty;
@@ -76,7 +77,8 @@ class _RouteFavoriteState extends State<RouteFavorite> {
   void initState() {
     super.initState();
     _scroller.addListener(() {
-      if (_scroller.position.pixels + _NEXT_THRESHOLD > _scroller.position.maxScrollExtent) {
+      if (_scroller.position.pixels + _NEXT_THRESHOLD >
+          _scroller.position.maxScrollExtent) {
         if (_fetching || !mounted) return;
         _fetchNextPage();
       }
@@ -94,49 +96,51 @@ class _RouteFavoriteState extends State<RouteFavorite> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text('此功能需要登录！'),
-        content: Container(
-          height: 120.0,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-                RaisedButton(
-                  color: Colors.lightBlue[700],
-                  child: const Text('登录', style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18.0,
-                  )),
-                  onPressed: () async {
-                    await showDialog<void>(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context) => SimpleDialog(
-                        title: const Text('用户登录'),
-                        children: [
-                          LoginForm(),
-                        ],
-                      ),
-                    );
-                    if (!globals.user.isLogin) return;
-                    Navigator.pop(context);
-                    _refresh(indicator: true);
-                  },
-                ),
-                RaisedButton(
-                  color: Colors.red[900],
-                  child: const Text('关闭', style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18.0,
-                  )),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
+            title: const Text('此功能需要登录！'),
+            content: Container(
+              height: 120.0,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  RaisedButton(
+                    color: Colors.lightBlue[700],
+                    child: const Text('登录',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                        )),
+                    onPressed: () async {
+                      await showDialog<void>(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => SimpleDialog(
+                              title: const Text('用户登录'),
+                              children: [
+                                LoginForm(),
+                              ],
+                            ),
+                      );
+                      if (!globals.user.isLogin) return;
+                      Navigator.pop(context);
+                      _refresh(indicator: true);
+                    },
+                  ),
+                  RaisedButton(
+                    color: Colors.red[900],
+                    child: const Text('关闭',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                        )),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
     );
   }
 
@@ -154,19 +158,21 @@ class _RouteFavoriteState extends State<RouteFavorite> {
 
   @override
   Widget build(BuildContext context) => Column(
-    children: <Widget>[
-      TopBarFrame(onPressed: _scrollToTop),
-      Expanded(child: RefreshIndicator(
-        onRefresh: _refresh,
-        child: ListView.builder(
-          controller: _scroller,
-          itemCount: _comics.length + 1,
-          padding: const EdgeInsets.all(0.0),
-          itemBuilder: (_, i) => i == _comics.length ?
-            Progressing(visible: _indicator && _fetching) :
-            ComicCoverRow(_comics[i], context, onPopComic: _updateHistory),
-        ),
-      )),
-    ],
-  );
+        children: <Widget>[
+          TopBarFrame(onPressed: _scrollToTop),
+          Expanded(
+              child: RefreshIndicator(
+            onRefresh: _refresh,
+            child: ListView.builder(
+              controller: _scroller,
+              itemCount: _comics.length + 1,
+              padding: const EdgeInsets.all(0.0),
+              itemBuilder: (_, i) => i == _comics.length
+                  ? Progressing(visible: _indicator && _fetching)
+                  : ComicCoverRow(_comics[i], context,
+                      onPopComic: _updateHistory),
+            ),
+          )),
+        ],
+      );
 }

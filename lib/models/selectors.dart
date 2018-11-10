@@ -7,13 +7,14 @@ import 'website_meta_data.dart';
 enum SelectorType { Comic, Author }
 
 class SelectorMeta {
-  SelectorMeta({ this.filterGroups, this.orders })
-    : linkGroupMap = _buildLinkGroupMap(filterGroups)
-    , linkTitleMap = _buildLinkTitleMap(filterGroups)
-    , orderMap = Map.fromEntries(orders.map((order) => MapEntry(order.linkBase, order)))
-    ;
+  SelectorMeta({this.filterGroups, this.orders})
+      : linkGroupMap = _buildLinkGroupMap(filterGroups),
+        linkTitleMap = _buildLinkTitleMap(filterGroups),
+        orderMap = Map.fromEntries(
+            orders.map((order) => MapEntry(order.linkBase, order)));
 
-  static Map<String, String> _buildLinkGroupMap(List<FilterGroup> filterGroups) {
+  static Map<String, String> _buildLinkGroupMap(
+      List<FilterGroup> filterGroups) {
     Map<String, String> r = {};
     filterGroups.forEach((grp) {
       grp.filters.forEach((f) {
@@ -23,7 +24,8 @@ class SelectorMeta {
     return r;
   }
 
-  static Map<String, String> _buildLinkTitleMap(List<FilterGroup> filterGroups) {
+  static Map<String, String> _buildLinkTitleMap(
+      List<FilterGroup> filterGroups) {
     Map<String, String> r = {};
     filterGroups.forEach((grp) {
       grp.filters.forEach((f) {
@@ -41,9 +43,8 @@ class SelectorMeta {
 }
 
 class FilterSelector {
-  FilterSelector(this.basePath, this.meta, { String order })
-    : this.order = order ?? meta.orders.first.linkBase
-    ;
+  FilterSelector(this.basePath, this.meta, {String order})
+      : this.order = order ?? meta.orders.first.linkBase;
   final SelectorMeta meta;
   final String basePath;
 
@@ -55,7 +56,7 @@ class FilterSelector {
 
   Order get currentOrder => meta.orderMap[order];
 
-  void selectFilter({ String link, String group }) {
+  void selectFilter({String link, String group}) {
     if (link == null) {
       filters[group] = null;
     } else {
@@ -64,11 +65,12 @@ class FilterSelector {
   }
 
   String get filterPath => meta.filterGroups
-    .map((grp) => filters[grp.key])
-    .where((link) => link != null).join('_');
+      .map((grp) => filters[grp.key])
+      .where((link) => link != null)
+      .join('_');
 
   String get fullPath =>
-    "$basePath${filterPath.isEmpty ? '' : '$filterPath/'}${order}_p$page.html";
+      "$basePath${filterPath.isEmpty ? '' : '$filterPath/'}${order}_p$page.html";
 
   String get url => '$PROTOCOL://$DOMAIN$fullPath';
 
@@ -76,9 +78,11 @@ class FilterSelector {
 
   static int parsePageCount(Document doc) {
     final links = doc.querySelectorAll('a.prev');
-    return links.isEmpty ? 1 : int.parse(rePageNo.firstMatch(
-        links.last.attributes['href'],
-      )[1]);
+    return links.isEmpty
+        ? 1
+        : int.parse(rePageNo.firstMatch(
+            links.last.attributes['href'],
+          )[1]);
   }
 
   Future<Document> fetchDom() async {

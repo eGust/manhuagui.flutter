@@ -19,7 +19,8 @@ class ReaderScreen extends StatefulWidget {
   _ReaderScreenState createState() => _ReaderScreenState(helper);
 }
 
-class _ReaderScreenState extends State<ReaderScreen> with TickerProviderStateMixin {
+class _ReaderScreenState extends State<ReaderScreen>
+    with TickerProviderStateMixin {
   _ReaderScreenState(final this.helper) {
     StatusBar.hide();
     AnimationHelper.circleSize = globals.screenSize.width / 4;
@@ -58,7 +59,7 @@ class _ReaderScreenState extends State<ReaderScreen> with TickerProviderStateMix
     return (page < 0 ? ch.prevChpId : ch.nextChpId) != null;
   }
 
-  Future<void> _onReadModeAction({ final int offset }) async {
+  Future<void> _onReadModeAction({final int offset}) async {
     if (offset == null) {
       _toggleReadMode();
       return;
@@ -68,7 +69,8 @@ class _ReaderScreenState extends State<ReaderScreen> with TickerProviderStateMix
     _slideActionId = (_slideActionId + 1) & _SLIDE_ACTION_RANGE;
     final actionId = _slideActionId;
     setState(() {
-      _direction = offset > 0 ? SlideDirection.leftToRight : SlideDirection.rightToLeft;
+      _direction =
+          offset > 0 ? SlideDirection.leftToRight : SlideDirection.rightToLeft;
       _nextImage = null;
       _animation.play(actionId);
     });
@@ -88,7 +90,8 @@ class _ReaderScreenState extends State<ReaderScreen> with TickerProviderStateMix
     final direction = _direction;
 
     if (next == null && direction != null) {
-      next = await helper.getSiblingEntry(direction == SlideDirection.rightToLeft ? 0 - 1 : 0 + 1);
+      next = await helper.getSiblingEntry(
+          direction == SlideDirection.rightToLeft ? 0 - 1 : 0 + 1);
       if (!mounted || actionId != _slideActionId) return;
     }
 
@@ -137,57 +140,54 @@ class _ReaderScreenState extends State<ReaderScreen> with TickerProviderStateMix
 
   @override
   Widget build(BuildContext context) => WillPopScope(
-    onWillPop: () async => !_preventBack,
-    child: Container(
-      color: Colors.black,
-      child: Stack(
-        fit: StackFit.expand,
-        children: _animation.makeWidgets(
-          current: _currentImage,
-          next: _nextImage,
-          direction: _direction,
-          append: _reading ? [
-            ReadActionPanel(onPressed: _onReadModeAction),
-            FastStatus('$status  $time'),
-          ] : [
-            InfoPanel(
-              onGoBack: () {
-                _preventBack = false;
-                Navigator.pop(context);
-              },
-              onPageChanged: () {
-                _nextImage = null;
-                _reloadImages();
-              },
-              onDownload: () {},
-
-              onReadModeAction: _onReadModeAction,
-              onChapterChanged: ({ final int offset }) {
-                helper.changeCurrent(offset < 0 ? helper.prevChapter : helper.nextChapter);
-                helper.pageIndex = 0;
-                _open();
-              },
-              onPageChanging: ({ final int offset }) {
-                setState(() {
-                  helper.pageIndex = offset;
-                });
-              },
-
-              title: helper.comic.name,
-              subTitle: status,
-
-              invalidPrevPage: !_slidable(0 - 1),
-              invalidNextPage: !_slidable(0 + 1),
-
-              invalidPrevChapter: helper.prevChapter == null,
-              invalidNextChapter: helper.nextChapter == null,
-
-              pageIndex: helper.pageIndex,
-              pageCount: helper.current?.pageCount,
-            ),
-          ]
+      onWillPop: () async => !_preventBack,
+      child: Container(
+        color: Colors.black,
+        child: Stack(
+          fit: StackFit.expand,
+          children: _animation.makeWidgets(
+              current: _currentImage,
+              next: _nextImage,
+              direction: _direction,
+              append: _reading
+                  ? [
+                      ReadActionPanel(onPressed: _onReadModeAction),
+                      FastStatus('$status  $time'),
+                    ]
+                  : [
+                      InfoPanel(
+                        onGoBack: () {
+                          _preventBack = false;
+                          Navigator.pop(context);
+                        },
+                        onPageChanged: () {
+                          _nextImage = null;
+                          _reloadImages();
+                        },
+                        onDownload: () {},
+                        onReadModeAction: _onReadModeAction,
+                        onChapterChanged: ({final int offset}) {
+                          helper.changeCurrent(offset < 0
+                              ? helper.prevChapter
+                              : helper.nextChapter);
+                          helper.pageIndex = 0;
+                          _open();
+                        },
+                        onPageChanging: ({final int offset}) {
+                          setState(() {
+                            helper.pageIndex = offset;
+                          });
+                        },
+                        title: helper.comic.name,
+                        subTitle: status,
+                        invalidPrevPage: !_slidable(0 - 1),
+                        invalidNextPage: !_slidable(0 + 1),
+                        invalidPrevChapter: helper.prevChapter == null,
+                        invalidNextChapter: helper.nextChapter == null,
+                        pageIndex: helper.pageIndex,
+                        pageCount: helper.current?.pageCount,
+                      ),
+                    ]),
         ),
-      ),
-    )
-  );
+      ));
 }

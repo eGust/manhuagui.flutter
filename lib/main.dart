@@ -21,22 +21,22 @@ void updateSettings() async {
 class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
-    theme: ThemeData(
-      brightness: Brightness.light,
-      dialogBackgroundColor: Colors.yellow[200].withAlpha(0xCC),
-      inputDecorationTheme: InputDecorationTheme(
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.brown[900]),
-          borderRadius: BorderRadius.circular(32.0),
+        theme: ThemeData(
+          brightness: Brightness.light,
+          dialogBackgroundColor: Colors.yellow[200].withAlpha(0xCC),
+          inputDecorationTheme: InputDecorationTheme(
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.brown[900]),
+              borderRadius: BorderRadius.circular(32.0),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.brown[600], width: 2.0),
+              borderRadius: BorderRadius.circular(32.0),
+            ),
+            hintStyle: TextStyle(color: Colors.lightBlue[300]),
+            contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+          ),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.brown[600], width: 2.0),
-          borderRadius: BorderRadius.circular(32.0),
-        ),
-        hintStyle: TextStyle(color: Colors.lightBlue[300]),
-        contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-      ),
-    ),
-    home: Material(child: HomeScreen()),
-  );
+        home: Material(child: HomeScreen()),
+      );
 }

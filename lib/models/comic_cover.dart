@@ -15,7 +15,12 @@ class ComicCover {
   }
 
   final int bookId;
-  String name, lastUpdatedChapter, lastReadChapter, maxReadChapter, score, updatedAt;
+  String name,
+      lastUpdatedChapter,
+      lastReadChapter,
+      maxReadChapter,
+      score,
+      updatedAt;
   int lastChapterId, lastChapterPage, maxChapterId, maxChapterPage;
   bool finished = false, restricted = false;
   bool get isFavorite => globals.favoriteBookIdSet.contains(bookId);
@@ -43,7 +48,7 @@ class ComicCover {
 
   String get path => "/comic/$bookId/";
   String getImageUrl({CoverSize size = CoverSize.lg}) =>
-    "https://cf.hamreus.com/cpic/${_coverSizeMap[size]}$bookId.jpg";
+      "https://cf.hamreus.com/cpic/${_coverSizeMap[size]}$bookId.jpg";
 
   static final reDate = RegExp(r'(\d{4}-\d{2}-\d{2})');
 
@@ -90,8 +95,11 @@ class ComicCover {
     final cover = element.querySelector('a.bcover');
     final cc = ComicCover.fromLink(cover);
     cc.finished = cover.querySelectorAll('.sl').isEmpty;
-    cc.lastUpdatedChapter = cover.querySelector('.tt').text
-      .replaceAll('更新至', '').replaceAll('[完]', '');
+    cc.lastUpdatedChapter = cover
+        .querySelector('.tt')
+        .text
+        .replaceAll('更新至', '')
+        .replaceAll('[完]', '');
 
     final update = element.querySelector('.updateon');
     cc.updatedAt = reDate.firstMatch(update.text).group(1);
@@ -106,7 +114,8 @@ class ComicCover {
     cc.lastUpdatedChapter = status.querySelector('a').text.trim();
 
     cc.updatedAt = status.querySelectorAll('span.red').last.text.trim();
-    cc.score = element.nextElementSibling.querySelector('.score-avg strong').text;
+    cc.score =
+        element.nextElementSibling.querySelector('.score-avg strong').text;
     return cc;
   }
 
@@ -115,33 +124,33 @@ class ComicCover {
     final cover = ComicCover(id, json['t']);
     cover.finished = json['s'];
     cover.lastUpdatedChapter = json['ct'];
-    cover.authors = (json['a'] as String).split(',').map((a) => AuthorLink(0, a)).toList();
+    cover.authors =
+        (json['a'] as String).split(',').map((a) => AuthorLink(0, a)).toList();
     return cover;
   }
 
-  static Iterable<ComicCover> parseDesktop(Document doc) => doc
-    .querySelectorAll('ul#contList > li')
-    .map(ComicCover.fromDesktopDom);
+  static Iterable<ComicCover> parseDesktop(Document doc) =>
+      doc.querySelectorAll('ul#contList > li').map(ComicCover.fromDesktopDom);
 
   static Iterable<ComicCover> parseAuthor(Document doc) => doc
-    .querySelectorAll('.book-result ul li .book-detail')
-    .map(ComicCover.fromAuthorDom);
+      .querySelectorAll('.book-result ul li .book-detail')
+      .map(ComicCover.fromAuthorDom);
 
-  static Iterable<ComicCover> parseFavorite(Document doc) => doc
-    .querySelectorAll('li > a')
-    .map(ComicCover.fromMobileDom);
+  static Iterable<ComicCover> parseFavorite(Document doc) =>
+      doc.querySelectorAll('li > a').map(ComicCover.fromMobileDom);
 
   Map<String, dynamic> toJson() => {
-    'as': authors,
-    'tg': tags,
-    'ts': tagSet.toList(),
-    'in': shortIntro,
-    'ad': restricted,
-    'fi': finished,
-  };
+        'as': authors,
+        'tg': tags,
+        'ts': tagSet.toList(),
+        'in': shortIntro,
+        'ad': restricted,
+        'fi': finished,
+      };
 
   void loadJson(Map<String, dynamic> json) {
-    authors = List.from((json['as'] as List).map((a) => AuthorLink.fromJson(a)));
+    authors =
+        List.from((json['as'] as List).map((a) => AuthorLink.fromJson(a)));
     tags = List.from(json['tg']);
     tagSet = Set.from(json['ts']);
     shortIntro = json['in'];

@@ -7,27 +7,29 @@ window["\x65\x76\x61\x6c"](function(p,a,c,k,e,d){e=function(c){return(c<a?"":e(p
 final reWord = RegExp(r'\b\w+\b');
 
 String decryptChapterData(String zippedJson, int base, String lzTable) {
-  final dictTable = lzDecompressFromBase64(lzTable)
-    .split('|').asMap()
-    .map((index, value) {
-      final str = int2str(index, base);
-      return MapEntry(str, value.isEmpty ? str : value);
-    });
+  final dictTable =
+      lzDecompressFromBase64(lzTable).split('|').asMap().map((index, value) {
+    final str = int2str(index, base);
+    return MapEntry(str, value.isEmpty ? str : value);
+  });
   return zippedJson.replaceAllMapped(reWord, (m) => dictTable[m[0]]);
 }
 
 String lzDecompressFromBase64(String source) =>
-  _lzDecompress(source.split('').map((c) => _b64[c]).toList(), 32);
+    _lzDecompress(source.split('').map((c) => _b64[c]).toList(), 32);
 
 String int2str(int number, int base) {
   final chars = <String>[];
   do {
     var c = number % base;
-    if (c < 10) { // 0..9
+    if (c < 10) {
+      // 0..9
       c += 48;
-    } else if (c < 36) { // a..z
+    } else if (c < 36) {
+      // a..z
       c += 87;
-    } else { // A..Z
+    } else {
+      // A..Z
       c += 29;
     }
     chars.add(String.fromCharCode(c));
@@ -38,8 +40,10 @@ String int2str(int number, int base) {
 
 // logic translated from: https://github.com/pieroxy/lz-string
 
-final _b64Base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
-                  .split('').asMap();
+final _b64Base =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
+        .split('')
+        .asMap();
 final _b64 = Map.fromIterables(_b64Base.values, _b64Base.keys);
 
 String _lzDecompress(List<int> source, int resetValue) {
@@ -76,11 +80,12 @@ String _lzDecompress(List<int> source, int resetValue) {
   }
 
   switch (bits) {
-    case 0: {
-      bits = 0;
-      maxpower = 256;
-      power = 1;
-      while (power != maxpower) {
+    case 0:
+      {
+        bits = 0;
+        maxpower = 256;
+        power = 1;
+        while (power != maxpower) {
           resb = val & position;
           position >>= 1;
           if (position == 0) {
@@ -89,14 +94,15 @@ String _lzDecompress(List<int> source, int resetValue) {
           }
           bits |= (resb > 0 ? 1 : 0) * power;
           power <<= 1;
+        }
+        c = String.fromCharCode(bits);
+        break;
       }
-      c = String.fromCharCode(bits);
-      break;
-    }
-    case 1: {
+    case 1:
+      {
         bits = 0;
         maxpower = 65536;
-        power=1;
+        power = 1;
         while (power != maxpower) {
           resb = val & position;
           position >>= 1;
@@ -104,12 +110,12 @@ String _lzDecompress(List<int> source, int resetValue) {
             position = resetValue;
             val = source[index++];
           }
-          bits |= (resb>0 ? 1 : 0) * power;
+          bits |= (resb > 0 ? 1 : 0) * power;
           power <<= 1;
         }
-      c = String.fromCharCode(bits);
-      break;
-    }
+        c = String.fromCharCode(bits);
+        break;
+      }
     case 2:
       return "";
   }
@@ -131,7 +137,7 @@ String _lzDecompress(List<int> source, int resetValue) {
         position = resetValue;
         val = source[index++];
       }
-      bits |= (resb>0 ? 1 : 0) * power;
+      bits |= (resb > 0 ? 1 : 0) * power;
       power <<= 1;
     }
 
@@ -139,15 +145,15 @@ String _lzDecompress(List<int> source, int resetValue) {
       case 0:
         bits = 0;
         maxpower = 256;
-        power=1;
-        while (power!=maxpower) {
+        power = 1;
+        while (power != maxpower) {
           resb = val & position;
           position >>= 1;
           if (position == 0) {
             position = resetValue;
             val = source[index++];
           }
-          bits |= (resb>0 ? 1 : 0) * power;
+          bits |= (resb > 0 ? 1 : 0) * power;
           power <<= 1;
         }
 
@@ -158,15 +164,15 @@ String _lzDecompress(List<int> source, int resetValue) {
       case 1:
         bits = 0;
         maxpower = 65536;
-        power=1;
-        while (power!=maxpower) {
+        power = 1;
+        while (power != maxpower) {
           resb = val & position;
           position >>= 1;
           if (position == 0) {
             position = resetValue;
             val = source[index++];
           }
-          bits |= (resb>0 ? 1 : 0) * power;
+          bits |= (resb > 0 ? 1 : 0) * power;
           power <<= 1;
         }
         dictionary.add(String.fromCharCode(bits));
@@ -203,6 +209,5 @@ String _lzDecompress(List<int> source, int resetValue) {
       enlargeIn = pow(2, numBits);
       numBits++;
     }
-
   }
 }

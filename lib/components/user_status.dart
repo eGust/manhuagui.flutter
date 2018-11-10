@@ -15,9 +15,7 @@ class _UserStatusButtonState extends State<UserStatusButton> {
   _UserStatusButtonState({
     this.iconSize = 28.0,
     this.fontSize = 18.0,
-  })
-    : this.user = globals.user
-    ;
+  }) : this.user = globals.user;
   final double iconSize, fontSize;
   final User user;
 
@@ -26,35 +24,37 @@ class _UserStatusButtonState extends State<UserStatusButton> {
       context: context,
       barrierDismissible: false,
       builder: (context) => SimpleDialog(
-        title: Center(child: user.isLogin ? const Text('已登录') : const Text('用户登录')),
-        children: [
-          user.isLogin ? LogoutForm() : LoginForm(),
-        ],
-      ),
+            title: Center(
+                child: user.isLogin ? const Text('已登录') : const Text('用户登录')),
+            children: [
+              user.isLogin ? LogoutForm() : LoginForm(),
+            ],
+          ),
     );
-    setState(() { });
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) => Container(
-    margin: const EdgeInsets.all(2.0),
-    padding: const EdgeInsets.only(left: 3.0, right: 3.0),
-    child: GestureDetector(
-      onTap: showUserDialog,
-      child: Row(
-        children: <Widget>[
-          Icon(user.isLogin ? Icons.person : Icons.person_outline,
-            size: iconSize,
-            color: user.isLogin ? Colors.yellow[500] : Colors.red[200],
-          ),
-          Text(user.isLogin ? ' ${user.nickname}' : '（未登录）',
-            style: TextStyle(
-              fontSize: fontSize,
-              color: user.isLogin ? Colors.white : Colors.red[200],
+      margin: const EdgeInsets.all(2.0),
+      padding: const EdgeInsets.only(left: 3.0, right: 3.0),
+      child: GestureDetector(
+        onTap: showUserDialog,
+        child: Row(
+          children: <Widget>[
+            Icon(
+              user.isLogin ? Icons.person : Icons.person_outline,
+              size: iconSize,
+              color: user.isLogin ? Colors.yellow[500] : Colors.red[200],
             ),
-          ),
-        ],
-      ),
-    )
-  );
+            Text(
+              user.isLogin ? ' ${user.nickname}' : '（未登录）',
+              style: TextStyle(
+                fontSize: fontSize,
+                color: user.isLogin ? Colors.white : Colors.red[200],
+              ),
+            ),
+          ],
+        ),
+      ));
 }

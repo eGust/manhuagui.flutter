@@ -22,8 +22,7 @@ class RouteAuthor extends StatefulWidget {
 
 class _RouteAuthorState extends State<RouteAuthor> {
   _RouteAuthorState()
-    : this.filterSelector = globals.metaData.createAuthorSelector()
-    ;
+      : this.filterSelector = globals.metaData.createAuthorSelector();
 
   final FilterSelector filterSelector;
 
@@ -35,16 +34,16 @@ class _RouteAuthorState extends State<RouteAuthor> {
       context: context,
       barrierDismissible: false,
       builder: (context) => SimpleDialog(
-        title: DialogTopBar('查找作者'),
-        children: [
-          DialogBody(
-            filterSelector.meta.filterGroups,
-            filters,
-            orders: filterSelector.meta.orders,
-            blacklist: globals.blacklistSet,
+            title: DialogTopBar('查找作者'),
+            children: [
+              DialogBody(
+                filterSelector.meta.filterGroups,
+                filters,
+                orders: filterSelector.meta.orders,
+                blacklist: globals.blacklistSet,
+              ),
+            ],
           ),
-        ],
-      ),
     );
 
     final oldFilterPath = filterSelector.fullPath;
@@ -59,7 +58,7 @@ class _RouteAuthorState extends State<RouteAuthor> {
   List<AuthorCover> authors = [];
   Set<int> authorIds = Set();
 
-  Future<void> _refresh({ bool indicator = true }) async {
+  Future<void> _refresh({bool indicator = true}) async {
     if (!mounted || _fetching) return;
     setState(() {
       authors.clear();
@@ -77,9 +76,8 @@ class _RouteAuthorState extends State<RouteAuthor> {
 
     final doc = await filterSelector.fetchDom();
     final covers = AuthorCover.parseDesktop(doc)
-      .where((auth) => !authorIds.contains(auth.updatedAt))
-      .toList()
-      ;
+        .where((auth) => !authorIds.contains(auth.updatedAt))
+        .toList();
     filterSelector.page += 1;
 
     if (!mounted) return;
@@ -101,7 +99,8 @@ class _RouteAuthorState extends State<RouteAuthor> {
   void initState() {
     super.initState();
     _scroller.addListener(() {
-      if (_scroller.position.pixels + _NEXT_THRESHOLD > _scroller.position.maxScrollExtent) {
+      if (_scroller.position.pixels + _NEXT_THRESHOLD >
+          _scroller.position.maxScrollExtent) {
         if (_fetching || !mounted) return;
         _fetchNextPage();
       }
@@ -116,12 +115,11 @@ class _RouteAuthorState extends State<RouteAuthor> {
   }
 
   String filtersTitle() {
-    final s = filterSelector.meta
-      .filterGroups
-      .map((grp) => filterSelector.filters[grp.key])
-      .where((s) => s != null)
-      .map((link) => filterSelector.meta.linkTitleMap[link])
-      .join(', ');
+    final s = filterSelector.meta.filterGroups
+        .map((grp) => filterSelector.filters[grp.key])
+        .where((s) => s != null)
+        .map((link) => filterSelector.meta.linkTitleMap[link])
+        .join(', ');
     return s.isEmpty ? '全部' : s;
   }
 
@@ -129,43 +127,44 @@ class _RouteAuthorState extends State<RouteAuthor> {
 
   @override
   Widget build(BuildContext context) => Column(
-    children: <Widget>[
-      ListTopBar(
-        blacklistEnabled: false,
-        filtersTitle: '${filtersTitle()} (${filterSelector.currentOrder.title})',
-        onPressedScrollTop: () {
-          _scroller.animateTo(
-            0.1,
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.fastOutSlowIn,
-          );
-        },
-        onPressedRefresh: _refresh,
-        onPressedFilters: () async {
-          if (_fetching) return;
-          if (await showDialogChanged(context)) {
-            _refresh();
-          }
-        },
-      ),
-      Expanded(
-        child: RefreshIndicator(
-          onRefresh: () => _refresh(indicator: false),
-          child: GridView.builder(
-            controller: _scroller,
-            // gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 2.0,
-            ),
-            itemCount: authors.length,
-            padding: const EdgeInsets.all(0.0),
-            itemBuilder: (_, i) => AuthorCard(authors[i]),
+        children: <Widget>[
+          ListTopBar(
+            blacklistEnabled: false,
+            filtersTitle:
+                '${filtersTitle()} (${filterSelector.currentOrder.title})',
+            onPressedScrollTop: () {
+              _scroller.animateTo(
+                0.1,
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.fastOutSlowIn,
+              );
+            },
+            onPressedRefresh: _refresh,
+            onPressedFilters: () async {
+              if (_fetching) return;
+              if (await showDialogChanged(context)) {
+                _refresh();
+              }
+            },
           ),
-        ),
-      ),
-    ],
-  );
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () => _refresh(indicator: false),
+              child: GridView.builder(
+                controller: _scroller,
+                // gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  childAspectRatio: 2.0,
+                ),
+                itemCount: authors.length,
+                padding: const EdgeInsets.all(0.0),
+                itemBuilder: (_, i) => AuthorCard(authors[i]),
+              ),
+            ),
+          ),
+        ],
+      );
 }
 
 class AuthorCard extends StatelessWidget {
@@ -174,48 +173,50 @@ class AuthorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Card(
-    child: GestureDetector(
-      onTap: () {
-        RouteHelper.pushAuthor(context, author);
-      },
-      child: Container(
-        padding: const EdgeInsets.all(10.0),
-        color: Colors.white,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Text(author.name,
-              style: const TextStyle(
-                fontSize: 18.0,
-              ),
-            ),
-            Row(
+        child: GestureDetector(
+          onTap: () {
+            RouteHelper.pushAuthor(context, author);
+          },
+          child: Container(
+            padding: const EdgeInsets.all(10.0),
+            color: Colors.white,
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                Text(author.region),
+                Text(
+                  author.name,
+                  style: const TextStyle(
+                    fontSize: 18.0,
+                  ),
+                ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    const Text('共 '),
-                    Text(' ${author.comicCount} ', style: TextStyle(
-                      color: Colors.blue[600],
-                      fontWeight: FontWeight.bold,
-                    )),
-                    const Text(' 部作品'),
+                    Text(author.region),
+                    Row(
+                      children: <Widget>[
+                        const Text('共 '),
+                        Text(' ${author.comicCount} ',
+                            style: TextStyle(
+                              color: Colors.blue[600],
+                              fontWeight: FontWeight.bold,
+                            )),
+                        const Text(' 部作品'),
+                      ],
+                    )
                   ],
-                )
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text('更新: ${author.updatedAt}'),
+                    Text(author.score),
+                  ],
+                ),
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('更新: ${author.updatedAt}'),
-                Text(author.score),
-              ],
-            ),
-          ],
+          ),
         ),
-      ),
-    ),
-  );
+      );
 }

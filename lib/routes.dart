@@ -14,7 +14,7 @@ import './models.dart';
 
 class RouteHelper {
   static Route<Widget> buildRoute(Widget screen) =>
-    MaterialPageRoute(builder: (_) => Material(child: screen));
+      MaterialPageRoute(builder: (_) => Material(child: screen));
 
   static Future<Widget> pushComic(BuildContext context, ComicCover cover) {
     return Navigator.push(

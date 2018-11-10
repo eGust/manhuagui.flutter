@@ -42,30 +42,29 @@ class _RouteHistoryState extends State<RouteHistory> {
 
     setState(() {
       comics = rows.map((row) {
-          final cc = ComicCover(row['book_id'], row['name']);
-          cc.loadJson(jsonDecode(row['cover_json']));
-          cc.lastChapterId = row['last_chapter_id'];
-          cc.lastChapterPage = row['last_chapter_page'];
-          cc.lastReadChapter = row['last_chapter_title'];
-          cc.maxChapterId = row['max_chapter_id'];
-          cc.maxChapterPage = row['max_chapter_page'];
-          cc.maxReadChapter = row['max_chapter_title'];
-          return cc;
-        }).toList();
+        final cc = ComicCover(row['book_id'], row['name']);
+        cc.loadJson(jsonDecode(row['cover_json']));
+        cc.lastChapterId = row['last_chapter_id'];
+        cc.lastChapterPage = row['last_chapter_page'];
+        cc.lastReadChapter = row['last_chapter_title'];
+        cc.maxChapterId = row['max_chapter_id'];
+        cc.maxChapterPage = row['max_chapter_page'];
+        cc.maxReadChapter = row['max_chapter_title'];
+        return cc;
+      }).toList();
     });
   }
 
   void _updateProgresses() async {
     await globals.updateChapterProgresses(comics);
     if (!mounted) return;
-    setState(() { });
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) => ListView(
-    padding: const EdgeInsets.all(0.0),
-    children: List<Widget>.from(comics.map((comic) =>
-      ComicCoverRow(comic, context, onPopComic: _updateProgresses)
-    )),
-  );
+        padding: const EdgeInsets.all(0.0),
+        children: List<Widget>.from(comics.map((comic) =>
+            ComicCoverRow(comic, context, onPopComic: _updateProgresses))),
+      );
 }

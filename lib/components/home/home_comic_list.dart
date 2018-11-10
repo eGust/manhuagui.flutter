@@ -18,8 +18,9 @@ class HomeComicList extends StatelessWidget {
 }
 
 class HomeComicListManager extends ComicListManagerBase {
-  HomeComicListManager(this.router) :
-    this.filterSelector = globals.metaData.createComicSelector(pathOrderMap[router.path]);
+  HomeComicListManager(this.router)
+      : this.filterSelector =
+            globals.metaData.createComicSelector(pathOrderMap[router.path]);
 
   final SubRouter router;
   final FilterSelector filterSelector;
@@ -27,8 +28,8 @@ class HomeComicListManager extends ComicListManagerBase {
 
   static const Map<String, String> pathOrderMap = {
     'comic_category': 'index',
-    'comic_rank':     'view',
-    'comic_update':   'update',
+    'comic_rank': 'view',
+    'comic_update': 'update',
   };
 
   @override
@@ -52,16 +53,16 @@ class HomeComicListManager extends ComicListManagerBase {
   }
 
   @override
-  String get filtersTitle => filterSelector.meta
-    .filterGroups
-    .map((grp) => filterSelector.filters[grp.key])
-    .where((s) => s != null)
-    .map((link) => filterSelector.meta.linkTitleMap[link])
-    .join(', ');
+  String get filtersTitle => filterSelector.meta.filterGroups
+      .map((grp) => filterSelector.filters[grp.key])
+      .where((s) => s != null)
+      .map((link) => filterSelector.meta.linkTitleMap[link])
+      .join(', ');
 
   @override
   bool notInBlacklist(ComicCover cover) =>
-    cover.tagSet == null || globals.blacklistSet.intersection(cover.tagSet).isEmpty;
+      cover.tagSet == null ||
+      globals.blacklistSet.intersection(cover.tagSet).isEmpty;
 
   @override
   bool get isLastPage => filterSelector.page == filterSelector.pageCount;
@@ -81,25 +82,25 @@ class HomeComicListManager extends ComicListManagerBase {
       context: context,
       barrierDismissible: false,
       builder: (context) => SimpleDialog(
-        title: DialogTopBar(
-          router.label,
-          pinned: _pinned,
-          onPinChanged: (bool pinned) {
-            _pinned = pinned;
-          },
-        ),
-        children: [
-          DialogBody(
-            filterSelector.meta.filterGroups,
-            filters,
-            blacklist: globals.blacklistSet,
-            onSelectedFilter: () {
-              if (_pinned) return;
-              Navigator.pop(context);
-            },
+            title: DialogTopBar(
+              router.label,
+              pinned: _pinned,
+              onPinChanged: (bool pinned) {
+                _pinned = pinned;
+              },
+            ),
+            children: [
+              DialogBody(
+                filterSelector.meta.filterGroups,
+                filters,
+                blacklist: globals.blacklistSet,
+                onSelectedFilter: () {
+                  if (_pinned) return;
+                  Navigator.pop(context);
+                },
+              ),
+            ],
           ),
-        ],
-      ),
     );
 
     final oldFilterPath = filterSelector.filterPath;
