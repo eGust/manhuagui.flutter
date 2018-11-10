@@ -81,7 +81,11 @@ class ReaderHelper {
 
   static Future<File> getCachedImageFile(
           final Chapter chapter, final int page) =>
-      globals.cache.getFile(chapter.getPageUrl(page), headers: IMAGE_HEADERS);
+      globals.cache.getFile(
+        chapter.getPageUrl(page),
+        headers: IMAGE_HEADERS,
+        key: '${chapter.bookId}/${chapter.chapterId}.webp',
+      );
 
   Future<ImageEntry> _findImageEntry(
       final Chapter chapter, final int index) async {

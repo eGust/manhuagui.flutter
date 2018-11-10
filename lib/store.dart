@@ -12,6 +12,13 @@ import './models.dart';
 import './api.dart';
 import './config.dart';
 
+class LRUCachePolicy extends LessRecentlyUsedPolicy {
+  LRUCachePolicy(final int maxCount) : super(maxCount: maxCount);
+
+  @override
+  String generateFilename({final String key, final String url}) => key;
+}
+
 class Store {
   SharedPreferences storage;
   WebsiteMetaData metaData;
@@ -81,6 +88,7 @@ class Store {
   }
 
   Future<void> _openCache() async {
+    CacheStore.setPolicy(LRUCachePolicy(2000));
     cache = await CacheStore.getInstance();
   }
 
