@@ -29,3 +29,5 @@ ios/Runner.xcodeproj/project.pbxproj
 
 config.dart
 ios/Podfile.lock
+
+icons/
