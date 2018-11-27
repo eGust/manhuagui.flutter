@@ -13,32 +13,28 @@ class DialogTopBar extends StatefulWidget {
   final _PinChanged onPinChanged;
 
   @override
-  _DialogTopBarState createState() =>
-      _DialogTopBarState(title, pinned, onPinChanged);
+  _DialogTopBarState createState() => _DialogTopBarState(pinned);
 }
 
 class _DialogTopBarState extends State<DialogTopBar> {
-  _DialogTopBarState(this._title, bool pinned, this._onPinChanged)
-      : _pinned = pinned;
-  final String _title;
-  final _PinChanged _onPinChanged;
+  _DialogTopBarState(bool pinned) : _pinned = pinned;
   bool _pinned;
 
   void onPressed() {
     setState(() {
       _pinned = !_pinned;
     });
-    if (_onPinChanged != null) {
-      _onPinChanged(_pinned);
+    if (widget.onPinChanged != null) {
+      widget.onPinChanged(_pinned);
     }
   }
 
   @override
   Widget build(BuildContext context) => Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: _onPinChanged == null
+        children: widget.onPinChanged == null
             ? [
-                Text(_title),
+                Text(widget.title),
                 FlatButton(
                   child: Icon(Icons.check),
                   onPressed: () {
@@ -55,7 +51,7 @@ class _DialogTopBarState extends State<DialogTopBar> {
                   color: _pinned ? Colors.orange[900] : Colors.transparent,
                   onPressed: onPressed,
                 ),
-                Text(_title),
+                Text(widget.title),
                 FlatButton(
                   child: Icon(Icons.check),
                   onPressed: () {
@@ -77,49 +73,47 @@ class DialogBody extends StatefulWidget {
   final List<Order> orders;
 
   @override
-  _DialogBodyState createState() => _DialogBodyState(this);
+  _DialogBodyState createState() => _DialogBodyState();
 }
 
 class _DialogBodyState extends State<DialogBody> {
-  _DialogBodyState(this.data);
-
-  final DialogBody data;
+  _DialogBodyState();
 
   void _onSelectedFilter(FilterGroup group, String link) {
     final grp = group.key;
     setState(() {
-      if (data.selected[grp] == link) {
-        data.selected[grp] = null;
+      if (widget.selected[grp] == link) {
+        widget.selected[grp] = null;
       } else {
-        data.selected[grp] = link;
+        widget.selected[grp] = link;
       }
     });
 
-    if (data.onSelectedFilter != null) data.onSelectedFilter();
+    if (widget.onSelectedFilter != null) widget.onSelectedFilter();
   }
 
   void _onSelectedOrder(Displayable order) {
     final newOrder = order.value;
-    if (data.selected['order'] == newOrder) return;
+    if (widget.selected['order'] == newOrder) return;
     setState(() {
-      data.selected['order'] = newOrder;
+      widget.selected['order'] = newOrder;
     });
   }
 
   List<Widget> buildFilters(columnCount) =>
-      List.from(data.groups.map((fg) => FilterGroupList(
+      List.from(widget.groups.map((fg) => FilterGroupList(
             fg,
-            data.selected[fg.key],
+            widget.selected[fg.key],
             onSelectedFilter: _onSelectedFilter,
-            blacklist: data.blacklist,
+            blacklist: widget.blacklist,
             columnCount: columnCount,
           )));
 
   List<Widget> buildFiltersWithOrder() {
     final list = buildFilters(7);
     list.add(OrderSelectGroup(
-      selected: data.selected['order'],
-      orders: data.orders,
+      selected: widget.selected['order'],
+      orders: widget.orders,
       onSelected: _onSelectedOrder,
     ));
     return list;
@@ -128,5 +122,5 @@ class _DialogBodyState extends State<DialogBody> {
   @override
   Widget build(BuildContext context) => Column(
       children:
-          data.orders == null ? buildFilters(5) : buildFiltersWithOrder());
+          widget.orders == null ? buildFilters(5) : buildFiltersWithOrder());
 }

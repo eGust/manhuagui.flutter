@@ -17,12 +17,11 @@ class ResultList extends StatefulWidget {
   String get search => Uri.encodeComponent(searchKey);
 
   @override
-  _ResultListState createState() => _ResultListState(this);
+  _ResultListState createState() => _ResultListState();
 }
 
 class _ResultListState extends State<ResultList> {
-  _ResultListState(this.parent);
-  final ResultList parent;
+  _ResultListState();
 
   final _scroller = ScrollController();
   final _bookIds = Set<int>();
@@ -96,7 +95,7 @@ class _ResultListState extends State<ResultList> {
   }
 
   String get url =>
-      '$_BASE_URL${parent.search}$_order${_page > 1 ? '_p$_page' : ''}.html';
+      '$_BASE_URL${widget.search}$_order${_page > 1 ? '_p$_page' : ''}.html';
 
   void _scrollToTop() {
     _scroller.animateTo(
@@ -118,7 +117,7 @@ class _ResultListState extends State<ResultList> {
   }
 
   Future<void> _fetchNextPage() async {
-    if (_isLastPage || !mounted || !globals.user.isLogin) return;
+    if (_isLastPage || !mounted) return;
     setState(() {
       _fetching = true;
     });
@@ -206,7 +205,7 @@ class _ResultListState extends State<ResultList> {
                 ),
               ),
             ],
-            middle: Text('搜索：${parent.searchKey}',
+            middle: Text('搜索：${widget.searchKey}',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18.0,
@@ -217,7 +216,7 @@ class _ResultListState extends State<ResultList> {
                 Icons.edit,
                 size: 28.0,
                 color: Colors.white,
-                onPressed: parent.onResearch,
+                onPressed: widget.onResearch,
               ),
             ],
             onPressed: _scrollToTop,

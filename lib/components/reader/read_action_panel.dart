@@ -8,13 +8,12 @@ class ReadActionPanel extends StatefulWidget {
   ReadActionPanel({@required this.onPressed});
   final ReadAction onPressed;
   @override
-  _ReadActionPanelState createState() => _ReadActionPanelState(onPressed);
+  _ReadActionPanelState createState() => _ReadActionPanelState();
 }
 
 class _ReadActionPanelState extends State<ReadActionPanel> {
-  _ReadActionPanelState(this.onPressed);
+  _ReadActionPanelState();
 
-  final ReadAction onPressed;
   Offset _dragFrom, _dragTo;
 
   @override
@@ -30,7 +29,7 @@ class _ReadActionPanelState extends State<ReadActionPanel> {
           final dy = _dragTo.dy - _dragFrom.dy;
 
           if (dx.abs() < dy.abs() * 3 || dx.abs() < 40.0) return;
-          onPressed(offset: dx > 0 ? 0 - 1 : 0 + 1);
+          widget.onPressed(offset: dx > 0 ? 0 - 1 : 0 + 1);
         },
         // onScaleStart: (details) {
         //   logd('onScaleStart $details');
@@ -41,11 +40,11 @@ class _ReadActionPanelState extends State<ReadActionPanel> {
         onTapUp: (details) {
           final x = details.globalPosition.dx;
           if (x > globals.prevThreshold && x < globals.nextThreshold) {
-            onPressed();
+            widget.onPressed();
             return;
           }
 
-          onPressed(offset: x < globals.prevThreshold ? 0 - 1 : 0 + 1);
+          widget.onPressed(offset: x < globals.prevThreshold ? 0 - 1 : 0 + 1);
         },
       );
 }

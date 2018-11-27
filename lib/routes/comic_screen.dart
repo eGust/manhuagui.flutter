@@ -13,12 +13,13 @@ class ComicScreen extends StatefulWidget {
   final ComicCover cover;
 
   @override
-  _ComicScreenState createState() => _ComicScreenState(cover);
+  _ComicScreenState createState() =>
+      _ComicScreenState(ComicBook.fromCover(cover));
 }
 
 class _ComicScreenState extends State<ComicScreen>
     with SingleTickerProviderStateMixin {
-  _ComicScreenState(ComicCover cover) : this.comic = ComicBook.fromCover(cover);
+  _ComicScreenState(this.comic);
 
   ComicBook comic;
 

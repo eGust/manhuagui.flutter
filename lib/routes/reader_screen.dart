@@ -16,17 +16,19 @@ class ReaderScreen extends StatefulWidget {
   final ReaderHelper helper;
 
   @override
-  _ReaderScreenState createState() => _ReaderScreenState(helper);
+  _ReaderScreenState createState() => _ReaderScreenState();
 }
 
 class _ReaderScreenState extends State<ReaderScreen>
     with TickerProviderStateMixin {
-  _ReaderScreenState(final this.helper) {
+  _ReaderScreenState() {
     StatusBar.hide();
     AnimationHelper.circleSize = globals.screenSize.width / 4;
     AnimationHelper.strokeWidth = 8.0;
     _animation = AnimationHelper(this, _onAnimationFinished);
   }
+
+  ReaderHelper get helper => widget.helper;
 
   @override
   void initState() {
@@ -40,8 +42,6 @@ class _ReaderScreenState extends State<ReaderScreen>
     _animation.dispose();
     super.dispose();
   }
-
-  final ReaderHelper helper;
 
   AnimationHelper _animation;
   File _currentImage, _nextImage;

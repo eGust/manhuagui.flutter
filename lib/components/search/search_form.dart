@@ -12,14 +12,13 @@ class SearchForm extends StatefulWidget {
   final String searchText;
   final OnSearchCallback onSearch;
   @override
-  _SearchFormState createState() => _SearchFormState(this);
+  _SearchFormState createState() => _SearchFormState(searchText);
 }
 
 class _SearchFormState extends State<SearchForm> {
-  _SearchFormState(this.parent)
-      : _key = TextEditingController(text: parent.searchText);
+  _SearchFormState(String searchText)
+      : _key = TextEditingController(text: searchText);
 
-  final SearchForm parent;
   final TextEditingController _key;
 
   @override
@@ -68,8 +67,8 @@ class _SearchFormState extends State<SearchForm> {
   }
 
   void _onPressedSearch() {
-    if (parent.onSearch == null) return;
-    parent.onSearch(_key.text);
+    if (widget.onSearch == null) return;
+    widget.onSearch(_key.text);
   }
 
   @override

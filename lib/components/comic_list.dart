@@ -34,17 +34,17 @@ class ComicList extends StatefulWidget {
   ComicList(this.stateManager);
   final ComicListManagerBase stateManager;
   @override
-  _ComicListState createState() => _ComicListState(this.stateManager);
+  _ComicListState createState() => _ComicListState();
 }
 
 class _ComicListState extends State<ComicList> {
-  _ComicListState(this.stateManager);
+  _ComicListState();
 
-  final ComicListManagerBase stateManager;
   final _comics = <ComicCover>[];
   final _bookIds = Set<int>();
   final _scroller = ScrollController();
 
+  ComicListManagerBase get stateManager => widget.stateManager;
   bool _blacklistEnabled = true, _fetching = false, _indicator = false;
 
   Future<void> _showFilterDialog({bool isInitial = false}) async {
