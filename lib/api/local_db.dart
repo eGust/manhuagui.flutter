@@ -8,6 +8,7 @@ class LocalDb {
   static Future<Database> connect() async {
     final basePath = await getDatabasesPath();
     final filename = '$basePath/$_FILENAME';
+    print('local db path: $filename');
     return await openDatabase(
       filename,
       version: _VERSION,
