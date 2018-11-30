@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import './store.dart';
@@ -6,9 +8,13 @@ import './api.dart';
 
 void main() async {
   log('main started');
-  StatusBar.init();
   await globals.initialize();
   // updateSettings();
+
+  final size = MediaQueryData.fromWindow(window).size;
+  print("window.devicePixelRatio = ${window.devicePixelRatio}");
+  print("width = ${size.shortestSide} x ${size.longestSide}");
+
   log('ready to start app');
   runApp(App());
 }

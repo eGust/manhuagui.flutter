@@ -26,7 +26,7 @@ class ReaderHelper {
 
   Chapter get current => _current;
   set current(final Chapter val) {
-    final diff = val.chapterId != val.chapterId;
+    final diff = current.chapterId != val.chapterId;
     _current = val;
     if (diff) {
       updateCurrentChapter();

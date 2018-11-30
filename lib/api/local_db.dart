@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:sqflite/sqflite.dart';
+
+import 'package:path_provider/path_provider.dart';
 
 class LocalDb {
   static const _FILENAME = 'history.db';
@@ -9,6 +12,10 @@ class LocalDb {
     final basePath = await getDatabasesPath();
     final filename = '$basePath/$_FILENAME';
     print('local db path: $filename');
+    if (Platform.isAndroid) {
+      print('android external path: ${await getExternalStorageDirectory()}');
+    }
+
     return await openDatabase(
       filename,
       version: _VERSION,

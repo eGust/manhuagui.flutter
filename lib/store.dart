@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
+import 'dart:ui';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
@@ -30,9 +32,12 @@ class Store {
   Set<String> blacklistSet = Set();
   static final _df = DateFormat('yyyy-MM-dd');
   static final _tf = DateFormat('HH:mm');
+
   Size screenSize;
-  double statusBarHeight = 20.0;
-  double prevThreshold, nextThreshold;
+  double statusBarHeight;
+  double prevThreshold;
+  double nextThreshold;
+  bool get smallScreen => screenSize.shortestSide < 700;
 
   String formatDate(DateTime date) => date == null ? '--' : _df.format(date);
   String formatTimeHM(DateTime time) => time == null ? '--' : _tf.format(time);
@@ -111,6 +116,7 @@ class Store {
   }
 
   Future<void> initialize() async {
+    StatusBar.init();
     await _loadStorage();
     await Future.wait([
       _openRemoteDb(),

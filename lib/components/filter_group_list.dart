@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models.dart';
+import '../store.dart';
 
 typedef SelectedFilter = void Function(FilterGroup group, String filter);
 
@@ -8,7 +9,7 @@ class FilterGroupList extends StatelessWidget {
   FilterGroupList(this.filterGroup, this.selected,
       {Set<String> blacklist, this.onSelectedFilter, this.columnCount = 5})
       : this.blacklist = blacklist ?? Set(),
-        this.buttonFontSize = columnCount > 5 ? 16.0 : 18.0;
+        this.buttonFontSize = (columnCount > 5 ? 16.0 : 18.0) - (globals.smallScreen ? 2 : 0);
 
   final FilterGroup filterGroup;
   final String selected;
@@ -69,19 +70,19 @@ class DisplayableGroupList extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
       margin: const EdgeInsets.only(left: 8.0, right: 8.0),
-      padding: const EdgeInsets.all(5.0),
+      padding: const EdgeInsets.all(1.0),
       decoration: BoxDecoration(
         border: Border(top: BorderSide(color: Colors.white)),
       ),
       child: Row(
         children: <Widget>[
           Container(
-            width: 50.0,
+            width: globals.smallScreen ? 40.0 : 50.0,
             alignment: Alignment.center,
-            child: Text(title, style: const TextStyle(fontSize: 18.0)),
+            child: Text(title, style: TextStyle(fontSize: globals.smallScreen ? 17.0 : 18.0)),
           ),
           Container(
-            width: 600.0,
+            width: globals.smallScreen ? 440.0 : 560.0,
             child: _GridList(
               columnCount: columnCount,
               children: children,
@@ -112,16 +113,14 @@ class DisplayableButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         margin: const EdgeInsets.fromLTRB(10.0, 1.0, 0.0, 1.0),
-        child: FlatButton(
-          color: color,
-          disabledColor: Colors.grey[600],
+        child: RawMaterialButton(
+          fillColor: onPressed == null ? Colors.grey[600] : color,
           onPressed: onPressed,
           child: Container(
-            padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
             child: Text(
               item.display,
               style: TextStyle(
-                fontSize: fontSize,
+                fontSize: fontSize - (item.display.length > 3 ? 3 : 0),
                 color: textColor,
               ),
             ),
