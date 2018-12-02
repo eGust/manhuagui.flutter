@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import './filter_group_list.dart';
+import 'filter_group_list.dart';
 import '../models.dart';
 
 typedef _PinChanged = void Function(bool);

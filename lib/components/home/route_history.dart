@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 
-import './sub_router.dart';
+import 'sub_router.dart';
 import '../comic_cover_row.dart';
 import '../../store.dart';
 import '../../models.dart';

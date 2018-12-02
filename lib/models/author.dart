@@ -2,9 +2,9 @@ import 'dart:async';
 import 'package:html/dom.dart';
 
 import '../api/request.dart' as request;
-import './website_meta_data.dart';
-import './selectors.dart';
-import './comic_cover.dart';
+import 'website_meta_data.dart';
+import 'selectors.dart';
+import 'comic_cover.dart';
 
 typedef AuthorLinkCallback = void Function(AuthorLink);
 

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import './comic_book.dart';
-import './chapter.dart';
+import 'comic_book.dart';
+import 'chapter.dart';
 import '../store.dart';
 
 class ImageEntry {

@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-import './progressing.dart';
-import './list_top_bar.dart';
-import './comic_cover_row.dart';
+import 'progressing.dart';
+import 'list_top_bar.dart';
+import 'comic_cover_row.dart';
 import '../models.dart';
 import '../store.dart';
 

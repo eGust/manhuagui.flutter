@@ -21,8 +21,11 @@ dependencies:
   mongo_dart: any
   path_provider: any
   shared_preferences: any
+  simple_auth_flutter: any
+  simple_auth: any
   sqflite: any
   url_launcher: any
+
   flutter_cache_store:
     path: ../flutter_cache_store
 

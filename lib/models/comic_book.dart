@@ -4,10 +4,10 @@ import 'package:html/parser.dart' show parse;
 
 import '../api/request.dart';
 import '../api/decrypt_chapter_json.dart';
-import './website_meta_data.dart';
-import './author.dart';
-import './comic_cover.dart';
-import './chapter.dart';
+import 'website_meta_data.dart';
+import 'author.dart';
+import 'comic_cover.dart';
+import 'chapter.dart';
 import '../store.dart';
 
 class ComicBook extends ComicCover {

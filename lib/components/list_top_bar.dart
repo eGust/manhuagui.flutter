@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import './touchable_icon.dart';
-import './user_status.dart';
+import 'touchable_icon.dart';
+import 'user_status.dart';
 
 class TopBarFrame extends StatelessWidget {
   TopBarFrame({

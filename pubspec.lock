@@ -7,7 +7,7 @@ packages:
       name: args
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.5.0"
+    version: "1.5.1"
   async:
     dependency: transitive
     description:
@@ -193,6 +193,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.3"
+  simple_auth:
+    dependency: "direct main"
+    description:
+      name: simple_auth
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
+  simple_auth_flutter:
+    dependency: "direct main"
+    description:
+      name: simple_auth_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -267,7 +281,7 @@ packages:
       name: url_launcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.0.1"
+    version: "4.0.2"
   utf:
     dependency: transitive
     description:

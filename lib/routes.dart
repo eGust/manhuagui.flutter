@@ -10,7 +10,7 @@ import 'routes/author_screen.dart';
 import 'routes/reader_screen.dart';
 import 'routes/search_screen.dart';
 
-import './models.dart';
+import 'models.dart';
 
 class RouteHelper {
   static Route<Widget> buildRoute(Widget screen) =>

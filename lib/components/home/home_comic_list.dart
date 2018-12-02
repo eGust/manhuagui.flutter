@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-import './side_bar.dart';
+import 'side_bar.dart';
 import '../filter_dialog.dart';
 import '../comic_list.dart';
 import '../../store.dart';

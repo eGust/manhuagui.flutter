@@ -1,6 +1,6 @@
 import 'package:html/dom.dart';
 
-import './author.dart';
+import 'author.dart';
 import '../store.dart';
 
 enum CoverSize { min, xs, sm, md, lg, xl, max }

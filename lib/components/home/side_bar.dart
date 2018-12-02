@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import './sub_router.dart';
+import 'sub_router.dart';
 import '../../routes.dart';
 
 export './sub_router.dart';

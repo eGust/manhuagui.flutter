@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import './read_action_panel.dart';
+import 'read_action_panel.dart';
 import '../touchable_icon.dart';
 
 class InfoPanel extends StatelessWidget {

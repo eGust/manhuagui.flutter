@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:simple_auth/simple_auth.dart';
+import 'package:simple_auth_flutter/simple_auth_flutter.dart';
 
-import './sub_router.dart';
+import 'sub_router.dart';
 import '../list_top_bar.dart';
 import '../../store.dart';
 import '../../models.dart';
@@ -16,9 +18,42 @@ class RouteConfiguration extends StatefulWidget {
   _RouteConfigurationState createState() => _RouteConfigurationState();
 }
 
+final googleApi = GoogleApi(
+  'google',
+  '45516579677-vhhmlfivk1ic4nr8ji5uvvb1358c5q8u.apps.googleusercontent.com',
+  'redirecturl',
+  clientSecret: 'TLLbey1-vAqvClNqZ9QJ7-lM',
+  scopes: [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'https://www.googleapis.com/auth/drive.appdata',
+    'https://www.googleapis.com/auth/drive.file',
+  ],
+);
+
+Future<void> syncData() async {
+  try {
+    await googleApi.authenticate();
+    final req =
+        Request(HttpMethod.Get, 'https://www.googleapis.com/drive/v3/files');
+    final res = await googleApi.send<String>(req);
+    print(res.body);
+  } catch (e) {
+    print(e);
+  }
+}
+
 class _RouteConfigurationState extends State<RouteConfiguration> {
   static bool _isBlocked(final Filter filter) =>
       globals.blacklistSet.contains(filter.link);
+
+  @override
+  initState() {
+    super.initState();
+    if (googleApi != null) {
+      SimpleAuthFlutter.init(context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) => Column(
@@ -87,6 +122,11 @@ class _RouteConfigurationState extends State<RouteConfiguration> {
               children: [
                 RaisedButton(
                   color: Colors.lightBlue[800],
+                  child: const Text('缓存',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16.0,
+                      )),
                   onPressed: () async {
                     var cleanning = false;
                     await showDialog<void>(
@@ -121,11 +161,20 @@ class _RouteConfigurationState extends State<RouteConfiguration> {
                           ),
                     );
                   },
-                  child: const Text('缓存',
+                ),
+                Container(width: 10.0),
+                RaisedButton(
+                  color: Colors.lightBlue[800],
+                  child: const Text('同步...',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16.0,
                       )),
+                  onPressed: googleApi == null
+                      ? null
+                      : () {
+                          syncData();
+                        },
                 ),
               ],
             ),

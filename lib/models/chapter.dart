@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import '../api/request.dart';
 import '../api/decrypt_chapter_json.dart';
-import './website_meta_data.dart';
+import 'website_meta_data.dart';
 import '../store.dart';
 
 /*

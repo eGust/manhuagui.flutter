@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../models.dart';
 import '../store.dart';
-import './login_form.dart';
-import './logout_form.dart';
+import 'login_form.dart';
+import 'logout_form.dart';
 
 class UserStatusButton extends StatefulWidget {
   const UserStatusButton();

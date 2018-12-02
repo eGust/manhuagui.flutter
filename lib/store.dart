@@ -10,9 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_cache_store/flutter_cache_store.dart';
 
-import './models.dart';
-import './api.dart';
-import './config.dart';
+import 'models.dart';
+import 'api.dart';
+import 'config.dart';
 
 class LRUCachePolicy extends LessRecentlyUsedPolicy {
   LRUCachePolicy(final int maxCount) : super(maxCount: maxCount);

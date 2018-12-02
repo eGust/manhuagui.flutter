@@ -7,7 +7,7 @@ import '../../models.dart';
 import '../../routes.dart';
 import '../progressing.dart';
 import '../list_top_bar.dart';
-import './sub_router.dart';
+import 'sub_router.dart';
 
 final _router = SubRouter(
   'home',

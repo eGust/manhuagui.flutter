@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:html/dom.dart';
 
-import './selectors.dart';
+import 'selectors.dart';
 import '../api/request.dart';
 
 const PROTOCOL = 'https';

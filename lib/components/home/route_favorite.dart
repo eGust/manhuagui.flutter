@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-import './sub_router.dart';
+import 'sub_router.dart';
 import '../progressing.dart';
 import '../list_top_bar.dart';
 import '../comic_cover_row.dart';
