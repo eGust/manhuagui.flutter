@@ -68,7 +68,7 @@ class _RouteConfigurationState extends State<RouteConfiguration> {
             child: const Text('黑名单', style: TextStyle(fontSize: 24.0)),
           ),
           Container(
-            padding: const EdgeInsets.all(5.0),
+            padding: const EdgeInsets.all(15.0),
             decoration: const BoxDecoration(
               border:
                   Border(bottom: BorderSide(color: Colors.brown, width: 2.0)),
@@ -77,12 +77,9 @@ class _RouteConfigurationState extends State<RouteConfiguration> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: globals.metaData.comicFilterGroupList
                   .map(
-                    (grp) => Container(
-                        padding:
-                            const EdgeInsets.fromLTRB(10.0, 6.0, 10.0, 6.0),
-                        child: Wrap(
-                          spacing: 9.0,
-                          runSpacing: 4.0,
+                    (grp) => Wrap(
+                          spacing: 8.0,
+                          runSpacing: -10.0,
                           children: grp.filters
                               .map((filter) => _BlacklistButton(
                                     filter,
@@ -100,13 +97,13 @@ class _RouteConfigurationState extends State<RouteConfiguration> {
                                     },
                                   ))
                               .toList(),
-                        )),
+                        ),
                   )
                   .toList(),
             ),
           ),
           Container(
-            padding: const EdgeInsets.fromLTRB(18.0, 8.0, 0.0, 4.0),
+            padding: const EdgeInsets.fromLTRB(18.0, 4.0, 0.0, 4.0),
             decoration: const BoxDecoration(
               border: Border(bottom: BorderSide(color: Colors.orange)),
             ),
@@ -195,9 +192,8 @@ class _BlacklistButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   @override
-  Widget build(BuildContext context) => Container(
-        child: RawMaterialButton(
-          constraints: const BoxConstraints(minWidth: 50.0),
+  Widget build(BuildContext context) => RawMaterialButton(
+          constraints: const BoxConstraints(minWidth: 45.0),
           shape: RoundedRectangleBorder(
             side: BorderSide(
               color: blocked ? Colors.red[900] : Colors.green,
@@ -206,13 +202,12 @@ class _BlacklistButton extends StatelessWidget {
             borderRadius: const BorderRadius.all(Radius.circular(9.0)),
           ),
           fillColor: blocked ? Colors.red : Colors.white,
-          padding: const EdgeInsets.fromLTRB(20.0, 9.0, 20.0, 9.0),
+          padding: const EdgeInsets.fromLTRB(12.0, 4.0, 12.0, 4.0),
           child: Text(filter.title,
               style: TextStyle(
-                fontSize: 17.0,
+                fontSize: 14.0,
                 color: blocked ? Colors.black : Colors.green[900],
               )),
           onPressed: onPressed,
-        ),
       );
 }
