@@ -1,16 +1,18 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:sqflite/sqflite.dart';
 
+import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class LocalDb {
   static const _FILENAME = 'history.db';
   static const _VERSION = 1;
 
+  static String _basePath;
+  static String get filename => '$_basePath/$_FILENAME';
+
   static Future<Database> connect() async {
-    final basePath = await getDatabasesPath();
-    final filename = '$basePath/$_FILENAME';
+    _basePath = await getDatabasesPath();
     print('local db path: $filename');
     if (Platform.isAndroid) {
       print('android external path: ${await getExternalStorageDirectory()}');

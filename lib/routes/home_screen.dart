@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         }
       case AppLifecycleState.resumed:
         {
-          globals.resucme();
+          globals.resume();
           break;
         }
       default:

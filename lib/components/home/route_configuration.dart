@@ -6,6 +6,7 @@ import 'sub_router.dart';
 import '../list_top_bar.dart';
 import '../../store.dart';
 import '../../models.dart';
+import '../../api/sync.dart';
 
 class RouteConfiguration extends StatefulWidget {
   static final router = SubRouter(
@@ -18,31 +19,6 @@ class RouteConfiguration extends StatefulWidget {
   _RouteConfigurationState createState() => _RouteConfigurationState();
 }
 
-final googleApi = GoogleApi(
-  'google',
-  '45516579677-vhhmlfivk1ic4nr8ji5uvvb1358c5q8u.apps.googleusercontent.com',
-  'redirecturl',
-  clientSecret: 'TLLbey1-vAqvClNqZ9QJ7-lM',
-  scopes: [
-    'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/userinfo.profile',
-    'https://www.googleapis.com/auth/drive.appdata',
-    'https://www.googleapis.com/auth/drive.file',
-  ],
-);
-
-Future<void> syncData() async {
-  try {
-    await googleApi.authenticate();
-    final req =
-        Request(HttpMethod.Get, 'https://www.googleapis.com/drive/v3/files');
-    final res = await googleApi.send<String>(req);
-    print(res.body);
-  } catch (e) {
-    print(e);
-  }
-}
-
 class _RouteConfigurationState extends State<RouteConfiguration> {
   static bool _isBlocked(final Filter filter) =>
       globals.blacklistSet.contains(filter.link);
@@ -50,9 +26,7 @@ class _RouteConfigurationState extends State<RouteConfiguration> {
   @override
   initState() {
     super.initState();
-    if (googleApi != null) {
-      SimpleAuthFlutter.init(context);
-    }
+    SimpleAuthFlutter.init(context);
   }
 
   @override
@@ -167,11 +141,9 @@ class _RouteConfigurationState extends State<RouteConfiguration> {
                         color: Colors.white,
                         fontSize: 16.0,
                       )),
-                  onPressed: googleApi == null
-                      ? null
-                      : () {
-                          syncData();
-                        },
+                  onPressed: () {
+                    GoogleDriverSyncManager().syncData();
+                  },
                 ),
               ],
             ),
@@ -193,21 +165,21 @@ class _BlacklistButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => RawMaterialButton(
-          constraints: const BoxConstraints(minWidth: 45.0),
-          shape: RoundedRectangleBorder(
-            side: BorderSide(
-              color: blocked ? Colors.red[900] : Colors.green,
-              width: 2.0,
-            ),
-            borderRadius: const BorderRadius.all(Radius.circular(9.0)),
+        constraints: const BoxConstraints(minWidth: 45.0),
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+            color: blocked ? Colors.red[900] : Colors.green,
+            width: 2.0,
           ),
-          fillColor: blocked ? Colors.red : Colors.white,
-          padding: const EdgeInsets.fromLTRB(12.0, 4.0, 12.0, 4.0),
-          child: Text(filter.title,
-              style: TextStyle(
-                fontSize: 14.0,
-                color: blocked ? Colors.black : Colors.green[900],
-              )),
-          onPressed: onPressed,
+          borderRadius: const BorderRadius.all(Radius.circular(9.0)),
+        ),
+        fillColor: blocked ? Colors.red : Colors.white,
+        padding: const EdgeInsets.fromLTRB(12.0, 4.0, 12.0, 4.0),
+        child: Text(filter.title,
+            style: TextStyle(
+              fontSize: 14.0,
+              color: blocked ? Colors.black : Colors.green[900],
+            )),
+        onPressed: onPressed,
       );
 }

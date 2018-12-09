@@ -42,21 +42,25 @@ class Store {
   String formatDate(DateTime date) => date == null ? '--' : _df.format(date);
   String formatTimeHM(DateTime time) => time == null ? '--' : _tf.format(time);
 
-  static const _META_DATA_KEY = 'websiteMetaData';
-  static const _USER_KEY = 'user';
-  static const _FAVORITES_KEY = 'favorites';
-  static const _BLACKLIST = 'blacklist';
+  String _tempPath;
+  String get tempPath => _tempPath;
+
+  static const PREF_META_DATA = 'websiteMetaData';
+  static const PREF_USER = 'user';
+  static const PREF_FAVORITES = 'favorites';
+  static const PREF_BLACKLIST = 'blacklist';
 
   Future<void> refreshMetaData() async {
     metaData = await WebsiteMetaData().refresh();
   }
 
-  void save() {
-    storage.setString(_META_DATA_KEY, jsonEncode(metaData));
-    storage.setString(_FAVORITES_KEY, jsonEncode(favoriteBookIdSet.toList()));
-    storage.setString(_BLACKLIST, jsonEncode(blacklistSet.toList()));
-    storage.setString(_USER_KEY, jsonEncode(user));
-  }
+  Future<void> save() => Future.wait([
+        storage.setString(PREF_META_DATA, jsonEncode(metaData)),
+        storage.setString(
+            PREF_FAVORITES, jsonEncode(favoriteBookIdSet.toList())),
+        storage.setString(PREF_BLACKLIST, jsonEncode(blacklistSet.toList())),
+        storage.setString(PREF_USER, jsonEncode(user)),
+      ]);
 
   static bool get isDebug => Logger.isDebug;
 
@@ -70,7 +74,7 @@ class Store {
   }
 
   Future<void> _loadMetaData() async {
-    final metaJson = _loadStorageJson(_META_DATA_KEY);
+    final metaJson = _loadStorageJson(PREF_META_DATA);
     if (metaJson != null) {
       metaData = WebsiteMetaData.fromJson(metaJson);
     } else {
@@ -79,7 +83,7 @@ class Store {
   }
 
   Future<void> _loadUser() async {
-    user = User.fromJson(_loadStorageJson(_USER_KEY) ?? {});
+    user = User.fromJson(_loadStorageJson(PREF_USER) ?? {});
     await user.initialize();
   }
 
@@ -98,9 +102,7 @@ class Store {
   }
 
   Future<void> _cleanLegacy() async {
-    final tmpPath = (await getTemporaryDirectory()).path;
-    logd('tmpPath = $tmpPath');
-    final dir = Directory('${tmpPath}cache');
+    final dir = Directory('${_tempPath}cache');
     if (await dir.exists()) {
       await dir.delete(recursive: true);
     }
@@ -117,19 +119,26 @@ class Store {
 
   Future<void> initialize() async {
     StatusBar.init();
+    _tempPath = (await getTemporaryDirectory()).path;
+    logd('tmpPath = $_tempPath');
+
     await _loadStorage();
     await Future.wait([
       _openRemoteDb(),
       _openLocalDb(),
       _openCache(),
       _loadMetaData(),
-      _loadUser(),
     ]);
+    await reload();
+  }
 
+  Future<bool> reload() async {
+    await _loadUser();
     // sets
-    favoriteBookIdSet = Set.from(_loadStorageJson(_FAVORITES_KEY) ?? []);
+    favoriteBookIdSet = Set.from(_loadStorageJson(PREF_FAVORITES) ?? []);
     // blacklistSet = Set.from(['danmei']);
-    blacklistSet = Set.from(_loadStorageJson(_BLACKLIST) ?? ['danmei']);
+    blacklistSet = Set.from(_loadStorageJson(PREF_BLACKLIST) ?? ['danmei']);
+    return true;
   }
 
   Future<void> updateCovers(final Map<int, ComicCover> coverMap) async {
@@ -214,7 +223,7 @@ class Store {
     save();
   }
 
-  Future<void> resucme() async {
+  Future<void> resume() async {
     _openRemoteDb();
     _openLocalDb();
   }
