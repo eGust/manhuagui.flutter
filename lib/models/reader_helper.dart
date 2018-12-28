@@ -58,7 +58,7 @@ class ReaderHelper {
     _current = chapter;
   }
 
-  static const IMAGE_HEADERS = const {'Referer': 'https://m.manhuagui.com'};
+  static const REFERER_BASE = 'https://m.manhuagui.com';
   static const CACHE_SIBLINGS = [0 - 2, 0 - 1, 0 + 1, 0 + 2, 0 + 3, 0 + 4];
   Map<int, Map<int, ImageEntry>> imageCache = {};
 
@@ -79,12 +79,13 @@ class ReaderHelper {
     return r;
   }
 
-  static Future<File> getCachedImageFile(
-          final Chapter chapter, final int page) =>
+  static Future<File> getCachedImageFile(final Chapter chp, final int page) =>
       globals.cache.getFile(
-        chapter.getPageUrl(page),
-        headers: IMAGE_HEADERS,
-        key: '${chapter.bookId}/${chapter.chapterId}/p$page.webp',
+        chp.getPageUrl(page),
+        headers: {
+          'Referer': '$REFERER_BASE/comic/${chp.bookId}/${chp.chapterId}.html'
+        },
+        key: '${chp.bookId}/${chp.chapterId}/p$page.webp',
       );
 
   Future<ImageEntry> _findImageEntry(
