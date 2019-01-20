@@ -52,8 +52,11 @@ class Chapter {
     _refreshing = true;
     final doc = await fetchDom('$PROTOCOL://$DOMAIN$path',
         headers: globals.user.cookieHeaders);
-    final m = _reExtractParams
-        .firstMatch(doc.querySelector('script:not([src])').text);
+    final script = doc
+        .querySelectorAll('script:not([src])')
+        .map((s) => s.text)
+        .firstWhere((js) => _reExtractParams.hasMatch(js));
+    final m = _reExtractParams.firstMatch(script);
     final json = decryptChapterData(m[1], int.parse(m[2]), m[3]);
     final chapter = jsonDecode(json);
     pages = List<String>.from(chapter['files']);
