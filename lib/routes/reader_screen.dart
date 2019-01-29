@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 
 import '../api.dart';
@@ -47,6 +48,7 @@ class _ReaderScreenState extends State<ReaderScreen>
   File _currentImage, _nextImage;
   ImageEntry _currEntry, _nextEntry;
   SlideDirection _direction;
+  FocusNode _readNode = FocusNode();
 
   int _slideActionId = 0;
   static const _SLIDE_ACTION_RANGE = 0x00FFFFFF;
@@ -135,59 +137,84 @@ class _ReaderScreenState extends State<ReaderScreen>
     });
   }
 
+  _buildChild() {
+    FocusScope.of(context).requestFocus(_readNode);
+
+    return Container(
+      color: Colors.black,
+      child: RawKeyboardListener(
+          focusNode: _readNode,
+          onKey: (key) {
+            if (key.runtimeType.toString() == 'RawKeyDownEvent') {
+              RawKeyEventDataAndroid data = key.data as RawKeyEventDataAndroid;
+              switch (data.keyCode) {
+                case 4:
+                  // KEYCODE_BACK
+                  break;
+                case 24:
+                  // KEYCODE_VOLUME_UP
+                  _onReadModeAction(offset: -1);
+                  break;
+                case 25:
+                  // KEYCODE_VOLUME_DOWN
+                  _onReadModeAction(offset: 1);
+                  break;
+              }
+            }
+          },
+          child: Stack(
+            fit: StackFit.expand,
+            children: _animation.makeWidgets(
+                current: _currentImage,
+                next: _nextImage,
+                direction: _direction,
+                append: _reading
+                    ? [
+                        ReadActionPanel(onPressed: _onReadModeAction),
+                        FastStatus('$status  $time'),
+                      ]
+                    : [
+                        InfoPanel(
+                          onGoBack: () {
+                            _preventBack = false;
+                            Navigator.pop(context);
+                          },
+                          onPageChanged: () {
+                            _nextImage = null;
+                            _reloadImages();
+                          },
+                          onDownload: () {},
+                          onReadModeAction: _onReadModeAction,
+                          onChapterChanged: ({final int offset}) {
+                            helper.changeCurrent(offset < 0
+                                ? helper.prevChapter
+                                : helper.nextChapter);
+                            helper.pageIndex = 0;
+                            _open();
+                          },
+                          onPageChanging: ({final int offset}) {
+                            setState(() {
+                              helper.pageIndex = offset;
+                            });
+                          },
+                          title: helper.comic.name,
+                          subTitle: status,
+                          invalidPrevPage: !_slidable(0 - 1),
+                          invalidNextPage: !_slidable(0 + 1),
+                          invalidPrevChapter: helper.prevChapter == null,
+                          invalidNextChapter: helper.nextChapter == null,
+                          pageIndex: helper.pageIndex,
+                          pageCount: helper.current?.pageCount,
+                        ),
+                      ]),
+          )),
+    );
+  }
+
   String get status => _currEntry == null ? '...' : _currEntry.toString();
   String get time => globals.formatTimeHM(DateTime.now());
 
   @override
-  Widget build(BuildContext context) => WillPopScope(
-      onWillPop: () async => !_preventBack,
-      child: Container(
-        color: Colors.black,
-        child: Stack(
-          fit: StackFit.expand,
-          children: _animation.makeWidgets(
-              current: _currentImage,
-              next: _nextImage,
-              direction: _direction,
-              append: _reading
-                  ? [
-                      ReadActionPanel(onPressed: _onReadModeAction),
-                      FastStatus('$status  $time'),
-                    ]
-                  : [
-                      InfoPanel(
-                        onGoBack: () {
-                          _preventBack = false;
-                          Navigator.pop(context);
-                        },
-                        onPageChanged: () {
-                          _nextImage = null;
-                          _reloadImages();
-                        },
-                        onDownload: () {},
-                        onReadModeAction: _onReadModeAction,
-                        onChapterChanged: ({final int offset}) {
-                          helper.changeCurrent(offset < 0
-                              ? helper.prevChapter
-                              : helper.nextChapter);
-                          helper.pageIndex = 0;
-                          _open();
-                        },
-                        onPageChanging: ({final int offset}) {
-                          setState(() {
-                            helper.pageIndex = offset;
-                          });
-                        },
-                        title: helper.comic.name,
-                        subTitle: status,
-                        invalidPrevPage: !_slidable(0 - 1),
-                        invalidNextPage: !_slidable(0 + 1),
-                        invalidPrevChapter: helper.prevChapter == null,
-                        invalidNextChapter: helper.nextChapter == null,
-                        pageIndex: helper.pageIndex,
-                        pageCount: helper.current?.pageCount,
-                      ),
-                    ]),
-        ),
-      ));
+  Widget build(BuildContext context) =>
+      WillPopScope(onWillPop: () async => !_preventBack, child: _buildChild());
 }

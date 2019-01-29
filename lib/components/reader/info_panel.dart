@@ -35,8 +35,8 @@ class InfoPanel extends StatelessWidget {
         children: <Widget>[
           Container(
             color: Color.fromARGB(200, 40, 40, 40),
-            height: 100.0,
-            padding: const EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 10.0),
+            height: 90.0,
+            padding: const EdgeInsets.fromLTRB(10.0, 25.0, 10.0, 5.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
