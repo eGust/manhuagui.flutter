@@ -13,6 +13,7 @@ class ComicBanner extends StatelessWidget {
         height: 36.0,
         alignment: Alignment.center,
         padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+        margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -27,7 +28,7 @@ class ComicBanner extends StatelessWidget {
             Text(
               title,
               style: TextStyle(
-                fontSize: 20.0,
+                fontSize: 17.0,
                 color: Colors.white,
               ),
             ),

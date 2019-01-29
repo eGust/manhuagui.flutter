@@ -13,52 +13,54 @@ class ChapterTabView extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Expanded(
         child: Container(
-          color: Colors.white,
+          color: Colors.grey[200],
           child: comic.chapterGroups.isEmpty
-              ? Progressing(size: 80.0, strokeWidth: 8.0)
-              : Column(children: [
-                  Container(
-                    color: Colors.yellow[800],
-                    height: 36.0,
-                    child: TabBar(
-                      controller: controller,
-                      indicatorColor: Colors.deepOrange[900],
-                      labelStyle: TextStyle(
-                        fontSize: 17.0,
-                        fontWeight: FontWeight.bold,
+              ? Progressing(size: 50.0, strokeWidth: 5.0)
+              : Column(
+                  children: [
+                    Container(
+                      color: Colors.yellow[800],
+                      height: 36.0,
+                      child: TabBar(
+                        controller: controller,
+                        indicatorColor: Colors.deepOrange[900],
+                        labelStyle: TextStyle(
+                          fontSize: 17.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        unselectedLabelStyle: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.normal,
+                        ),
+                        labelColor: Colors.deepOrange[900],
+                        unselectedLabelColor: Colors.white,
+                        tabs: comic.chapterGroups
+                            .map((grp) => Tab(text: grp))
+                            .toList(),
                       ),
-                      unselectedLabelStyle: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.normal,
-                      ),
-                      labelColor: Colors.deepOrange[900],
-                      unselectedLabelColor: Colors.white,
-                      tabs: comic.chapterGroups
-                          .map((grp) => Tab(text: grp))
-                          .toList(),
                     ),
-                  ),
-                  Expanded(
+                    Expanded(
                       child: TabBarView(
-                    controller: controller,
-                    children: comic.chapterGroups
-                        .map((grp) => SingleChildScrollView(
-                              child: Container(
-                                padding: const EdgeInsets.fromLTRB(
-                                    3.0, 1.0, 3.0, 15.0),
-                                child: Wrap(
-                                  children: comic.groupedChapterIdListMap[grp]
-                                      .map((chId) => ChapterButton(
-                                            comic.chapterMap[chId],
-                                            onPressed: onPressed,
-                                          ))
-                                      .toList(),
-                                ),
-                              ),
-                            ))
-                        .toList(),
-                  )),
-                ]),
+                        controller: controller,
+                        children: comic.chapterGroups
+                            .map(
+                              (grp) => GridView.count(
+                                    crossAxisCount: 4,
+                                    crossAxisSpacing: 4.0,
+                                    childAspectRatio: 1.6,
+                                    children: comic.groupedChapterIdListMap[grp]
+                                        .map((chId) => ChapterButton(
+                                              comic.chapterMap[chId],
+                                              onPressed: onPressed,
+                                            ))
+                                        .toList(),
+                                  ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                  ],
+                ),
         ),
       );
 }
@@ -73,18 +75,19 @@ class ChapterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        margin: const EdgeInsets.fromLTRB(8.0, 6.0, 8.0, 6.0),
+        margin: const EdgeInsets.fromLTRB(4.0, 3.0, 4.0, 3.0),
         child: RawMaterialButton(
           shape: const RoundedRectangleBorder(
             side: BorderSide(color: Colors.orange, width: 2.0),
-            borderRadius: BorderRadius.all(Radius.circular(12.0)),
+            borderRadius: BorderRadius.all(Radius.circular(8.0)),
           ),
           fillColor: chapter.neverRead ? Colors.yellow[300] : Colors.red[700],
           splashColor: Colors.orange,
-          padding: const EdgeInsets.fromLTRB(16.0, 5.0, 16.0, 5.0),
+          padding: const EdgeInsets.fromLTRB(12.0, 5.0, 12.0, 5.0),
           child: Column(children: [
             Text(
-              chapter.title,
+              chapter.title.split(' ')[0],
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color:
                     chapter.neverRead ? Colors.brown[900] : Colors.yellow[100],
