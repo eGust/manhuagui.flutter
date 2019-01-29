@@ -61,7 +61,9 @@ class ListTopBar extends StatelessWidget {
     this.blacklistEnabled = true,
   })  : this.filtersTitle = filtersTitle ?? '',
         middle = listTitle == null
-            ? UserStatusButton()
+            ? UserStatusButton(
+                showUserName: false,
+              )
             : Text(listTitle, style: MIDDLE_TEXT_STYLE);
 
   final VoidCallback onPressedScrollTop,
@@ -86,13 +88,14 @@ class ListTopBar extends StatelessWidget {
                 )
               : Container(),
           FlatButton(
+            padding: EdgeInsets.all(0.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
                   child: const Icon(Icons.filter_list,
-                      color: Colors.white, size: 28.0),
-                  margin: const EdgeInsets.only(right: 10.0),
+                      color: ICON_COLOR, size: ICON_SIZE),
+                  margin: const EdgeInsets.only(right: 5.0),
                 ),
                 Text(
                   filtersTitle.isEmpty ? '全部' : filtersTitle,

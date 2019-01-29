@@ -6,7 +6,8 @@ import 'login_form.dart';
 import 'logout_form.dart';
 
 class UserStatusButton extends StatefulWidget {
-  const UserStatusButton();
+  final bool showUserName;
+  const UserStatusButton({Key key, this.showUserName = true});
   @override
   _UserStatusButtonState createState() => _UserStatusButtonState();
 }
@@ -47,13 +48,15 @@ class _UserStatusButtonState extends State<UserStatusButton> {
               size: iconSize,
               color: user.isLogin ? Colors.yellow[500] : Colors.red[200],
             ),
-            Text(
-              user.isLogin ? ' ${user.nickname}' : '（未登录）',
-              style: TextStyle(
-                fontSize: fontSize,
-                color: user.isLogin ? Colors.white : Colors.red[200],
-              ),
-            ),
+            widget.showUserName
+                ? Text(
+                    user.isLogin ? ' ${user.nickname}' : '（未登录）',
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      color: user.isLogin ? Colors.white : Colors.red[200],
+                    ),
+                  )
+                : Container(),
           ],
         ),
       ));
