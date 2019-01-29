@@ -9,7 +9,8 @@ class FilterGroupList extends StatelessWidget {
   FilterGroupList(this.filterGroup, this.selected,
       {Set<String> blacklist, this.onSelectedFilter, this.columnCount = 5})
       : this.blacklist = blacklist ?? Set(),
-        this.buttonFontSize = (columnCount > 5 ? 16.0 : 18.0) - (globals.smallScreen ? 2 : 0);
+        this.buttonFontSize =
+            (columnCount > 5 ? 16.0 : 18.0) - (globals.smallScreen ? 2 : 0);
 
   final FilterGroup filterGroup;
   final String selected;
@@ -77,12 +78,13 @@ class DisplayableGroupList extends StatelessWidget {
       child: Row(
         children: <Widget>[
           Container(
-            width: globals.smallScreen ? 40.0 : 50.0,
+            width: globals.smallScreen ? 20.0 : 50.0,
             alignment: Alignment.center,
-            child: Text(title, style: TextStyle(fontSize: globals.smallScreen ? 17.0 : 18.0)),
+            child: Text(title,
+                style: TextStyle(fontSize: globals.smallScreen ? 17.0 : 18.0)),
           ),
           Container(
-            width: globals.smallScreen ? 440.0 : 560.0,
+            width: globals.smallScreen ? 240.0 : 560.0,
             child: _GridList(
               columnCount: columnCount,
               children: children,

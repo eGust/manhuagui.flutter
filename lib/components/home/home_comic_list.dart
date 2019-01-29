@@ -82,6 +82,7 @@ class HomeComicListManager extends ComicListManagerBase {
       context: context,
       barrierDismissible: false,
       builder: (context) => SimpleDialog(
+            titlePadding: const EdgeInsets.fromLTRB(6.0, 12.0, 6.0, 0.0),
             title: DialogTopBar(
               router.label,
               pinned: _pinned,

@@ -46,9 +46,8 @@ class _DialogTopBarState extends State<DialogTopBar> {
                 FlatButton(
                   child: Icon(
                     _pinned ? Icons.lock : Icons.lock_open,
-                    color: _pinned ? Colors.white : Colors.grey[700],
+                    color: Colors.grey[700],
                   ),
-                  color: _pinned ? Colors.orange[900] : Colors.transparent,
                   onPressed: onPressed,
                 ),
                 Text(widget.title),
@@ -110,7 +109,7 @@ class _DialogBodyState extends State<DialogBody> {
           )));
 
   List<Widget> buildFiltersWithOrder() {
-    final list = buildFilters(7);
+    final list = buildFilters(4);
     list.add(OrderSelectGroup(
       selected: widget.selected['order'],
       orders: widget.orders,
@@ -122,5 +121,5 @@ class _DialogBodyState extends State<DialogBody> {
   @override
   Widget build(BuildContext context) => Column(
       children:
-          widget.orders == null ? buildFilters(5) : buildFiltersWithOrder());
+          widget.orders == null ? buildFilters(4) : buildFiltersWithOrder());
 }
