@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'store.dart';
 import 'routes.dart';
@@ -16,6 +17,10 @@ void main() async {
   print("width = ${size.shortestSide} x ${size.longestSide}");
 
   log('ready to start app');
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(App());
 }
 
