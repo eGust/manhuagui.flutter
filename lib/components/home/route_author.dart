@@ -154,8 +154,8 @@ class _RouteAuthorState extends State<RouteAuthor> {
                 controller: _scroller,
                 // gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  childAspectRatio: 2.0,
+                  crossAxisCount: 2,
+                  childAspectRatio: 1.5,
                 ),
                 itemCount: authors.length,
                 padding: const EdgeInsets.all(0.0),
@@ -178,17 +178,23 @@ class AuthorCard extends StatelessWidget {
             RouteHelper.pushAuthor(context, author);
           },
           child: Container(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(5.0),
             color: Colors.white,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                Text(
-                  author.name,
-                  style: const TextStyle(
-                    fontSize: 18.0,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      author.name,
+                      style: const TextStyle(
+                        fontSize: 16.0,
+                      ),
+                    ),
+                    Text(author.score),
+                  ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -211,7 +217,6 @@ class AuthorCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text('更新: ${author.updatedAt}'),
-                    Text(author.score),
                   ],
                 ),
               ],
