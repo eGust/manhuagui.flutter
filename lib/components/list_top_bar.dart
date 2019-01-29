@@ -22,7 +22,7 @@ class TopBarFrame extends StatelessWidget {
         child: GestureDetector(
           onTap: onPressed,
           child: Container(
-            height: 36.0,
+            height: 40.0,
             padding: const EdgeInsets.only(left: 10.0, right: 10.0),
             color: Colors.brown[900],
             child: Row(

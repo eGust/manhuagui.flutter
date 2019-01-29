@@ -10,7 +10,7 @@ class ComicBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        height: 36.0,
+        height: 40.0,
         alignment: Alignment.center,
         padding: const EdgeInsets.only(left: 10.0, right: 10.0),
         margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
