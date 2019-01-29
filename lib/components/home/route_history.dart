@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import 'sub_router.dart';
+import '../list_top_bar.dart';
 import '../comic_cover_row.dart';
 import '../../store.dart';
 import '../../models.dart';
@@ -62,9 +63,17 @@ class _RouteHistoryState extends State<RouteHistory> {
   }
 
   @override
-  Widget build(BuildContext context) => ListView(
-        padding: const EdgeInsets.all(0.0),
-        children: List<Widget>.from(comics.map((comic) =>
-            ComicCoverRow(comic, context, onPopComic: _updateProgresses))),
+  Widget build(BuildContext context) => Column(
+        children: <Widget>[
+          TopBarFrame(),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(0.0),
+              children: List<Widget>.from(comics.map((comic) => ComicCoverRow(
+                  comic, context,
+                  onPopComic: _updateProgresses))),
+            ),
+          )
+        ],
       );
 }
