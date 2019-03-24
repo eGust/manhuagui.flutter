@@ -22,7 +22,7 @@ class RouteFavorite extends StatefulWidget {
 }
 
 class _RouteFavoriteState extends State<RouteFavorite> {
-  final _scroller = ScrollController();
+  final _scroll = ScrollController();
   final _bookIds = Set<int>();
   final _comics = <ComicCover>[];
 
@@ -32,7 +32,7 @@ class _RouteFavoriteState extends State<RouteFavorite> {
   static const _NEXT_THRESHOLD = 2500.0; // > 10 items
 
   void _scrollToTop() {
-    _scroller.animateTo(
+    _scroll.animateTo(
       0.1,
       duration: const Duration(milliseconds: 500),
       curve: Curves.fastOutSlowIn,
@@ -76,9 +76,9 @@ class _RouteFavoriteState extends State<RouteFavorite> {
   @override
   void initState() {
     super.initState();
-    _scroller.addListener(() {
-      if (_scroller.position.pixels + _NEXT_THRESHOLD >
-          _scroller.position.maxScrollExtent) {
+    _scroll.addListener(() {
+      if (_scroll.position.pixels + _NEXT_THRESHOLD >
+          _scroll.position.maxScrollExtent) {
         if (_fetching || !mounted) return;
         _fetchNextPage();
       }
@@ -146,7 +146,7 @@ class _RouteFavoriteState extends State<RouteFavorite> {
 
   @override
   void dispose() {
-    _scroller.dispose();
+    _scroll.dispose();
     super.dispose();
   }
 
@@ -164,7 +164,7 @@ class _RouteFavoriteState extends State<RouteFavorite> {
               child: RefreshIndicator(
             onRefresh: _refresh,
             child: ListView.builder(
-              controller: _scroller,
+              controller: _scroll,
               itemCount: _comics.length + 1,
               padding: const EdgeInsets.all(0.0),
               itemBuilder: (_, i) => i == _comics.length

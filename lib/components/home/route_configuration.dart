@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:simple_auth/simple_auth.dart';
 import 'package:simple_auth_flutter/simple_auth_flutter.dart';
 
 import 'sub_router.dart';
@@ -99,29 +98,29 @@ class _RouteConfigurationState extends State<RouteConfiguration> {
                         fontSize: 16.0,
                       )),
                   onPressed: () async {
-                    var cleanning = false;
+                    var cleaning = false;
                     await showDialog<void>(
                       context: context,
                       barrierDismissible: false,
                       builder: (context) => SimpleDialog(
                             title: const Text('清除缓存'),
                             children: [
-                              cleanning
+                              cleaning
                                   ? const Text('清除中...')
                                   : RaisedButton(
                                       onPressed: () async {
                                         setState(() {
-                                          cleanning = true;
+                                          cleaning = true;
                                         });
                                         await globals.cleanCacheManager();
                                         setState(() {
-                                          cleanning = false;
+                                          cleaning = false;
                                         });
                                       },
                                       child: const Text('清理'),
                                     ),
                               RaisedButton(
-                                onPressed: cleanning
+                                onPressed: cleaning
                                     ? null
                                     : () {
                                         Navigator.pop(context);

@@ -98,9 +98,9 @@ class _RouteAuthorState extends State<RouteAuthor> {
   @override
   void initState() {
     super.initState();
-    _scroller.addListener(() {
-      if (_scroller.position.pixels + _NEXT_THRESHOLD >
-          _scroller.position.maxScrollExtent) {
+    _scroll.addListener(() {
+      if (_scroll.position.pixels + _NEXT_THRESHOLD >
+          _scroll.position.maxScrollExtent) {
         if (_fetching || !mounted) return;
         _fetchNextPage();
       }
@@ -110,7 +110,7 @@ class _RouteAuthorState extends State<RouteAuthor> {
 
   @override
   void dispose() {
-    _scroller.dispose();
+    _scroll.dispose();
     super.dispose();
   }
 
@@ -123,7 +123,7 @@ class _RouteAuthorState extends State<RouteAuthor> {
     return s.isEmpty ? '全部' : s;
   }
 
-  ScrollController _scroller = ScrollController();
+  ScrollController _scroll = ScrollController();
 
   @override
   Widget build(BuildContext context) => Column(
@@ -133,7 +133,7 @@ class _RouteAuthorState extends State<RouteAuthor> {
             filtersTitle:
                 '${filtersTitle()} (${filterSelector.currentOrder.title})',
             onPressedScrollTop: () {
-              _scroller.animateTo(
+              _scroll.animateTo(
                 0.1,
                 duration: const Duration(milliseconds: 500),
                 curve: Curves.fastOutSlowIn,
@@ -151,7 +151,7 @@ class _RouteAuthorState extends State<RouteAuthor> {
             child: RefreshIndicator(
               onRefresh: () => _refresh(indicator: false),
               child: GridView.builder(
-                controller: _scroller,
+                controller: _scroll,
                 // gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,

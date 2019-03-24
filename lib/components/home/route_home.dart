@@ -36,7 +36,7 @@ class _RouteHomeState extends State<RouteHome> {
 
     final doc = await fetchDom('https://m.manhuagui.com/');
     _updated = DateTime.now();
-    final grps = doc
+    final groups = doc
         .querySelectorAll('.bar + .main-list')
         .map((el) => MapEntry(
             el.previousElementSibling.querySelector('h2').text,
@@ -47,22 +47,22 @@ class _RouteHomeState extends State<RouteHome> {
         .toList()
         .reversed
         .toList();
-    final covers = Map.fromEntries(grps
+    final covers = Map.fromEntries(groups
         .map((g) => g.value)
         .expand((i) => i)
         .map((c) => MapEntry(c.bookId, c)));
 
     if (!mounted) return;
     setState(() {
-      _groups = grps;
+      _groups = groups;
     });
 
     await globals.updateCovers(covers);
-    comicGroups = grps;
+    comicGroups = groups;
 
     if (!mounted) return;
     setState(() {
-      _groups = grps;
+      _groups = groups;
     });
   }
 

@@ -45,16 +45,16 @@ class _ReaderScreenState extends State<ReaderScreen>
 
   AnimationHelper _animation;
   File _currentImage, _nextImage;
-  ImageEntry _currEntry, _nextEntry;
+  ImageEntry _currentEntry, _nextEntry;
   SlideDirection _direction;
 
   int _slideActionId = 0;
   static const _SLIDE_ACTION_RANGE = 0x00FFFFFF;
 
-  bool _slidable(final int offset) {
-    if (_currEntry == null) return false;
-    final page = _currEntry.page + offset;
-    final ch = _currEntry.chapter;
+  bool _isSlidable(final int offset) {
+    if (_currentEntry == null) return false;
+    final page = _currentEntry.page + offset;
+    final ch = _currentEntry.chapter;
     if (page >= 0 && page < ch.pageCount) return true;
     return (page < 0 ? ch.prevChpId : ch.nextChpId) != null;
   }
@@ -64,7 +64,7 @@ class _ReaderScreenState extends State<ReaderScreen>
       _toggleReadMode();
       return;
     }
-    if (_direction != null || !_slidable(offset)) return;
+    if (_direction != null || !_isSlidable(offset)) return;
 
     _slideActionId = (_slideActionId + 1) & _SLIDE_ACTION_RANGE;
     final actionId = _slideActionId;
@@ -111,14 +111,14 @@ class _ReaderScreenState extends State<ReaderScreen>
   void _reloadImages() async {
     if (!mounted) return;
     setState(() {
-      _currEntry = helper.currentEntry;
+      _currentEntry = helper.currentEntry;
       _currentImage = _nextImage;
       _nextImage = null;
       _nextEntry = null;
       _direction = null;
     });
 
-    final file = await _currEntry.loadFile();
+    final file = await _currentEntry.loadFile();
     if (!mounted) return;
 
     setState(() {
@@ -135,7 +135,7 @@ class _ReaderScreenState extends State<ReaderScreen>
     });
   }
 
-  String get status => _currEntry == null ? '...' : _currEntry.toString();
+  String get status => _currentEntry == null ? '...' : _currentEntry.toString();
   String get time => globals.formatTimeHM(DateTime.now());
 
   @override
@@ -180,8 +180,8 @@ class _ReaderScreenState extends State<ReaderScreen>
                         },
                         title: helper.comic.name,
                         subTitle: status,
-                        invalidPrevPage: !_slidable(0 - 1),
-                        invalidNextPage: !_slidable(0 + 1),
+                        invalidPrevPage: !_isSlidable(0 - 1),
+                        invalidNextPage: !_isSlidable(0 + 1),
                         invalidPrevChapter: helper.prevChapter == null,
                         invalidNextChapter: helper.nextChapter == null,
                         pageIndex: helper.pageIndex,

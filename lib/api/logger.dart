@@ -47,7 +47,7 @@ class Logger {
   LogLevel level = isDebug ? LogLevel.warning : LogLevel.debug;
   TimestampStyle style = TimestampStyle.timeOnly;
 
-  static final _logFuncs = {
+  static final _logFunctions = {
     LogLevel.info: _logInfo,
     LogLevel.debug: _logDebug,
     LogLevel.warning: _logWarning,
@@ -55,7 +55,7 @@ class Logger {
   };
 
   void log(LogLevel lvl, String msg) {
-    _logFuncs[lvl](level, msg, style);
+    _logFunctions[lvl](level, msg, style);
   }
 
   void info(String msg) {

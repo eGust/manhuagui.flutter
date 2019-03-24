@@ -53,8 +53,8 @@ class User {
     }
 
     if (_username == null || _password == null) return false;
-    final succ = await login(username: _username, password: _password);
-    return succ != null;
+    final success = await login(username: _username, password: _password);
+    return success != null;
   }
 
   String _cookie, _username, _nickname, _password;

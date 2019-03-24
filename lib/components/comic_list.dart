@@ -42,7 +42,7 @@ class _ComicListState extends State<ComicList> {
 
   final _comics = <ComicCover>[];
   final _bookIds = Set<int>();
-  final _scroller = ScrollController();
+  final _scroll = ScrollController();
 
   ComicListManagerBase get stateManager => widget.stateManager;
   bool _blacklistEnabled = true, _fetching = false, _indicator = false;
@@ -67,7 +67,7 @@ class _ComicListState extends State<ComicList> {
   }
 
   void _scrollToTop() {
-    _scroller.animateTo(
+    _scroll.animateTo(
       0.1,
       duration: const Duration(milliseconds: 500),
       curve: Curves.fastOutSlowIn,
@@ -106,7 +106,7 @@ class _ComicListState extends State<ComicList> {
         : _comics;
     final count = covers.length;
     return ListView.builder(
-      controller: _scroller,
+      controller: _scroll,
       itemCount: count + 1,
       padding: const EdgeInsets.all(0.0),
       itemBuilder: (_, i) => i == count
@@ -134,9 +134,9 @@ class _ComicListState extends State<ComicList> {
   @override
   void initState() {
     super.initState();
-    _scroller.addListener(() {
-      if (_scroller.position.pixels + _NEXT_THRESHOLD >
-          _scroller.position.maxScrollExtent) {
+    _scroll.addListener(() {
+      if (_scroll.position.pixels + _NEXT_THRESHOLD >
+          _scroll.position.maxScrollExtent) {
         if (_fetching || !mounted) return;
         _fetchNextPage();
       }
@@ -147,7 +147,7 @@ class _ComicListState extends State<ComicList> {
 
   @override
   void dispose() {
-    _scroller.dispose();
+    _scroll.dispose();
     super.dispose();
   }
 

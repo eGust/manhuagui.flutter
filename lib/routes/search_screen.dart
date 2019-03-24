@@ -10,19 +10,19 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  bool _inputing = true;
+  bool _inputting = true;
   String _searchKey = '';
 
   void _onSearch(final String key) {
     setState(() {
       _searchKey = key;
-      _inputing = false;
+      _inputting = false;
     });
   }
 
   void _onResearch() {
     setState(() {
-      _inputing = true;
+      _inputting = true;
     });
   }
 
@@ -34,7 +34,7 @@ class _SearchScreenState extends State<SearchScreen> {
             height: globals.statusBarHeight,
           ),
           Expanded(
-            child: _inputing
+            child: _inputting
                 ? SearchForm(_searchKey, onSearch: _onSearch)
                 : ResultList(_searchKey, onResearch: _onResearch),
           ),

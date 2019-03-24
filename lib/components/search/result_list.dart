@@ -23,7 +23,7 @@ class ResultList extends StatefulWidget {
 class _ResultListState extends State<ResultList> {
   _ResultListState();
 
-  final _scroller = ScrollController();
+  final _scroll = ScrollController();
   final _bookIds = Set<int>();
   final _comics = <ComicCover>[];
 
@@ -98,7 +98,7 @@ class _ResultListState extends State<ResultList> {
       '$_BASE_URL${widget.search}$_order${_page > 1 ? '_p$_page' : ''}.html';
 
   void _scrollToTop() {
-    _scroller.animateTo(
+    _scroll.animateTo(
       0.1,
       duration: const Duration(milliseconds: 500),
       curve: Curves.fastOutSlowIn,
@@ -140,9 +140,9 @@ class _ResultListState extends State<ResultList> {
   @override
   void initState() {
     super.initState();
-    _scroller.addListener(() {
-      if (_scroller.position.pixels + _NEXT_THRESHOLD >
-          _scroller.position.maxScrollExtent) {
+    _scroll.addListener(() {
+      if (_scroll.position.pixels + _NEXT_THRESHOLD >
+          _scroll.position.maxScrollExtent) {
         if (_fetching || !mounted) return;
         _fetchNextPage();
       }
@@ -153,7 +153,7 @@ class _ResultListState extends State<ResultList> {
 
   @override
   void dispose() {
-    _scroller.dispose();
+    _scroll.dispose();
     super.dispose();
   }
 
@@ -225,7 +225,7 @@ class _ResultListState extends State<ResultList> {
               child: RefreshIndicator(
             onRefresh: _refresh,
             child: ListView.builder(
-              controller: _scroller,
+              controller: _scroll,
               itemCount: _filteredComicList.length + 1,
               padding: const EdgeInsets.all(0.0),
               itemBuilder: (_, i) => i == _filteredComicList.length

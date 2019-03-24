@@ -20,7 +20,7 @@ class _LoginFormState extends State<LoginForm> {
   LoginStatus _status = LoginStatus.initial;
   // bool _remember = true;
 
-  bool get anyEmtpy => _username.text.isEmpty || _password.text.isEmpty;
+  bool get anyEmpty => _username.text.isEmpty || _password.text.isEmpty;
 
   @override
   void initState() {
@@ -155,7 +155,7 @@ class _LoginFormState extends State<LoginForm> {
                       child: Center(
                           child: const Text('登 录',
                               style: const TextStyle(fontSize: 21.0))),
-                      onPressed: anyEmtpy ? null : _startLogin,
+                      onPressed: anyEmpty ? null : _startLogin,
                     ),
                   ),
                 ]
