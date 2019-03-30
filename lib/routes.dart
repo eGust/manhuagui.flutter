@@ -37,10 +37,10 @@ class RouteHelper {
     );
   }
 
-  static Future<Widget> pushReader(BuildContext context, ReaderHelper helper) {
+  static Future<Widget> pushReader(BuildContext context, ImagePool pool) {
     return Navigator.push(
       context,
-      buildRoute(ReaderScreen(helper)),
+      buildRoute(ReaderScreen(pool)),
     );
   }
 

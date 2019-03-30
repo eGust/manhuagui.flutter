@@ -65,9 +65,10 @@ class _ComicScreenState extends State<ComicScreen>
     });
   }
 
-  void _onChapterPressed(final Chapter chapter, {final int startPage}) async {
-    final helper = ReaderHelper(comic, chapter, pageIndex: startPage);
-    await RouteHelper.pushReader(context, helper);
+  void _onChapterPressed(final Chapter chapter,
+      {final int startPage = 0}) async {
+    final pool = ImagePool.openChapter(chapter: chapter, startPage: startPage);
+    await RouteHelper.pushReader(context, pool);
     if (!mounted) return;
     setState(() {});
   }

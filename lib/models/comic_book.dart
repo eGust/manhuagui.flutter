@@ -130,7 +130,11 @@ class ComicBook extends ComicCover {
             final attrs = link.attributes;
             final chapterId =
                 int.parse(attrs['href'].split('/')[3].replaceAll('.html', ''));
-            final chapter = Chapter(chapterId, attrs['title'], bookId);
+            final chapter = Chapter(
+              chapterId: chapterId,
+              title: attrs['title'],
+              book: this,
+            );
             chapter.pageCount =
                 int.parse(link.querySelector('i').text.replaceAll('p', ''));
 

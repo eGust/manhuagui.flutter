@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../store.dart';
 
 class FastStatus extends StatelessWidget {
   FastStatus(this.text);
@@ -18,6 +19,19 @@ class FastStatus extends StatelessWidget {
               fontSize: 12.0,
             ),
           ),
+        ),
+      );
+}
+
+class LoadingCircle extends StatelessWidget {
+  static double get circleSize => globals.screenSize.shortestSide * 0.309;
+  static double get strokeWidth => circleSize * 0.0618;
+  @override
+  Widget build(BuildContext context) => Center(
+        child: SizedBox(
+          width: circleSize,
+          height: circleSize,
+          child: CircularProgressIndicator(strokeWidth: strokeWidth),
         ),
       );
 }

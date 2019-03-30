@@ -1,10 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import '../api/request.dart';
 import '../api/decrypt_chapter_json.dart';
-import 'website_meta_data.dart';
 import '../store.dart';
+import 'website_meta_data.dart';
+import 'comic_book.dart';
+import 'comic_page.dart';
 
 /*
 {
@@ -30,15 +34,55 @@ import '../store.dart';
 */
 
 class Chapter {
-  Chapter(this.chapterId, this.title, this.bookId);
+  Chapter({
+    @required this.chapterId,
+    @required this.title,
+    @required this.book,
+  });
 
-  final int chapterId, bookId;
+  final ComicBook book;
+  final int chapterId;
   final String title;
   int pageCount, readAt, maxPage;
   int groupPrevId, groupNextId;
 
+  int get bookId => book.bookId;
+  String get key => '$bookId/$chapterId';
+
   String prevChpId, nextChpId, basePath, signature;
   List<String> pages;
+  List<ComicPage> _pages;
+
+  Chapter get prevByGroup => book.groupPrevOf(this);
+  Chapter get nextByGroup => book.groupNextOf(this);
+
+  FutureOr<ComicPage> page(int pageIndex) {
+    if (!(_ready is bool)) {
+      return _loadPage(pageIndex);
+    }
+
+    final index = pageIndex < 0 ? pageCount + pageIndex : pageIndex;
+    final cached = _pages[index];
+    if (cached != null) return cached;
+
+    final pg = ComicPage(chapter: this, pageIndex: index);
+    _pages[index] = pg;
+    return pg;
+  }
+
+  Future<ComicPage> _loadPage(pageIndex) async {
+    await load();
+    return page(pageIndex);
+  }
+
+  FutureOr<ComicPage> prevPageOf(int pageIndex) {
+    return pageIndex == 0 ? prevByGroup?.page(-1) : page(pageIndex - 1);
+  }
+
+  FutureOr<ComicPage> nextPageOf(int pageIndex) {
+    final index = pageIndex + 1;
+    return index == pageCount ? nextByGroup?.page(0) : page(index);
+  }
 
   String get path => '/comic/$bookId/$chapterId.html';
   bool get neverRead => readAt == null;
@@ -46,10 +90,9 @@ class Chapter {
   String getPageUrl(int index) =>
       'https://i.hamreus.com$basePath${pages[index]}$signature';
 
-  bool _refreshing = false, _ready = false;
+  FutureOr<bool> _ready;
 
-  Future<void> _refresh() async {
-    _refreshing = true;
+  Future<bool> _refresh() async {
     final doc = await fetchDom('$PROTOCOL://$DOMAIN$path',
         headers: globals.user.cookieHeaders);
     final script = doc
@@ -59,23 +102,20 @@ class Chapter {
     final m = _reExtractParams.firstMatch(script);
     final json = decryptChapterData(m[1], int.parse(m[2]), m[3]);
     final chapter = jsonDecode(json);
-    pages = List<String>.from(chapter['files']);
+    pages = List.from(chapter['files']);
     pageCount = pages.length;
+    _pages = List(pageCount);
     basePath = Uri.encodeFull(chapter['path']);
     signature = '?cid=$chapterId&md5=${chapter['sl']['md5']}';
     prevChpId = _safeId(chapter['prevId']);
     nextChpId = _safeId(chapter['nextId']);
-    _refreshing = false;
     _ready = true;
+    return true;
   }
 
-  Future<void> load() async {
-    if (_ready) return;
-    if (!_refreshing) return await _refresh();
-
-    do {
-      await Future.delayed(const Duration(milliseconds: 10), () {});
-    } while (_refreshing);
+  FutureOr<bool> load() {
+    _ready ??= _refresh();
+    return _ready;
   }
 
   Future<void> updateHistory(final int pageIndex) async {
