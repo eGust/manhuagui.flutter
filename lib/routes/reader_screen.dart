@@ -126,7 +126,15 @@ class _ReaderScreenState extends State<ReaderScreen>
       setState(() {
         final w = delegate.scaleWidth;
         final h = delegate.scaleHeight;
-        if (w > h || h > w * 2) delegate.fitScaleRight();
+        if (w > h) {
+          delegate.fitScaleRight();
+          delegate.type = ImageType.horizon;
+        } else if (h > w * 2) {
+          delegate.fitScaleTop();
+          delegate.type = ImageType.vertical;
+        } else {
+          delegate.type = ImageType.normal;
+        }
       });
 
       final key = resolver.key;

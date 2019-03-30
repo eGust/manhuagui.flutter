@@ -104,7 +104,9 @@ class _ImageHolderState extends State<ImageHolder>
                 transform: Matrix4.compose(
                   (_animationPosition == null
                       ? Vector3(posX, posY, 0.0)
-                      : Vector3(_animationPosition.value, posY, 0.0)),
+                      : _imageDelegate.type == ImageType.horizon
+                          ? Vector3(_animationPosition.value, posY, 0.0)
+                          : Vector3(posX, _animationPosition.value, 0.0)),
                   Quaternion.identity(),
                   Vector3(scale, scale, 0.0),
                 ),
@@ -112,7 +114,7 @@ class _ImageHolderState extends State<ImageHolder>
               ),
       );
 
-  void _playAnimation(double toPosX) {
+  void _playHorizontalAnimation(double toPosX) {
     _animationPosition = Tween(begin: posX, end: toPosX).animate(_curve);
     _controller
       ..reset()
@@ -122,13 +124,40 @@ class _ImageHolderState extends State<ImageHolder>
       });
   }
 
-  void _slide(int direction) {
-    if (mounted || _imageDelegate != null) {
-      final toX = _imageDelegate.getSlideToX(direction);
+  void _playVerticalAnimation(double toPosY) {
+    _animationPosition = Tween(begin: posY, end: toPosY).animate(_curve);
+    _controller
+      ..reset()
+      ..forward().whenComplete(() {
+        _imageDelegate.posY = toPosY;
+        _animationPosition = null;
+      });
+  }
 
-      if (toX != null) {
-        _playAnimation(toX);
-        return;
+  void _slide(int direction) {
+    if (mounted) {
+      switch (_imageDelegate?.type) {
+        case ImageType.horizon:
+          {
+            final toX = _imageDelegate.getSlideToX(direction);
+
+            if (toX != null) {
+              _playHorizontalAnimation(toX);
+              return;
+            }
+            break;
+          }
+        case ImageType.vertical:
+          {
+            final toY = _imageDelegate.getSlideToY(-direction);
+
+            if (toY != null) {
+              _playVerticalAnimation(toY);
+              return;
+            }
+            break;
+          }
+        default:
       }
     }
     widget.onSlide?.call(direction);

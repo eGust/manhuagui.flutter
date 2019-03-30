@@ -8,6 +8,12 @@ import 'action_panel.dart';
 import 'image_resolver.dart';
 import '../../store.dart';
 
+enum ImageType {
+  normal,
+  horizon,
+  vertical,
+}
+
 class ImageDelegate {
   ImageDelegate._(
     this.image, {
@@ -77,6 +83,7 @@ class ImageDelegate {
   double _deltaY;
 
   ImageThreshold threshold;
+  var type = ImageType.normal;
 
   double get extraAdjustX =>
       threshold?.extraAdjustWidth ?? ImageThreshold.threshold.extraAdjustWidth;
@@ -146,7 +153,7 @@ class ImageDelegate {
   void fitScaleTop() {
     scale = scaleFit;
     posX = 0;
-    posY = -limitY;
+    posY = limitY;
   }
 
   void fitScaleBottom() {
