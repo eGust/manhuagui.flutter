@@ -45,6 +45,12 @@ class _InfoPanelState extends State<InfoPanel> {
 
   int currentPage;
 
+  String get pageText {
+    if (currentPage == null) return '${widget.pageCount}';
+    if (currentPage == widget.pageIndex) return '${currentPage + 1} / ${widget.pageCount}';
+    return '${widget.pageIndex + 1} -> ${currentPage + 1} / ${widget.pageCount}';
+  }
+
   @override
   Widget build(BuildContext context) => Column(
         children: <Widget>[
@@ -94,7 +100,7 @@ class _InfoPanelState extends State<InfoPanel> {
           Expanded(child: GestureDetector(onTap: widget.onReadModeAction)),
           Container(
               color: Color.fromARGB(200, 40, 40, 40),
-              height: 72.0,
+              height: 80.0,
               padding: const EdgeInsets.only(left: 10.0, right: 10.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -116,7 +122,7 @@ class _InfoPanelState extends State<InfoPanel> {
                     disabledColor: _disabledColor,
                     size: 32.0,
                     onPressed: () {
-                      widget.onSlidePage(-1);
+                      widget.onSlidePage(1);
                     },
                   ),
                   Expanded(
@@ -129,7 +135,7 @@ class _InfoPanelState extends State<InfoPanel> {
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                     Text(
-                                      '${widget.pageIndex == null ? '' : widget.pageIndex + 1} / ${widget.pageCount}',
+                                      pageText,
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 15.0,
@@ -158,7 +164,7 @@ class _InfoPanelState extends State<InfoPanel> {
                     disabledColor: _disabledColor,
                     size: 32.0,
                     onPressed: () {
-                      widget.onSlidePage(1);
+                      widget.onSlidePage(-1);
                     },
                   ),
                   TouchableIcon(

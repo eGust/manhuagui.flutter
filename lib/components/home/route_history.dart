@@ -31,8 +31,8 @@ class _RouteHistoryState extends State<RouteHistory> {
     final rows = await globals.localDb.rawQuery('''
     SELECT books.book_id, books.name
       , cover_json, last_chapter_id, max_chapter_id
-      , last_chapter.title last_chapter_title, last_chapter.read_page
-      , max_chapter.title max_chapter_title, max_chapter.read_page
+      , last_chapter.title last_chapter_title, last_chapter.read_page last_chapter_page
+      , max_chapter.title max_chapter_title, max_chapter.read_page max_chapter_page
     FROM books
     INNER JOIN chapters last_chapter ON last_chapter.chapter_id = last_chapter_id
     LEFT JOIN chapters max_chapter ON max_chapter.chapter_id = max_chapter_id
