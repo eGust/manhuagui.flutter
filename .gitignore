@@ -26,6 +26,7 @@ build/
 
 ios/Runner.xcworkspace/contents.xcworkspacedata
 ios/Runner.xcodeproj/project.pbxproj
+ios/Flutter/flutter_export_environment.sh
 
 config.dart
 ios/Podfile.lock

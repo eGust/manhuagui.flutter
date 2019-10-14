@@ -35,7 +35,7 @@ class ImageDelegate {
 
   static Future<ImageDelegate> from(Image image, String key) {
     final c = Completer<ImageDelegate>();
-    image.image.resolve(_config).addListener((info, _bool) {
+    image.image.resolve(_config).addListener(ImageStreamListener((info, _bool) {
       final img = info.image;
       final w = img.width.toDouble();
       final h = img.height.toDouble();
@@ -62,7 +62,7 @@ class ImageDelegate {
         scaleHeight: scaleHeight,
         scaleFit: scaleFit,
       ));
-    });
+    }));
     return c.future;
   }
 
