@@ -57,11 +57,10 @@ class _ReaderScreenState extends State<ReaderScreen>
     subscribeUpdate(_current);
   }
 
-  void onSlide(int direction) async {
-    _imgOld = _current;
-    final page = direction < 0 ? currentPage.nextPage : currentPage.prevPage;
+  void slideToPage(FutureOr<ComicPage> page, int direction) async {
     if (page == null || !mounted) return;
 
+    _imgOld = _current;
     final ComicPage p = page is Future<ComicPage> ? await page : page;
     _imgNew = ImageResolver(p.key, pool.imageOf(page));
     subscribeUpdate(_imgNew);
@@ -92,6 +91,10 @@ class _ReaderScreenState extends State<ReaderScreen>
           pool.currentPage = p;
         });
       });
+  }
+
+  void onSlide(int direction) async {
+    slideToPage(direction < 0 ? currentPage.nextPage : currentPage.prevPage, direction);
   }
 
   bool isSlidable(final int offset) {
@@ -253,7 +256,7 @@ class _ReaderScreenState extends State<ReaderScreen>
                           Navigator.pop(context);
                         },
                         onPageChanged: (final int pageIndex) {
-                          pool.setCurrent(pageIndex: pageIndex);
+                          slideToPage(currentPage.chapter.page(pageIndex), currentPage.pageIndex - pageIndex);
                         },
                         onDownload: () {},
                         onReadModeAction: _toggleReadMode,

@@ -122,7 +122,10 @@ class _InfoPanelState extends State<InfoPanel> {
                     disabledColor: _disabledColor,
                     size: 32.0,
                     onPressed: () {
-                      widget.onSlidePage(1);
+                      setState(() {
+                        widget.onSlidePage(1);
+                        currentPage -= 1;
+                      });
                     },
                   ),
                   Expanded(
@@ -152,7 +155,9 @@ class _InfoPanelState extends State<InfoPanel> {
                                         widget.onPageChanged(value.toInt() - 1);
                                       },
                                       onChanged: (double value) {
-                                        currentPage = value.toInt() - 1;
+                                        setState(() {
+                                          currentPage = value.toInt() - 1;
+                                        });
                                       },
                                     ),
                                   ])),
@@ -164,7 +169,10 @@ class _InfoPanelState extends State<InfoPanel> {
                     disabledColor: _disabledColor,
                     size: 32.0,
                     onPressed: () {
-                      widget.onSlidePage(-1);
+                      setState(() {
+                        widget.onSlidePage(-1);
+                        currentPage += 1;
+                      });
                     },
                   ),
                   TouchableIcon(
