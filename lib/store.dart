@@ -97,8 +97,7 @@ class Store {
   }
 
   Future<void> _openCache() async {
-    CacheStore.setPolicy(LRUCachePolicy(2000));
-    cache = await CacheStore.getInstance();
+    cache = await CacheStore.getInstance(policy: LRUCachePolicy(2000));
   }
 
   Future<void> _cleanLegacy() async {
