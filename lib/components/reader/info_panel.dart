@@ -47,8 +47,17 @@ class _InfoPanelState extends State<InfoPanel> {
 
   String get pageText {
     if (currentPage == null) return '${widget.pageCount}';
-    if (currentPage == widget.pageIndex) return '${currentPage + 1} / ${widget.pageCount}';
-    return '${widget.pageIndex + 1} -> ${currentPage + 1} / ${widget.pageCount}';
+    return currentPage == widget.pageIndex
+        ? '${currentPage + 1} / ${widget.pageCount}'
+        : '${widget.pageIndex + 1} -> ${currentPage + 1} / ${widget.pageCount}';
+  }
+
+  Future<void> syncCurrentPage(Future<void> asyncFunc) async {
+    await asyncFunc;
+    await Future.delayed(const Duration());
+    setState(() {
+      currentPage = widget.pageIndex;
+    });
   }
 
   @override
@@ -111,9 +120,8 @@ class _InfoPanelState extends State<InfoPanel> {
                     disabled: widget.invalidPrevChapter,
                     disabledColor: _disabledColor,
                     size: 32.0,
-                    onPressed: () {
-                      widget.onChapterChanged(-1);
-                    },
+                    onPressed: () =>
+                        syncCurrentPage(widget.onChapterChanged(-1)),
                   ),
                   TouchableIcon(
                     Icons.arrow_left,
@@ -121,12 +129,7 @@ class _InfoPanelState extends State<InfoPanel> {
                     disabled: widget.invalidPrevPage,
                     disabledColor: _disabledColor,
                     size: 32.0,
-                    onPressed: () {
-                      setState(() {
-                        widget.onSlidePage(1);
-                        currentPage -= 1;
-                      });
-                    },
+                    onPressed: () => syncCurrentPage(widget.onSlidePage(1)),
                   ),
                   Expanded(
                     child: Container(
@@ -151,14 +154,12 @@ class _InfoPanelState extends State<InfoPanel> {
                                       value: (currentPage + 1).toDouble(),
                                       activeColor: Colors.white,
                                       inactiveColor: Colors.white,
-                                      onChangeEnd: (value) {
-                                        widget.onPageChanged(value.toInt() - 1);
-                                      },
-                                      onChanged: (double value) {
-                                        setState(() {
-                                          currentPage = value.toInt() - 1;
-                                        });
-                                      },
+                                      onChangeEnd: (value) => syncCurrentPage(
+                                        widget.onPageChanged(value.toInt() - 1),
+                                      ),
+                                      onChanged: (value) => setState(() {
+                                        currentPage = value.toInt() - 1;
+                                      }),
                                     ),
                                   ])),
                   ),
@@ -168,12 +169,7 @@ class _InfoPanelState extends State<InfoPanel> {
                     disabled: widget.invalidNextPage,
                     disabledColor: _disabledColor,
                     size: 32.0,
-                    onPressed: () {
-                      setState(() {
-                        widget.onSlidePage(-1);
-                        currentPage += 1;
-                      });
-                    },
+                    onPressed: () => syncCurrentPage(widget.onSlidePage(-1)),
                   ),
                   TouchableIcon(
                     Icons.fast_forward,
@@ -181,9 +177,8 @@ class _InfoPanelState extends State<InfoPanel> {
                     disabled: widget.invalidNextChapter,
                     disabledColor: _disabledColor,
                     size: 32.0,
-                    onPressed: () {
-                      widget.onChapterChanged(1);
-                    },
+                    onPressed: () =>
+                        syncCurrentPage(widget.onChapterChanged(1)),
                   ),
                 ],
               )),

@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 typedef OffsetAction = void Function(Offset position);
 typedef GestureAction = void Function(Offset position, double scale);
 typedef GestureEndAction = void Function(Offset delta, Offset velocity);
-typedef SlideAction = void Function(int direction);
+typedef SlideAction = Future<void> Function(int direction);
 
 class ActionEventCenter {
   const ActionEventCenter({

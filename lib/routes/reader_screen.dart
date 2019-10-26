@@ -57,8 +57,15 @@ class _ReaderScreenState extends State<ReaderScreen>
     subscribeUpdate(_current);
   }
 
-  void slideToPage(FutureOr<ComicPage> page, int direction) async {
-    if (page == null || !mounted) return;
+  Future<void> _slideToPage(
+    Completer<void> completer,
+    FutureOr<ComicPage> page,
+    int direction,
+  ) async {
+    if (page == null || !mounted) {
+      completer.complete();
+      return;
+    }
 
     _imgOld = _current;
     final ComicPage p = page is Future<ComicPage> ? await page : page;
@@ -89,12 +96,20 @@ class _ReaderScreenState extends State<ReaderScreen>
           _imgNew = null;
           _sliding = false;
           pool.currentPage = p;
+          completer.complete();
         });
       });
   }
 
-  void onSlide(int direction) async {
-    slideToPage(direction < 0 ? currentPage.nextPage : currentPage.prevPage, direction);
+  Future<void> slideToPage(FutureOr<ComicPage> page, int direction) {
+    final completer = Completer<void>();
+    _slideToPage(completer, page, direction);
+    return completer.future;
+  }
+
+  Future<void> onSlide(int direction) {
+    final page = direction < 0 ? currentPage.nextPage : currentPage.prevPage;
+    return slideToPage(page, direction);
   }
 
   bool isSlidable(final int offset) {
@@ -129,8 +144,8 @@ class _ReaderScreenState extends State<ReaderScreen>
       setState(() {
         final w = delegate.scaleWidth;
         final h = delegate.scaleHeight;
-        if (w > h) {
-          delegate.fitScaleRight();
+        if (w > h && w < h * 2) {
+          delegate.fitScaleHorizonPages();
           delegate.type = ImageType.horizon;
         } else if (h > w * 2) {
           delegate.fitScaleTop();
@@ -255,24 +270,26 @@ class _ReaderScreenState extends State<ReaderScreen>
                           _preventBack = false;
                           Navigator.pop(context);
                         },
-                        onPageChanged: (final int pageIndex) {
-                          slideToPage(currentPage.chapter.page(pageIndex), currentPage.pageIndex - pageIndex);
-                        },
+                        onPageChanged: (final pageIndex) => slideToPage(
+                          currentPage.chapter.page(pageIndex),
+                          currentPage.pageIndex - pageIndex,
+                        ),
                         onDownload: () {},
                         onReadModeAction: _toggleReadMode,
-                        onChapterChanged: (final int direction) {
-                          pool.currentPage = direction < 0
+                        onChapterChanged: (final delta) => slideToPage(
+                          delta < 0
                               ? currentChapter.prevByGroup?.page(0)
-                              : currentChapter.nextByGroup?.page(0);
-                        },
-                        title: pool.currentPage.chapter.book.name,
+                              : currentChapter.nextByGroup?.page(0),
+                          -delta,
+                        ),
+                        title: currentPage.chapter.book.name,
                         subTitle: status,
-                        invalidPrevPage: !isSlidable(0 - 1),
-                        invalidNextPage: !isSlidable(0 + 1),
+                        invalidPrevPage: !isSlidable(0 + 1),
+                        invalidNextPage: !isSlidable(0 - 1),
                         invalidPrevChapter:
-                            pool.currentPage.chapter.prevByGroup == null,
+                            currentPage.chapter.prevByGroup == null,
                         invalidNextChapter:
-                            pool.currentPage.chapter.nextByGroup == null,
+                            currentPage.chapter.nextByGroup == null,
                         pageIndex: currentPage?.pageIndex,
                         pageCount: currentChapter?.pageCount,
                         onSlidePage: onSlide,
