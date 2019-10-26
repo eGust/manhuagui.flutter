@@ -29,6 +29,7 @@ class ImageDelegate {
 
   static double get screenWidth => globals.screenSize.shortestSide;
   static double get screenHeight => globals.screenSize.longestSide;
+  static double get screenRatio => screenWidth / screenHeight;
 
   double get limitX => (scaleWidth * scale - screenWidth) / 2.0;
   double get limitY => (scaleHeight * scale - screenHeight) / 2.0;
@@ -160,6 +161,15 @@ class ImageDelegate {
     scale = scaleFit;
     posX = 0;
     posY = -limitY;
+  }
+
+  void fitScaleHorizonPages() {
+    final ratio = width / height;
+    final pageCount = (ratio / screenRatio).floorToDouble();
+    if (pageCount > 1) {
+      scale = pageCount * 0.96;
+      posX = -limitX;
+    }
   }
 
   double get slideIgnoreX =>
