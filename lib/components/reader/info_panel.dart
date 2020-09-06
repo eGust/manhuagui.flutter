@@ -28,8 +28,6 @@ class InfoPanel extends StatefulWidget {
   final bool invalidPrevChapter, invalidNextChapter;
   final int pageIndex, pageCount;
 
-  static final _disabledColor = Colors.grey[500];
-
   @override
   _InfoPanelState createState() => _InfoPanelState();
 }

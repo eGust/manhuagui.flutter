@@ -13,7 +13,6 @@ import '../models.dart';
 // import 'assets.dart';
 
 class SyncData {
-  SyncData._(this.sqlDb, {this.preferences = const {}});
   SyncData._fromPath(String path, {this.preferences = const {}})
       : sqlDb = path == null ? null : File(path);
 

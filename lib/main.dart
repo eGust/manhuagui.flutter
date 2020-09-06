@@ -8,6 +8,7 @@ import 'api.dart';
 
 void main() async {
   log('main started');
+  WidgetsFlutterBinding.ensureInitialized();
   await globals.initialize();
   // updateSettings();
 
