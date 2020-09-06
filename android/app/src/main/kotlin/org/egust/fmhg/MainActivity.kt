@@ -1,4 +1,4 @@
-package com.example.fmhg
+package org.egust.fmhg
 
 import io.flutter.embedding.android.FlutterActivity
 
