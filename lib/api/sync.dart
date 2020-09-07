@@ -366,9 +366,9 @@ class GoogleDriverSyncManager extends SyncManager {
 
   static final _api = GoogleApi(
     'google',
-    '45516579677-vhhmlfivk1ic4nr8ji5uvvb1358c5q8u.apps.googleusercontent.com',
-    'redirecturl',
-    clientSecret: 'TLLbey1-vAqvClNqZ9QJ7-lM',
+    '1034436232619-3ufbs8bm18omn1nr9m4js92jqafpksom.apps.googleusercontent.com',
+    'com.googleusercontent.apps.1034436232619-3ufbs8bm18omn1nr9m4js92jqafpksom:/redirct',
+    clientSecret: 'TJDtk1ywT6KKs-0FO8ObVcx9',
     scopes: [
       'https://www.googleapis.com/auth/userinfo.email',
       'https://www.googleapis.com/auth/userinfo.profile',
