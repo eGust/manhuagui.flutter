@@ -35,7 +35,7 @@ class _DialogTopBarState extends State<DialogTopBar> {
         children: widget.onPinChanged == null
             ? [
                 Text(widget.title),
-                FlatButton(
+                TextButton(
                   child: Icon(Icons.check),
                   onPressed: () {
                     Navigator.pop(context, null);
@@ -43,16 +43,18 @@ class _DialogTopBarState extends State<DialogTopBar> {
                 ),
               ]
             : [
-                FlatButton(
+                TextButton(
                   child: Icon(
                     _pinned ? Icons.lock : Icons.lock_open,
                     color: _pinned ? Colors.white : Colors.grey[700],
                   ),
-                  color: _pinned ? Colors.orange[900] : Colors.transparent,
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          _pinned ? Colors.orange[900] : Colors.transparent)),
                   onPressed: onPressed,
                 ),
                 Text(widget.title),
-                FlatButton(
+                TextButton(
                   child: Icon(Icons.check),
                   onPressed: () {
                     Navigator.pop(context, null);

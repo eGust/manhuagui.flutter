@@ -48,45 +48,48 @@ class _ResultListState extends State<ResultList> {
       context: context,
       barrierDismissible: false,
       builder: (context) => SimpleDialog(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                const Text('排序'),
-                TouchableIcon(
-                  Icons.close,
-                  onPressed: () {
-                    Navigator.pop(context, null);
-                  },
-                )
-              ],
-            ),
-            children: [
-              Container(
-                  padding: const EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 10.0),
-                  width: 240.0,
-                  height: 240.0,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: List<Widget>.from(
-                        _ORDER_MAP.entries.map((pair) => RaisedButton(
-                              onPressed: () {
-                                Navigator.pop(context, pair.key);
-                              },
-                              color: pair.key == _order
-                                  ? Colors.deepOrange[800]
-                                  : Colors.orange[700],
-                              child: Text(pair.value,
-                                  style: TextStyle(
-                                    color: pair.key == _order
-                                        ? Colors.white
-                                        : Colors.brown[700],
-                                    fontSize: 18.0,
-                                  )),
-                            ))),
-                  ))
-            ],
-          ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            const Text('排序'),
+            TouchableIcon(
+              Icons.close,
+              onPressed: () {
+                Navigator.pop(context, null);
+              },
+            )
+          ],
+        ),
+        children: [
+          Container(
+              padding: const EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 10.0),
+              width: 240.0,
+              height: 240.0,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: List<Widget>.from(
+                    _ORDER_MAP.entries.map((pair) => ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context, pair.key);
+                          },
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                pair.key == _order
+                                    ? Colors.deepOrange[800]
+                                    : Colors.orange[700]),
+                          ),
+                          child: Text(pair.value,
+                              style: TextStyle(
+                                color: pair.key == _order
+                                    ? Colors.white
+                                    : Colors.brown[700],
+                                fontSize: 18.0,
+                              )),
+                        ))),
+              ))
+        ],
+      ),
     );
 
     if (newOrder == null) return;
@@ -188,7 +191,7 @@ class _ResultListState extends State<ResultList> {
                   Navigator.pop(context);
                 },
               ),
-              FlatButton(
+              TextButton(
                 onPressed: _switchOrder,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,

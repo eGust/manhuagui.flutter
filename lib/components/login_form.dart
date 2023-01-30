@@ -62,16 +62,17 @@ class _LoginFormState extends State<LoginForm> {
       await showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(
-              title: const Text('无法打开外部链接'),
-              content: Center(
-                  child: RaisedButton(
-                child: const Text('确定'),
-                color: Colors.red,
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              )),
-            ),
+          title: const Text('无法打开外部链接'),
+          content: Center(
+              child: ElevatedButton(
+            child: const Text('确定'),
+            style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.red)),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )),
+        ),
       );
     }
   }
@@ -114,8 +115,10 @@ class _LoginFormState extends State<LoginForm> {
                       SizedBox(
                         width: 180.0,
                         height: 48.0,
-                        child: RaisedButton(
-                          color: Colors.green[900],
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  Colors.green[900])),
                           child: Row(
                             children: <Widget>[
                               const Icon(Icons.open_in_browser,
@@ -135,9 +138,13 @@ class _LoginFormState extends State<LoginForm> {
                       SizedBox(
                         width: 120.0,
                         height: 40.0,
-                        child: RaisedButton(
-                          color: Colors.red[900],
-                          textColor: Colors.white,
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                Colors.red[900]),
+                            foregroundColor:
+                                MaterialStateProperty.all<Color>(Colors.white),
+                          ),
                           child: const Text('取消',
                               style: const TextStyle(fontSize: 18.0)),
                           onPressed: () {
@@ -149,9 +156,13 @@ class _LoginFormState extends State<LoginForm> {
                   ),
                   SizedBox(
                     height: 48.0,
-                    child: RaisedButton(
-                      color: Colors.lightBlue[800],
-                      textColor: Colors.white,
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            Colors.lightBlue[800]),
+                        foregroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                      ),
                       child: Center(
                           child: const Text('登 录',
                               style: const TextStyle(fontSize: 21.0))),
@@ -182,9 +193,15 @@ class _LoginFormState extends State<LoginForm> {
                           SizedBox(
                             width: 120.0,
                             height: 40.0,
-                            child: RaisedButton(
-                              color: Colors.lightBlue[800],
-                              textColor: Colors.white,
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.lightBlue[800]),
+                                foregroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white),
+                              ),
                               child: const Text('完成',
                                   style: const TextStyle(fontSize: 18.0)),
                               onPressed: () {
@@ -203,9 +220,15 @@ class _LoginFormState extends State<LoginForm> {
                           SizedBox(
                             width: 120.0,
                             height: 40.0,
-                            child: RaisedButton(
-                              color: Colors.lightBlue[800],
-                              textColor: Colors.white,
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.lightBlue[800]),
+                                foregroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white),
+                              ),
                               child: const Text('重新输入',
                                   style: const TextStyle(fontSize: 18.0)),
                               onPressed: () {
@@ -220,9 +243,15 @@ class _LoginFormState extends State<LoginForm> {
                           SizedBox(
                             width: 120.0,
                             height: 40.0,
-                            child: RaisedButton(
-                              color: Colors.red[800],
-                              textColor: Colors.white,
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.red[800]),
+                                foregroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white),
+                              ),
                               child: const Text('关闭',
                                   style: const TextStyle(fontSize: 18.0)),
                               onPressed: () {
