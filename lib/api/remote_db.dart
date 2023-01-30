@@ -6,9 +6,7 @@ import '../models/comic_cover.dart';
 import '../models/author.dart';
 
 class RemoteDb {
-  RemoteDb(String uri) {
-    _db = Db(uri);
-  }
+  RemoteDb(this._db);
 
   Db _db;
   Db get db => _db;
@@ -58,7 +56,9 @@ class RemoteDb {
 
   static Future<RemoteDb> create({String uri}) async {
     if (uri == null) return null;
-    final r = RemoteDb(uri);
+
+    final db = await Db.create(uri);
+    final r = RemoteDb(db);
     await r.initialize();
     return r;
   }
