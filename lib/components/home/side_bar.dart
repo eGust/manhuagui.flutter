@@ -95,9 +95,12 @@ class IconLabelButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        child: FlatButton(
+        child: TextButton(
           onPressed: onPressed,
-          padding: const EdgeInsets.fromLTRB(5.0, 12.0, 5.0, 12.0),
+          style: ButtonStyle(
+            padding: MaterialStateProperty.all<EdgeInsets>(
+                const EdgeInsets.fromLTRB(5.0, 12.0, 5.0, 12.0)),
+          ),
           child: Column(children: _createChildren()),
         ),
         margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),

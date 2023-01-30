@@ -75,7 +75,7 @@ class AuthorComicListManager extends ComicListManagerBase {
               children: [
                 Container(),
                 Text('排序'),
-                FlatButton(
+                TextButton(
                   child: Icon(Icons.check),
                   onPressed: () {
                     Navigator.pop(context, oldOrder);

@@ -96,51 +96,55 @@ class _RouteFavoriteState extends State<RouteFavorite> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-            title: const Text('此功能需要登录！'),
-            content: Container(
-              height: 120.0,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  RaisedButton(
-                    color: Colors.lightBlue[700],
-                    child: const Text('登录',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.0,
-                        )),
-                    onPressed: () async {
-                      await showDialog<void>(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) => SimpleDialog(
-                              title: const Text('用户登录'),
-                              children: [
-                                LoginForm(),
-                              ],
-                            ),
-                      );
-                      if (!globals.user.isLogin) return;
-                      Navigator.pop(context);
-                      _refresh(indicator: true);
-                    },
-                  ),
-                  RaisedButton(
-                    color: Colors.red[900],
-                    child: const Text('关闭',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.0,
-                        )),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
+        title: const Text('此功能需要登录！'),
+        content: Container(
+          height: 120.0,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        Colors.lightBlue[700])),
+                child: const Text('登录',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18.0,
+                    )),
+                onPressed: () async {
+                  await showDialog<void>(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) => SimpleDialog(
+                      title: const Text('用户登录'),
+                      children: [
+                        LoginForm(),
+                      ],
+                    ),
+                  );
+                  if (!globals.user.isLogin) return;
+                  Navigator.pop(context);
+                  _refresh(indicator: true);
+                },
               ),
-            ),
+              ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.red[900])),
+                child: const Text('关闭',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18.0,
+                    )),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
           ),
+        ),
+      ),
     );
   }
 

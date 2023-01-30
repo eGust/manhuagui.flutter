@@ -25,9 +25,13 @@ class _LogoutFormState extends State<LogoutForm> {
                 : SizedBox(
                     width: 180.0,
                     height: 40.0,
-                    child: RaisedButton(
-                      color: Colors.red[900],
-                      textColor: Colors.white,
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.red[900]),
+                        foregroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                      ),
                       child: const Text('退出登录',
                           style: const TextStyle(fontSize: 18.0)),
                       onPressed: () {
@@ -41,9 +45,13 @@ class _LogoutFormState extends State<LogoutForm> {
             SizedBox(
               width: 180.0,
               height: 40.0,
-              child: RaisedButton(
-                color: Colors.lightBlue[800],
-                textColor: Colors.white,
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.lightBlue[800]),
+                  foregroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                ),
                 child:
                     const Text('返 回', style: const TextStyle(fontSize: 18.0)),
                 onPressed: () {

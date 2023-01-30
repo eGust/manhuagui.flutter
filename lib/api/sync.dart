@@ -300,7 +300,7 @@ class GoogleDriverSyncManager extends SyncManager {
   static const _API_BASE_URL = 'https://www.googleapis.com/drive/v3';
   static const _API_UPLOAD_URL =
       'https://www.googleapis.com/upload/drive/v3/files';
-  static String apiUrl(String path) => '$_API_BASE_URL/$path';
+  static Uri apiUrl(String path) => Uri.parse('$_API_BASE_URL/$path');
 
   Future<http.Response> _get(
     String api, {
@@ -353,7 +353,7 @@ class GoogleDriverSyncManager extends SyncManager {
     return jsonDecode(res.body);
   }
 
-  String _buildQuery(String path, Map<String, String> queryParameters) {
+  Uri _buildQuery(String path, Map<String, String> queryParameters) {
     final url = apiUrl(path);
     if (queryParameters == null || queryParameters.isEmpty) return url;
 
@@ -361,7 +361,7 @@ class GoogleDriverSyncManager extends SyncManager {
         .map((p) =>
             '${Uri.encodeComponent(p.key)}=${Uri.encodeComponent(p.value)}')
         .join('&');
-    return '$url?$qs';
+    return Uri.parse('$url?$qs');
   }
 
   static final _api = GoogleApi(

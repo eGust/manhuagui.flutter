@@ -85,7 +85,7 @@ class ListTopBar extends StatelessWidget {
                   },
                 )
               : Container(),
-          FlatButton(
+          TextButton(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [

@@ -51,26 +51,25 @@ class _RouteConfigurationState extends State<RouteConfiguration> {
               children: globals.metaData.comicFilterGroupList
                   .map(
                     (grp) => Wrap(
-                          spacing: 8.0,
-                          runSpacing: -10.0,
-                          children: grp.filters
-                              .map((filter) => _BlacklistButton(
-                                    filter,
-                                    blocked: _isBlocked(filter),
-                                    onPressed: () {
-                                      setState(() {
-                                        if (_isBlocked(filter)) {
-                                          globals.blacklistSet
-                                              .remove(filter.link);
-                                        } else {
-                                          globals.blacklistSet.add(filter.link);
-                                        }
-                                        globals.save();
-                                      });
-                                    },
-                                  ))
-                              .toList(),
-                        ),
+                      spacing: 8.0,
+                      runSpacing: -10.0,
+                      children: grp.filters
+                          .map((filter) => _BlacklistButton(
+                                filter,
+                                blocked: _isBlocked(filter),
+                                onPressed: () {
+                                  setState(() {
+                                    if (_isBlocked(filter)) {
+                                      globals.blacklistSet.remove(filter.link);
+                                    } else {
+                                      globals.blacklistSet.add(filter.link);
+                                    }
+                                    globals.save();
+                                  });
+                                },
+                              ))
+                          .toList(),
+                    ),
                   )
                   .toList(),
             ),
@@ -90,8 +89,10 @@ class _RouteConfigurationState extends State<RouteConfiguration> {
             ),
             child: Wrap(
               children: [
-                RaisedButton(
-                  color: Colors.lightBlue[800],
+                ElevatedButton(
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlue[800])),
                   child: const Text('缓存',
                       style: TextStyle(
                         color: Colors.white,
@@ -103,38 +104,40 @@ class _RouteConfigurationState extends State<RouteConfiguration> {
                       context: context,
                       barrierDismissible: false,
                       builder: (context) => SimpleDialog(
-                            title: const Text('清除缓存'),
-                            children: [
-                              cleaning
-                                  ? const Text('清除中...')
-                                  : RaisedButton(
-                                      onPressed: () async {
-                                        setState(() {
-                                          cleaning = true;
-                                        });
-                                        await globals.cleanCacheManager();
-                                        setState(() {
-                                          cleaning = false;
-                                        });
-                                      },
-                                      child: const Text('清理'),
-                                    ),
-                              RaisedButton(
-                                onPressed: cleaning
-                                    ? null
-                                    : () {
-                                        Navigator.pop(context);
-                                      },
-                                child: const Text('关闭'),
-                              ),
-                            ],
+                        title: const Text('清除缓存'),
+                        children: [
+                          cleaning
+                              ? const Text('清除中...')
+                              : ElevatedButton(
+                                  onPressed: () async {
+                                    setState(() {
+                                      cleaning = true;
+                                    });
+                                    await globals.cleanCacheManager();
+                                    setState(() {
+                                      cleaning = false;
+                                    });
+                                  },
+                                  child: const Text('清理'),
+                                ),
+                          ElevatedButton(
+                            onPressed: cleaning
+                                ? null
+                                : () {
+                                    Navigator.pop(context);
+                                  },
+                            child: const Text('关闭'),
                           ),
+                        ],
+                      ),
                     );
                   },
                 ),
                 Container(width: 10.0),
-                RaisedButton(
-                  color: Colors.lightBlue[800],
+                ElevatedButton(
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.lightBlue[800])),
                   child: const Text('同步...',
                       style: TextStyle(
                         color: Colors.white,

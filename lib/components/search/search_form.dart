@@ -110,9 +110,13 @@ class _SearchFormState extends State<SearchForm> {
                     ),
                     Container(
                       margin: const EdgeInsets.only(left: 10.0),
-                      child: RaisedButton(
-                        color: Colors.deepOrange[900],
-                        textColor: Colors.white,
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              Colors.deepOrange[900]),
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                        ),
                         child: _lastSearched.isEmpty
                             ? const Icon(Icons.search,
                                 size: 30.0, color: Colors.grey)
